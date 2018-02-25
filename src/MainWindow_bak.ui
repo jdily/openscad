@@ -169,7 +169,7 @@
         <widget class="QFrame" name="animate_panel">
          <property name="enabled">
           <bool>true</bool>
-         </property> 
+         </property>
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>
          </property>
@@ -272,7 +272,7 @@
      <x>0</x>
      <y>0</y>
      <width>1118</width>
-     <height>19</height>
+     <height>17</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -497,7 +497,7 @@
          <number>0</number>
         </property>
         <item row="0" column="0">
-         <widget class="QComboBox" name="findTypeComboBox"> 
+         <widget class="QComboBox" name="findTypeComboBox">
           <item>
            <property name="text">
             <string>Find</string>
@@ -512,7 +512,7 @@
         </item>
         <item row="0" column="1">
          <widget class="QWordSearchField" name="findInputField">
-          <property name="placeholderText">
+          <property name="placeholderText" stdset="0">
            <string>Search string</string>
           </property>
          </widget>
@@ -520,42 +520,42 @@
         <item row="0" column="2">
          <widget class="QPushButton" name="findPrevButton">
           <property name="text">
-           <string>Prev.</string> 
+           <string>Prev.</string>
           </property>
          </widget>
         </item>
         <item row="0" column="3">
          <widget class="QPushButton" name="findNextButton">
           <property name="text">
-           <string>Next</string> 
+           <string>Next</string>
           </property>
          </widget>
         </item>
         <item row="0" column="4">
          <widget class="QPushButton" name="cancelButton">
           <property name="text">
-           <string>Done</string> 
+           <string>Done</string>
           </property>
          </widget>
         </item>
         <item row="1" column="1">
          <widget class="QLineEdit" name="replaceInputField">
           <property name="placeholderText">
-           <string>Replacement string</string> 
+           <string>Replacement string</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="2" colspan="2"> 
+        <item row="1" column="2" colspan="2">
          <widget class="QPushButton" name="replaceButton">
           <property name="text">
-           <string>Replace</string> 
+           <string>Replace</string>
           </property>
          </widget>
         </item>
         <item row="1" column="4">
          <widget class="QPushButton" name="replaceAllButton">
           <property name="text">
-           <string>All</string> 
+           <string>All</string>
           </property>
          </widget>
         </item>
@@ -1388,7 +1388,6 @@
    <header>QGLView.h</header>
    <container>1</container>
   </customwidget>
-  
   <customwidget>
    <class>Dock</class>
    <extends>QDockWidget</extends>

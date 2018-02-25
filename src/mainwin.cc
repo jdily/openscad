@@ -97,6 +97,10 @@
 #include <QSettings> //Include QSettings for direct operations on settings arrays
 #include "QSettingsCached.h"
 
+// ichao
+#include "GLViewer_group.h"
+
+
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 #include <QTextDocument>
 #define QT_HTML_ESCAPE(qstring) Qt::escape(qstring)
