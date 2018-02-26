@@ -150,7 +150,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QGLView" name="qglview" native="true">
+        <widget class="GLViewer_group" name="qglview_group" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -1386,6 +1386,12 @@
    <class>QGLView</class>
    <extends>QWidget</extends>
    <header>QGLView.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GLViewer_group</class>
+   <extends>QWidget</extends>
+   <header>GLViewer_group.h</header>
    <container>1</container>
   </customwidget>
   

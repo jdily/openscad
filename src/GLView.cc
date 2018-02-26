@@ -103,7 +103,7 @@ void GLView::setupCamera()
 		}
 		case Camera::ProjectionType::ORTHOGONAL: {
 			// ichao test
-			std::cout << "ichao test here" << std::endl;
+			// std::cout << "ichao test here" << std::endl;
 			auto height = dist * tan(cam.fov/2*M_PI/180);
 			glOrtho(-height*aspectratio, height*aspectratio,
 							-height, height,

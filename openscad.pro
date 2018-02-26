@@ -251,6 +251,7 @@ HEADERS += src/version_check.h \
            src/CGAL_OGL_Polyhedron.h \
            src/QGLView.h \
            src/GLView.h \
+           src/GLViewer_group.h \
            src/MainWindow.h \
            src/OpenSCADApp.h \
            src/WindowManager.h \
@@ -357,6 +358,7 @@ HEADERS += src/version_check.h \
            src/parameter/ignoreWheelWhenNotFocused.h \
            src/QWordSearchField.h \
            src/QSettingsCached.h
+           
 
 SOURCES += \
            src/libsvg/libsvg.cc \
@@ -439,6 +441,7 @@ SOURCES += \
            src/editor.cc \
            src/GLView.cc \
            src/QGLView.cc \
+           src/GLViewer_group.cpp \
            src/AutoUpdater.cc \
            \
            src/hash.cc \
@@ -498,7 +501,8 @@ SOURCES += \
            src/parameter/ignoreWheelWhenNotFocused.cpp \
            src/QWordSearchField.cc\
            \
-           src/QSettingsCached.cc
+           src/QSettingsCached.cc 
+           
 
 # CGAL
 HEADERS += src/ext/CGAL/convex_hull_3_bugfix.h \
