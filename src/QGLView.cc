@@ -78,7 +78,7 @@ void QGLView::init()
 
   setMouseTracking(true);
 
-
+  m_sView = QString("free");
 
 #if defined(_WIN32) && !defined(USE_QOPENGLWIDGET)
 // see paintGL() + issue160 + wine FAQ
@@ -93,6 +93,10 @@ void QGLView::init()
 void QGLView::resetView()
 {
 	cam.resetView();
+}
+
+void QGLView::setView(QString view) {
+  m_sView = view;
 }
 
 void QGLView::viewAll()
@@ -222,7 +226,9 @@ void QGLView::paintGL()
   glDisable(GL_DEPTH_TEST);
   painter.endNativePainting();
   painter.setFont(QFont("times",22));
-  painter.drawText(10, 20, "Testing");
+  QPen red_pen(QColor("#ff0000"));
+  painter.setPen(red_pen);
+  painter.drawText(10, 20, m_sView);
   painter.end();
 #if defined(_WIN32) && !defined(USE_QOPENGLWIDGET)
   if (running_under_wine) swapBuffers();

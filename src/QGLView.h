@@ -60,6 +60,9 @@ public:
 	void resetView();
 	void viewAll();
 
+	// ichao
+	void setView(QString view);
+
 public slots:
 	void ZoomIn(void);
 	void ZoomOut(void);
@@ -79,6 +82,7 @@ private:
 	QPoint last_mouse;
 	QImage frame; // Used by grabFrame() and save()
 	bool fixed;
+	QString m_sView;
 
 	void wheelEvent(QWheelEvent *event) override;
 	void mousePressEvent(QMouseEvent *event) override;

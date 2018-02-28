@@ -14,12 +14,15 @@ GLViewer_group::GLViewer_group(QWidget *parent): QWidget(parent) {
     // set default view of camera for different viewer
     m_topViewer->cam.object_rot << 90,0,0;
     m_topViewer->setOrthoMode(true);
+    m_topViewer->setView("top");
     m_topViewer->updateGL();
     m_frontViewer->cam.object_rot << 0,0,0;
     m_frontViewer->setOrthoMode(true);
+    m_frontViewer->setView("front");
     m_frontViewer->updateGL();
     m_sideViewer->cam.object_rot << 0,0,90;
     m_sideViewer->setOrthoMode(true);
+    m_sideViewer->setView("side");
     m_sideViewer->updateGL();
 
     m_topViewer->toggleDrag();
