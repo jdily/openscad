@@ -21,4 +21,9 @@ GLViewer_group::GLViewer_group(QWidget *parent): QWidget(parent) {
     m_sideViewer->cam.object_rot << 0,0,90;
     m_sideViewer->setOrthoMode(true);
     m_sideViewer->updateGL();
+
+    m_topViewer->toggleDrag();
+    m_topViewer->displayText(QString("top"));
+    m_frontViewer->toggleDrag();
+    m_sideViewer->toggleDrag();
 }

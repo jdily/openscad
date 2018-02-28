@@ -588,8 +588,8 @@
       <widget class="QTextEdit" name="console">
        <property name="minimumSize">
         <size>
-         <width>10</width>
-         <height>10</height>
+         <width>100</width>
+         <height>100</height>
         </size>
        </property>
        <property name="focusPolicy">

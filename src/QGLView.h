@@ -9,7 +9,6 @@
 #include <QGLWidget>
 #endif
 #include <QLabel>
-
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include "GLView.h"
@@ -53,6 +52,8 @@ public:
 #if QT_VERSION >= 0x050100
 	float getDPI() override { return this->devicePixelRatio(); }
 #endif
+	void toggleDrag();
+	void displayText(QString viewtext);
 	
 	const QImage & grabFrame();
 	bool save(const char *filename) override;
@@ -77,6 +78,7 @@ private:
 	bool mouse_drag_active;
 	QPoint last_mouse;
 	QImage frame; // Used by grabFrame() and save()
+	bool fixed;
 
 	void wheelEvent(QWheelEvent *event) override;
 	void mousePressEvent(QMouseEvent *event) override;
@@ -90,6 +92,7 @@ private:
 	void paintGL() override;
 	void normalizeAngle(GLdouble& angle);
 
+	// void paintEvent(QPaintEvent *e) override;
 #ifdef ENABLE_OPENCSG
 	void display_opencsg_warning() override;
 private slots:

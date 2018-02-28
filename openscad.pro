@@ -102,7 +102,7 @@ mingw* {
   debug: QMAKE_CXXFLAGS += -O1
 }
 
-CONFIG += qt
+CONFIG += qt qopenglwidget
 QT += widgets concurrent
 
 netbsd* {

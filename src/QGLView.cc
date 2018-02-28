@@ -42,6 +42,7 @@
 #include <QErrorMessage>
 #include "OpenCSGWarningDialog.h"
 #include "QSettingsCached.h"
+#include <QPainter>
 
 
 #include <stdio.h>
@@ -58,6 +59,9 @@ QGLView::QGLView(QWidget *parent) :
 	QGLWidget(parent)
 #endif
 {
+#if defined(USE_QOPENGLWIDGET)
+  std::cout << "use qopenglwidget yeah" << std::endl;
+#endif
   init();
 }
 
@@ -68,7 +72,7 @@ static bool running_under_wine = false;
 void QGLView::init()
 {
   resetView();
-
+  fixed = false;
   this->mouse_drag_active = false;
   this->statusLabel = nullptr;
 
@@ -98,6 +102,21 @@ void QGLView::viewAll()
 		cam.object_trans = -bbox.center();
 		cam.viewAll(renderer->getBoundingBox());
 	}
+}
+
+void QGLView::toggleDrag() {
+  if (hasMouseTracking()) {
+    setMouseTracking(false);
+  } else {
+    setMouseTracking(true);
+  }
+  // fixed = true;
+  fixed = !fixed;
+  // this->mouse_drag_active = !this->mouse_drag_active;
+}
+
+void QGLView::displayText(QString viewtext) {
+  // drawText(20, 20, viewtext.toStdString().c_str());
 }
 
 void QGLView::initializeGL()
@@ -174,10 +193,23 @@ void QGLView::resizeGL(int w, int h)
   GLView::resizeGL(w,h);
 }
 
+// void QGLView::paintEvent(QPaintEvent *e) {
+  // QPainter p(this);
+  // p.setPen(Qt::red);
+  // p.drawLine(rect().topLeft(), rect().bottomRight());
+  // p.beginNativePainting();
+  // paintGL();
+  // p.endNativePainting();
+// }
+
 void QGLView::paintGL()
 {
+  QPainter painter(this);
+  painter.beginNativePainting();
+  glEnable(GL_DEPTH_TEST);
   GLView::paintGL();
-
+  // Necessary if used glPush-es above
+  // glBindBuffer(GL_ARRAY_BUFFER,0);
   if (statusLabel) {
     Camera nc(cam);
     nc.gimbalDefaultTranslate();
@@ -187,15 +219,22 @@ void QGLView::paintGL()
 			.arg(size().rheight());
     statusLabel->setText(status);
   }
-
+  glDisable(GL_DEPTH_TEST);
+  painter.endNativePainting();
+  painter.setFont(QFont("times",22));
+  painter.drawText(10, 20, "Testing");
+  painter.end();
 #if defined(_WIN32) && !defined(USE_QOPENGLWIDGET)
   if (running_under_wine) swapBuffers();
 #endif
+
 }
 
 void QGLView::mousePressEvent(QMouseEvent *event)
 {
-  mouse_drag_active = true;
+  if (!fixed) {
+    mouse_drag_active = true;
+  }
   last_mouse = event->globalPos();
 }
 
@@ -243,6 +282,7 @@ void QGLView::normalizeAngle(GLdouble& angle)
 
 void QGLView::mouseMoveEvent(QMouseEvent *event)
 {
+  // std::cout << "mouse move detected" << std::endl;
   auto this_mouse = event->globalPos();
   double dx = (this_mouse.x() - last_mouse.x()) * 0.7;
   double dy = (this_mouse.y() - last_mouse.y()) * 0.7;
