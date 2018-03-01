@@ -3,7 +3,8 @@
 #include <QWidget>
 #include <vector>
 #include <QGridLayout>
-
+#include <QSize>
+#include <QResizeEvent>
 // #ifdef USE_QOPENGLWIDGET
 // #include <QOpenGLWidget>
 // #else
@@ -25,4 +26,6 @@ class GLViewer_group : public QWidget {
         QGLView *m_topViewer;
         QGLView *m_sideViewer;
         QGLView *m_frontViewer;
+    // protected:
+    //     void resizeEvent(QResizeEvent *) override;
 };

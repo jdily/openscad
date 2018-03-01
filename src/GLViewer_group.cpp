@@ -25,8 +25,22 @@ GLViewer_group::GLViewer_group(QWidget *parent): QWidget(parent) {
     m_sideViewer->setView("side");
     m_sideViewer->updateGL();
 
-    m_topViewer->toggleDrag();
+    // m_topViewer->toggleDrag();
     m_topViewer->displayText(QString("top"));
-    m_frontViewer->toggleDrag();
-    m_sideViewer->toggleDrag();
+    // m_frontViewer->toggleDrag();
+    m_frontViewer->displayText(QString("front"));
+    // m_sideViewer->toggleDrag();
+    m_sideViewer->displayText(QString("side"));
 }
+
+// TODO : fix the issue
+
+// void GLViewer_group::resizeEvent(QResizeEvent *event) {
+//     std::cout << "resize" << std::endl;
+//     // std::cout << "test " << std::endl;
+//     std::cout << event->size().width() << " " << event->size().height() << std::endl;
+//     m_perpViewer->resizeGL(event->size().width(), event->size().height());
+//     m_topViewer->resizeGL(event->size().width(), event->size().height());
+//     m_frontViewer->resizeGL(event->size().width(), event->size().height());
+//     m_sideViewer->resizeGL(event->size().width(), event->size().height());
+// }

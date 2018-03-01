@@ -79,6 +79,7 @@ void QGLView::init()
   setMouseTracking(true);
 
   m_sView = QString("free");
+  edit2D = false;
 
 #if defined(_WIN32) && !defined(USE_QOPENGLWIDGET)
 // see paintGL() + issue160 + wine FAQ
@@ -97,6 +98,11 @@ void QGLView::resetView()
 
 void QGLView::setView(QString view) {
   m_sView = view;
+}
+
+void QGLView::toggleEditMode() {
+  std::cout << "toggle edit mode " << std::endl;
+  edit2D = !edit2D;
 }
 
 void QGLView::viewAll()
@@ -238,10 +244,12 @@ void QGLView::paintGL()
 
 void QGLView::mousePressEvent(QMouseEvent *event)
 {
-  if (!fixed) {
-    mouse_drag_active = true;
-  }
+  // if (!fixed) {
+    // mouse_drag_active = true;
+  // }
+  mouse_drag_active = true;
   last_mouse = event->globalPos();
+  last_local_mouse = event->localPos();
 }
 
 void QGLView::mouseDoubleClickEvent (QMouseEvent *event) {
@@ -292,7 +300,8 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
   auto this_mouse = event->globalPos();
   double dx = (this_mouse.x() - last_mouse.x()) * 0.7;
   double dy = (this_mouse.y() - last_mouse.y()) * 0.7;
-  if (mouse_drag_active) {
+  std::cout << edit2D << std::endl;
+  if (mouse_drag_active && !edit2D) {
     if (event->buttons() & Qt::LeftButton
 #ifdef Q_OS_MAC
         && !(event->modifiers() & Qt::MetaModifier)
@@ -360,12 +369,37 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
     }
     updateGL();
     emit doAnimateUpdate();
+  } else if (mouse_drag_active) {
+    // draw here ...
+    // 1. add point at last_mouse 
+    // std::cout << "Let's draw in 2D" << std::endl;
+    // auto this_local_mouse = event->localPos();
+    // std::cout << last_local_mouse.x() << " " << last_local_mouse.y() << std::endl;
+    // std::cout << event->localPos().x() << " " << event->localPos().y() << std::endl; 
+    // QLineF line(last_local_mouse.x(), last_local_mouse.y(), this_local_mouse.x(), this_local_mouse.y());
+    // QLineF line(last_local_mouse.x(), last_local_mouse.y(), this_local_mouse.x(), this_local_mouse.y());
+    // QPainterPath path;
+    // path.moveTo(last_local_mouse.x(), last_local_mouse.y());
+    // path.lineTo(this_local_mouse.x(), this_local_mouse.y());
+    
+    // QPainter painter(this);
+    // QPen red_pen(QColor("#ff0000"));
+    // painter.setPen(red_pen);
+    // painter.drawLine(line);
+    // // painter.drawPath(path);
   }
   last_mouse = this_mouse;
 }
 
-void QGLView::mouseReleaseEvent(QMouseEvent*)
+void QGLView::mouseReleaseEvent(QMouseEvent* event)
 {
+  // we should draw here instead to capture the release point as last point in the drawn line.
+  if (edit2D) {
+    auto this_local_mouse = event->localPos();
+    QLineF line(last_local_mouse.x(), last_local_mouse.y(), this_local_mouse.x(), this_local_mouse.y());
+    QPainter painter(this);
+    painter.drawLine(line);
+  }
   mouse_drag_active = false;
   releaseMouse();
 }

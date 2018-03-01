@@ -258,6 +258,8 @@ public slots:
 	void autoReloadSet(bool);
 	void setContentsChanged();
 
+	void editSwitch2D();
+
 private:
 	static void report_func(const class AbstractNode*, void *vp, int mark);
 	static bool mdiMode;

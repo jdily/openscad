@@ -255,6 +255,7 @@
          <addaction name="viewActionShowAxes"/>
          <addaction name="viewActionShowScaleProportional"/>
          <addaction name="viewActionShowEdges"/>
+         <addaction name="edit2Dmode"/>
         </widget>
        </item>
       </layout>
@@ -948,6 +949,21 @@
    <property name="shortcut">
     <string>F12</string>
    </property>
+  </action>
+  <action name="edit2Dmode">
+    <property name="checkable">
+      <bool>false</bool>
+    </property>
+    <property name="icon">
+      <iconset resource="../openscad.qrc">
+     <normaloff>:/images/Rotation-32.png</normaloff>:/images/Rotation-32.png</iconset>
+    </property>
+    <property name="text">
+      <string>Switch to 2D edit mode</string>
+    </property>
+    <property name="shortcut">
+      <string>Ctrl+4</string>
+    </property>
   </action>
   <action name="viewActionShowEdges">
    <property name="checkable">

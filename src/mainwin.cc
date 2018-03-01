@@ -407,6 +407,8 @@ MainWindow::MainWindow(const QString &filename)
 	connect(this->helpActionLibraryInfo, SIGNAL(triggered()), this, SLOT(helpLibrary()));
 	connect(this->helpActionFontInfo, SIGNAL(triggered()), this, SLOT(helpFontInfo()));
 
+	connect(this->edit2Dmode, SIGNAL(triggered()), this, SLOT(editSwitch2D()));
+
 #ifdef OPENSCAD_UPDATER
 	this->menuBar()->addMenu(AutoUpdater::updater()->updateMenu);
 #endif
@@ -2536,6 +2538,18 @@ void MainWindow::viewAll()
 	this->qglview_group->m_perpViewer->updateGL();
 	this->qglview_group->m_topViewer->viewAll();
 	this->qglview_group->m_topViewer->updateGL();
+}
+
+void MainWindow::editSwitch2D() {
+	std::cout << "switch 2D " << std::endl;
+	QSettingsCached settings;
+	settings.setValue("edit/edit2D", true);
+	
+	this->edit2Dmode->setChecked(true);
+	this->qglview_group->m_topViewer->toggleEditMode();
+	this->qglview_group->m_sideViewer->toggleEditMode();
+	this->qglview_group->m_frontViewer->toggleEditMode();
+	// this->edit2Dmode->toggle();
 }
 
 void MainWindow::on_editorDock_visibilityChanged(bool)

@@ -62,6 +62,8 @@ public:
 
 	// ichao
 	void setView(QString view);
+	// switch between 2D or 3D
+	void toggleEditMode();
 
 public slots:
 	void ZoomIn(void);
@@ -72,6 +74,7 @@ public slots:
 
 public:
 	QLabel *statusLabel;
+	void resizeGL(int w, int h) override;
 #ifdef USE_QOPENGLWIDGET
 	inline QImage grabFrameBuffer() { return grabFramebuffer(); }
 #endif
@@ -80,9 +83,12 @@ private:
 
 	bool mouse_drag_active;
 	QPoint last_mouse;
+	QPointF last_local_mouse;
 	QImage frame; // Used by grabFrame() and save()
 	bool fixed;
+	// ichao
 	QString m_sView;
+	bool edit2D;
 
 	void wheelEvent(QWheelEvent *event) override;
 	void mousePressEvent(QMouseEvent *event) override;
@@ -91,7 +97,7 @@ private:
 	void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 	void initializeGL() override;
-	void resizeGL(int w, int h) override;
+	
 
 	void paintGL() override;
 	void normalizeAngle(GLdouble& angle);
