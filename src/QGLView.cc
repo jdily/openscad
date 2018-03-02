@@ -43,7 +43,8 @@
 #include "OpenCSGWarningDialog.h"
 #include "QSettingsCached.h"
 #include <QPainter>
-
+#include <QGraphicsLineItem>
+#include "simpleArrow.h"
 
 #include <stdio.h>
 #include <sstream>
@@ -397,8 +398,13 @@ void QGLView::mouseReleaseEvent(QMouseEvent* event)
   if (edit2D) {
     auto this_local_mouse = event->localPos();
     QLineF line(last_local_mouse.x(), last_local_mouse.y(), this_local_mouse.x(), this_local_mouse.y());
+    QGraphicsLineItem qline(line);
+    QPainterPath line_path = qline.shape();
+    simpleArrow arrow(&last_local_mouse, &this_local_mouse);
+    QPainterPath arrow_path = arrow.shape();
     QPainter painter(this);
-    painter.drawLine(line);
+    // painter.drawLine(line);
+    painter.drawPath(arrow_path);
   }
   mouse_drag_active = false;
   releaseMouse();

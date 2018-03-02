@@ -357,7 +357,8 @@ HEADERS += src/version_check.h \
            src/parameter/parameterset.h \
            src/parameter/ignoreWheelWhenNotFocused.h \
            src/QWordSearchField.h \
-           src/QSettingsCached.h
+           src/QSettingsCached.h \ 
+           src/simpleArrow.h
            
 
 SOURCES += \
@@ -501,7 +502,8 @@ SOURCES += \
            src/parameter/ignoreWheelWhenNotFocused.cpp \
            src/QWordSearchField.cc\
            \
-           src/QSettingsCached.cc 
+           src/QSettingsCached.cc \
+           src/simpleArrow.cpp
            
 
 # CGAL
