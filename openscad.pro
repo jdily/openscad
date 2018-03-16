@@ -170,6 +170,7 @@ CONFIG += fontconfig
 CONFIG += gettext
 CONFIG += libxml2
 CONFIG += libzip
+CONFIG += graphviz
 
 #Uncomment the following line to enable the QScintilla editor
 !nogui {
@@ -356,7 +357,11 @@ HEADERS += src/version_check.h \
            src/parameter/parameterset.h \
            src/parameter/ignoreWheelWhenNotFocused.h \
            src/QWordSearchField.h \
-           src/QSettingsCached.h
+           src/QSettingsCached.h \
+           src/treeViewer.h \
+           src/qtreeNode.h \
+           src/qtreeEdge.h \ 
+           src/CSGVisitor.h
 
 SOURCES += \
            src/libsvg/libsvg.cc \
@@ -498,7 +503,11 @@ SOURCES += \
            src/parameter/ignoreWheelWhenNotFocused.cpp \
            src/QWordSearchField.cc\
            \
-           src/QSettingsCached.cc
+           src/QSettingsCached.cc \ 
+           src/treeViewer.cpp \ 
+           src/qtreeNode.cpp \
+           src/qtreeEdge.cpp \ 
+           src/CSGVisitor.cc
 
 # CGAL
 HEADERS += src/ext/CGAL/convex_hull_3_bugfix.h \

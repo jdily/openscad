@@ -97,6 +97,8 @@
 #include <QSettings> //Include QSettings for direct operations on settings arrays
 #include "QSettingsCached.h"
 
+#include "CSGVisitor.h"
+
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 #include <QTextDocument>
 #define QT_HTML_ESCAPE(qstring) Qt::escape(qstring)
@@ -157,6 +159,8 @@ MainWindow::MainWindow(const QString &filename)
 	editorDockTitleWidget = new QWidget();
 	consoleDockTitleWidget = new QWidget();
 	parameterDockTitleWidget = new QWidget();
+	treeDockTitleWidget = new QWidget();
+	qtreeViewer = new treeViewer(editorDockTitleWidget);
 
 	this->editorDock->setConfigKey("view/hideEditor");
 	this->editorDock->setAction(this->viewActionHideEditor);
@@ -191,6 +195,9 @@ MainWindow::MainWindow(const QString &filename)
 #endif
 
 	editorDockContents->layout()->addWidget(editor);
+	editorDockContents->layout()->addWidget(qtreeViewer);
+	// QTextEdit *textedit = new QTextEdit(this);
+	// consoleDockTitleWidget->layout()->addWidget(qtreeViewer);
 
 	setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
 	setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
@@ -1119,6 +1126,9 @@ void MainWindow::instantiateRoot()
 			// Dump the tree (to initialize caches).
 			// FIXME: We shouldn't really need to do this explicitly..
 			this->tree.getString(*this->root_node);
+
+			// // ichao : set graph here and draw it.
+			qtreeViewer->setTree(&this->tree);	
 		}
 	}
 
@@ -1153,13 +1163,18 @@ void MainWindow::compileCSG(bool procevents)
 #endif
 #ifdef ENABLE_OPENCSG
 		CSGTreeEvaluator csgrenderer(this->tree, &geomevaluator);
+		// CSGVisitor csgvisitor(this->tree, &geomevaluator);
+		// csgvisitor.buildCSGTree(*root_node);
 #endif
 
 	progress_report_prep(this->root_node, report_func, this);
 	try {
 #ifdef ENABLE_OPENCSG
 		this->processEvents();
+		// ichao : set graph here and draw it.
+		// qtreeViewer->setTree(&this->tree);	
 		this->csgRoot = csgrenderer.buildCSGTree(*root_node);
+		
 #endif
 		GeometryCache::instance()->print();
 #ifdef ENABLE_CGAL

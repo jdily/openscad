@@ -1,0 +1,57 @@
+#pragma once
+// #include <boost/graph/adjacency_list.hpp>
+// #include <boost/graph/graphviz.hpp>
+#include <QGraphicsView>
+#include <QGraphicsItem>
+#include "Tree.h"
+// #include </usr/include/graphviz/gvc.h>
+#include "CSGTreeEvaluator.h"
+#include "GeometryEvaluator.h"
+#include "CSGVisitor.h"
+class treeViewer : public QGraphicsView {
+    Q_OBJECT
+    public:
+        treeViewer(QWidget *parent=0);
+        treeViewer(Tree *tree, QWidget *parent=0);
+        ~treeViewer();
+
+        void setTree(Tree *tree);
+    private:
+        void buildVizTree(Tree* tree);
+        void simpleVizTree(Tree* tree);
+        Tree *m_pTree;
+        shared_ptr<class CSGNode> csgRoot;		   // Result of the CSGTreeEvaluator
+        QGraphicsScene *m_pScene;
+        void draw_and_traverse(const AbstractNode &node);
+    protected:
+    // public slots:
+
+
+};  
+
+// class Edge : public QGraphicsItem {
+//     public:
+//         Edge(treeViewer* viewer);
+//         ~Edge();
+
+// };
+
+// class Node : public QGraphicsItem {
+//     public:
+//         Node(treeViewer *viewer);
+//         ~Node();
+//         QRectF boundingRect() const override;
+//         QPainterPath shape() const override;
+//         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+//         QList<Edge *> edges() const;
+//         void addEdge(Edge *edge);
+//     private:
+//         QList<Edge *> edgeList;
+//         QPointF newPos;
+//         treeViewer *m_pViewer;
+//     protected:
+//         QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+//         void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+//         void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+// };
+

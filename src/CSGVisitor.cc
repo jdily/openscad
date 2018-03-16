@@ -1,4 +1,4 @@
-#include "CSGTreeEvaluator.h"
+#include "CSGVisitor.h"
 #include "state.h"
 #include "csgops.h"
 #include "module.h"
@@ -28,7 +28,7 @@
 	with OpenCSG.
 */
 
-shared_ptr<CSGNode> CSGTreeEvaluator::buildCSGTree(const AbstractNode &node)
+shared_ptr<CSGNode> CSGVisitor::buildCSGTree(const AbstractNode &node)
 {
 	std::cout << "build CSG tree" << std::endl;
 	std::cout << "store size : " << this->stored_term.size() << std::endl;
@@ -47,7 +47,7 @@ shared_ptr<CSGNode> CSGTreeEvaluator::buildCSGTree(const AbstractNode &node)
 	return this->rootNode = t;
 }
 
-void CSGTreeEvaluator::applyBackgroundAndHighlight(State & /*state*/, const AbstractNode &node)
+void CSGVisitor::applyBackgroundAndHighlight(State & /*state*/, const AbstractNode &node)
 {
 	for(const auto &chnode : this->visitedchildren[node.index()]) {
 		shared_ptr<CSGNode> t(this->stored_term[chnode->index()]);
@@ -59,7 +59,7 @@ void CSGTreeEvaluator::applyBackgroundAndHighlight(State & /*state*/, const Abst
 	}
 }
 
-void CSGTreeEvaluator::applyToChildren(State & /*state*/, const AbstractNode &node, OpenSCADOperator op)
+void CSGVisitor::applyToChildren(State & /*state*/, const AbstractNode &node, OpenSCADOperator op)
 {
 	shared_ptr<CSGNode> t1;
 	for(const auto &chnode : this->visitedchildren[node.index()]) {
@@ -142,7 +142,7 @@ void CSGTreeEvaluator::applyToChildren(State & /*state*/, const AbstractNode &no
 	this->stored_term[node.index()] = t1;
 }
 
-Response CSGTreeEvaluator::visit(State &state, const AbstractNode &node)
+Response CSGVisitor::visit(State &state, const AbstractNode &node)
 {
 	if (state.isPostfix()) {
 		applyToChildren(state, node, OpenSCADOperator::UNION);
@@ -151,7 +151,7 @@ Response CSGTreeEvaluator::visit(State &state, const AbstractNode &node)
 	return Response::ContinueTraversal;
 }
 
-Response CSGTreeEvaluator::visit(State &state, const AbstractIntersectionNode &node)
+Response CSGVisitor::visit(State &state, const AbstractIntersectionNode &node)
 {
 	if (state.isPostfix()) {
 		applyToChildren(state, node, OpenSCADOperator::INTERSECTION);
@@ -160,7 +160,7 @@ Response CSGTreeEvaluator::visit(State &state, const AbstractIntersectionNode &n
 	return Response::ContinueTraversal;
 }
 
-shared_ptr<CSGNode> CSGTreeEvaluator::evaluateCSGNodeFromGeometry(
+shared_ptr<CSGNode> CSGVisitor::evaluateCSGNodeFromGeometry(
 	State &state, const shared_ptr<const Geometry> &geom,
 	const ModuleInstantiation *modinst, const AbstractNode &node)
 {
@@ -196,7 +196,7 @@ shared_ptr<CSGNode> CSGTreeEvaluator::evaluateCSGNodeFromGeometry(
 	return t;
 }
 
-Response CSGTreeEvaluator::visit(State &state, const AbstractPolyNode &node)
+Response CSGVisitor::visit(State &state, const AbstractPolyNode &node)
 {
 	if (state.isPostfix()) {
 		shared_ptr<CSGNode> t1;
@@ -213,7 +213,7 @@ Response CSGTreeEvaluator::visit(State &state, const AbstractPolyNode &node)
 	return Response::ContinueTraversal;
 }
 
-Response CSGTreeEvaluator::visit(State &state, const CsgOpNode &node)
+Response CSGVisitor::visit(State &state, const CsgOpNode &node)
 {
 	if (state.isPostfix()) {
 		applyToChildren(state, node, node.type);
@@ -222,7 +222,7 @@ Response CSGTreeEvaluator::visit(State &state, const CsgOpNode &node)
 	return Response::ContinueTraversal;
 }
 
-Response CSGTreeEvaluator::visit(State &state, const TransformNode &node)
+Response CSGVisitor::visit(State &state, const TransformNode &node)
 {
 	if (state.isPrefix()) {
 		if (matrix_contains_infinity(node.matrix) || matrix_contains_nan(node.matrix)) {
@@ -238,7 +238,7 @@ Response CSGTreeEvaluator::visit(State &state, const TransformNode &node)
 	return Response::ContinueTraversal;
 }
 
-Response CSGTreeEvaluator::visit(State &state, const ColorNode &node)
+Response CSGVisitor::visit(State &state, const ColorNode &node)
 {
 	if (state.isPrefix()) {
 		if (!state.color().isValid()) state.setColor(node.color);
@@ -251,7 +251,7 @@ Response CSGTreeEvaluator::visit(State &state, const ColorNode &node)
 }
 
 // FIXME: If we've got CGAL support, render this node as a CGAL union into a PolySet
-Response CSGTreeEvaluator::visit(State &state, const RenderNode &node)
+Response CSGVisitor::visit(State &state, const RenderNode &node)
 {
 	if (state.isPostfix()) {
 		shared_ptr<CSGNode> t1;
@@ -269,7 +269,7 @@ Response CSGTreeEvaluator::visit(State &state, const RenderNode &node)
 	return Response::ContinueTraversal;
 }
 
-Response CSGTreeEvaluator::visit(State &state, const CgaladvNode &node)
+Response CSGVisitor::visit(State &state, const CgaladvNode &node)
 {
 	if (state.isPostfix()) {
 		shared_ptr<CSGNode> t1;
@@ -294,7 +294,7 @@ Response CSGTreeEvaluator::visit(State &state, const CgaladvNode &node)
 	Call this for _every_ node which affects output during traversal.
     Usually, this should be called from the postfix stage, but for some nodes, we defer traversal letting other components (e.g. CGAL) render the subgraph, and we'll then call this from prefix and prune further traversal.
 */
-void CSGTreeEvaluator::addToParent(const State &state, const AbstractNode &node)
+void CSGVisitor::addToParent(const State &state, const AbstractNode &node)
 {
 	this->visitedchildren.erase(node.index());
 	if (state.parent()) {

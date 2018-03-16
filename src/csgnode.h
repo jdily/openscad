@@ -14,7 +14,7 @@ public:
 		FLAG_BACKGROUND = 0x01,
 		FLAG_HIGHLIGHT = 0x02
 	};
-
+	
 	CSGNode(Flag flags = FLAG_NONE) : flags(flags) {}
 	virtual ~CSGNode() {}
 	virtual std::string dump() = 0;

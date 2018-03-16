@@ -17,6 +17,7 @@
 #include <QMutex>
 #include <QTime>
 #include <QIODevice>
+#include "treeViewer.h"
 
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
@@ -66,6 +67,7 @@ public:
 		QWidget *editorDockTitleWidget;
 		QWidget *consoleDockTitleWidget;
 		QWidget *parameterDockTitleWidget;
+		QWidget *treeDockTitleWidget;
 
 	QString editortype;	
 	bool useScintilla;
@@ -124,6 +126,7 @@ private:
 		void updateStatusBar(class ProgressWidget *progressWidget);
 
 	EditorInterface *editor;
+	treeViewer *qtreeViewer;
 
   class LibraryInfoDialog* library_info_dialog;
   class FontListDialog *font_list_dialog;
