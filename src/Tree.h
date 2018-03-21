@@ -20,6 +20,9 @@ public:
 	const std::string &getString(const AbstractNode &node) const;
 	const std::string &getIdString(const AbstractNode &node) const;
 
+	// get the height of the node
+	// int height(AbstractNode &node);
+	// 
 private:
 	const AbstractNode *root_node;
   mutable NodeCache nodecache;

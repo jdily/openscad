@@ -8,7 +8,10 @@
 #include "CSGTreeEvaluator.h"
 #include "GeometryEvaluator.h"
 #include "CSGVisitor.h"
-class treeViewer : public QGraphicsView {
+
+class qtreeNode;
+
+class treeViewer : public QGraphicsView, public NodeVisitor {
     Q_OBJECT
     public:
         treeViewer(QWidget *parent=0);
@@ -16,13 +19,24 @@ class treeViewer : public QGraphicsView {
         ~treeViewer();
 
         void setTree(Tree *tree);
+
+        Response visit(State &state, const AbstractNode &node) override;
+        Response visit(State &state, const RootNode &node) override;
+        Response visit(State &state, const AbstractPolyNode &node) override;
+        Response visit(State &state, const TransformNode &node) override;
+        Response visit(State &state, const CsgOpNode &node) override;
+
     private:
         void buildVizTree(Tree* tree);
         void simpleVizTree(Tree* tree);
         Tree *m_pTree;
         shared_ptr<class CSGNode> csgRoot;		   // Result of the CSGTreeEvaluator
         QGraphicsScene *m_pScene;
-        void draw_and_traverse(const AbstractNode &node);
+        // potential issue : the idx of abstractnode is unique per tree only
+        QMap<int, qtreeNode*> node_map; 
+
+
+        void draw_and_traverse(const AbstractNode &node, qtreeNode *parent_node);
     protected:
     // public slots:
 

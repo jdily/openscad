@@ -30,20 +30,16 @@
 
 shared_ptr<CSGNode> CSGTreeEvaluator::buildCSGTree(const AbstractNode &node)
 {
-	std::cout << "build CSG tree" << std::endl;
-	std::cout << "store size : " << this->stored_term.size() << std::endl;
+	// std::cout << "CSGTreeEvaluator buildCSGTree" << std::endl;
 	this->traverse(node);
 	shared_ptr<CSGNode> t(this->stored_term[node.index()]);
-	std::cout << "store size : " << this->stored_term.size() << std::endl;
 	if (t) {
-		std::cout << "t is something " << std::endl;
 		if (t->isHighlight()) this->highlightNodes.push_back(t);
 		if (t->isBackground()) {
 			this->backgroundNodes.push_back(t);
 			t.reset();
 		}
 	}
-	if (!t) { std::cout << "no t " << std::endl; }
 	return this->rootNode = t;
 }
 
@@ -144,6 +140,8 @@ void CSGTreeEvaluator::applyToChildren(State & /*state*/, const AbstractNode &no
 
 Response CSGTreeEvaluator::visit(State &state, const AbstractNode &node)
 {
+	// ichao : check the abstraction status
+	// std::cout << "visit abstraction node" << std::endl;
 	if (state.isPostfix()) {
 		applyToChildren(state, node, OpenSCADOperator::UNION);
 		addToParent(state, node);
@@ -153,6 +151,8 @@ Response CSGTreeEvaluator::visit(State &state, const AbstractNode &node)
 
 Response CSGTreeEvaluator::visit(State &state, const AbstractIntersectionNode &node)
 {
+	// ichao : check the abstraction status
+	// std::cout << "visit abstract intersection node" << std::endl;
 	if (state.isPostfix()) {
 		applyToChildren(state, node, OpenSCADOperator::INTERSECTION);
 		addToParent(state, node);
@@ -198,6 +198,8 @@ shared_ptr<CSGNode> CSGTreeEvaluator::evaluateCSGNodeFromGeometry(
 
 Response CSGTreeEvaluator::visit(State &state, const AbstractPolyNode &node)
 {
+	// ichao : check the abstract poly status
+	// std::cout << "visit abstract poly node" << std::endl;
 	if (state.isPostfix()) {
 		shared_ptr<CSGNode> t1;
 		if (this->geomevaluator) {
@@ -215,6 +217,8 @@ Response CSGTreeEvaluator::visit(State &state, const AbstractPolyNode &node)
 
 Response CSGTreeEvaluator::visit(State &state, const CsgOpNode &node)
 {
+	// ichao : check the csgopt status
+	// std::cout << "visit csgopt node" << std::endl;
 	if (state.isPostfix()) {
 		applyToChildren(state, node, node.type);
 		addToParent(state, node);
@@ -224,6 +228,8 @@ Response CSGTreeEvaluator::visit(State &state, const CsgOpNode &node)
 
 Response CSGTreeEvaluator::visit(State &state, const TransformNode &node)
 {
+	// ichao : check the transformation status
+	// std::cout << "visit transformation node" << std::endl;
 	if (state.isPrefix()) {
 		if (matrix_contains_infinity(node.matrix) || matrix_contains_nan(node.matrix)) {
 			PRINT("WARNING: Transformation matrix contains Not-a-Number and/or Infinity - removing object.");

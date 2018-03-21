@@ -2,13 +2,15 @@
 
 #include <QGraphicsItem>
 #include <QList>
+#include <string>
 
 class qtreeEdge;
 class treeViewer;
-
+using namespace std;
 class qtreeNode : public QGraphicsItem {
     public:
         qtreeNode(treeViewer *viewer);
+        qtreeNode(treeViewer *viewer, string node_type);
         ~qtreeNode();
         void addEdge(qtreeEdge *edge);
         QList<qtreeEdge *> edges() const;
@@ -19,7 +21,10 @@ class qtreeNode : public QGraphicsItem {
         QList<qtreeEdge*> edgeList;
         QPointF newPos;
         treeViewer *m_pViewer;
-    protected:
+        string type;
+        QList<qtreeNode*> childList;
+        qtreeNode *parent_node;
+        QMap<string, QColor> color_map;
 
-
+    protected:  
 };

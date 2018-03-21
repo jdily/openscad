@@ -10,10 +10,20 @@
 
 qtreeNode::qtreeNode(treeViewer *viewer) {
     m_pViewer = viewer;   
-    // setFlag(ItemIsMovable);
+    setFlag(ItemIsMovable);
     setFlag(ItemSendsGeometryChanges);
     setCacheMode(DeviceCoordinateCache);
     setZValue(-1);
+    type = "";
+}
+
+qtreeNode::qtreeNode(treeViewer *viewer, string node_type) {
+    m_pViewer = viewer;   
+    setFlag(ItemIsMovable);
+    setFlag(ItemSendsGeometryChanges);
+    setCacheMode(DeviceCoordinateCache);
+    setZValue(-1);
+    type = node_type;
 }
 
 qtreeNode::~qtreeNode() {}
@@ -42,6 +52,7 @@ QPainterPath qtreeNode::shape() const
     return path;
 }
 
+// add different paint style for different node...
 void qtreeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
     painter->setPen(Qt::NoPen);

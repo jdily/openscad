@@ -30,20 +30,17 @@
 
 shared_ptr<CSGNode> CSGVisitor::buildCSGTree(const AbstractNode &node)
 {
-	std::cout << "build CSG tree" << std::endl;
-	std::cout << "store size : " << this->stored_term.size() << std::endl;
 	this->traverse(node);
+	// std::cout << resp << std::endl;
 	shared_ptr<CSGNode> t(this->stored_term[node.index()]);
-	std::cout << "store size : " << this->stored_term.size() << std::endl;
 	if (t) {
-		std::cout << "t is something " << std::endl;
+		std::cout << "CSGVisitor t is something" << std::endl;
 		if (t->isHighlight()) this->highlightNodes.push_back(t);
 		if (t->isBackground()) {
 			this->backgroundNodes.push_back(t);
 			t.reset();
 		}
 	}
-	if (!t) { std::cout << "no t " << std::endl; }
 	return this->rootNode = t;
 }
 
@@ -224,6 +221,8 @@ Response CSGVisitor::visit(State &state, const CsgOpNode &node)
 
 Response CSGVisitor::visit(State &state, const TransformNode &node)
 {
+	// ichao : check the transformation status
+	std::cout << "visit transformation node" << std::endl;
 	if (state.isPrefix()) {
 		if (matrix_contains_infinity(node.matrix) || matrix_contains_nan(node.matrix)) {
 			PRINT("WARNING: Transformation matrix contains Not-a-Number and/or Infinity - removing object.");

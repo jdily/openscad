@@ -37,6 +37,8 @@ public:
 		return this->backgroundNodes;
 	}
 
+
+
 private:
   void addToParent(const State &state, const AbstractNode &node);
 	void applyToChildren(State &state, const AbstractNode &node, OpenSCADOperator op);

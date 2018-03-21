@@ -1126,7 +1126,6 @@ void MainWindow::instantiateRoot()
 			// Dump the tree (to initialize caches).
 			// FIXME: We shouldn't really need to do this explicitly..
 			this->tree.getString(*this->root_node);
-
 			// // ichao : set graph here and draw it.
 			qtreeViewer->setTree(&this->tree);	
 		}

@@ -1,8 +1,8 @@
 boost {
-
   # Optionally specify location of boost using the
   # BOOSTDIR env. variable
   BOOST_DIR = $$(BOOSTDIR)
+  # BOOST_DIR = "/usr/local/"
   !isEmpty(BOOST_DIR) {
     QMAKE_INCDIR += $$BOOST_DIR
     message("boost location: $$BOOST_DIR")

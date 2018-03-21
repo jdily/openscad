@@ -11,12 +11,13 @@ qtreeEdge::qtreeEdge(qtreeNode *sourceNode, qtreeNode *destNode) {
     setAcceptedMouseButtons(0);
     source = sourceNode;
     dest = destNode;
+    sourcePoint = source->pos();
+    destPoint = dest->pos();
     source->addEdge(this);
     dest->addEdge(this);
     // adjust();
 }
 qtreeEdge::~qtreeEdge() {
-
 }
 
 qtreeNode* qtreeEdge::sourceNode() const {
@@ -38,19 +39,19 @@ QRectF qtreeEdge::boundingRect() const {
         .adjusted(-extra, -extra, extra, extra);
 }
 
+// TODO : make the edge stick with two end nodes .
 void qtreeEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     if (!source || !dest)
         return;
-
     QLineF line(sourcePoint, destPoint);
+    // QLineF line(source->pos(), dest->pos());
     if (qFuzzyCompare(line.length(), qreal(0.)))
         return;
-
     // Draw the line itself
     painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
     painter->drawLine(line);
 
-    // Draw the arrows
+    // // Draw the arrows
     double angle = std::atan2(-line.dy(), line.dx());
 
     QPointF sourceArrowP1 = sourcePoint + QPointF(sin(angle + M_PI / 3) * arrowSize,
