@@ -11,11 +11,12 @@
 #include "csgops.h"
 
 treeViewer::treeViewer(QWidget *parent) : QGraphicsView(parent) {
+    srand((unsigned)time(0));
     m_pScene = new QGraphicsScene(this);
     m_pScene->setItemIndexMethod(QGraphicsScene::NoIndex);
     // set background color.
     // setBackgroundBrush(QBrush(Qt::red, Qt::SolidPattern));
-    m_pScene->setSceneRect(-200, -200, 200, 200);
+    m_pScene->setSceneRect(-200, -200, 400, 400);
     setScene(m_pScene);
     setCacheMode(CacheBackground);
     setViewportUpdateMode(BoundingRectViewportUpdate);
@@ -28,9 +29,10 @@ treeViewer::treeViewer(QWidget *parent) : QGraphicsView(parent) {
 }
 
 treeViewer::treeViewer(Tree *tree, QWidget *parent) : QGraphicsView(parent) {
+    srand((unsigned)time(0));
     m_pScene = new QGraphicsScene(this);
     m_pScene->setItemIndexMethod(QGraphicsScene::NoIndex);
-    m_pScene->setSceneRect(-200, -200, 200, 200);
+    m_pScene->setSceneRect(-200, -200, 400, 400);
     setScene(m_pScene);
     // QVBoxLayout *treeViewerLayout = new QVBoxLayout(this);
     // tree
@@ -39,6 +41,16 @@ treeViewer::treeViewer(Tree *tree, QWidget *parent) : QGraphicsView(parent) {
 }
 
 treeViewer::~treeViewer() {}
+
+QPointF treeViewer::rand_pos() {
+    QRectF scene_rect = m_pScene->sceneRect();
+    int width = scene_rect.width();
+    int height = scene_rect.height();
+    QPointF top_left = scene_rect.topLeft();
+    float rand_w = rand()%width;
+    float rand_h = rand()%height;
+    return QPointF(top_left.x()+rand_w, top_left.y()+rand_h);
+}
 
 void treeViewer::setTree(Tree* tree) {
     m_pTree = tree;
@@ -140,6 +152,7 @@ Response treeViewer::visit(State &state, const AbstractPolyNode &node) {
     if (state.isPrefix()) {
         std::cout << "draw poly node" << std::endl;
         qtreeNode* poly_node = new qtreeNode(this, "poly");
+        poly_node->setPos(rand_pos());
         m_pScene->addItem(poly_node);
         node_map.insert(node.idx, poly_node);
         // find the parent and add edge
@@ -180,6 +193,7 @@ Response treeViewer::visit(State &state, const TransformNode &node) {
     if (state.isPrefix()) {
         std::cout << "draw transformation node" << std::endl;
         qtreeNode* trans_node = new qtreeNode(this, "trans");
+        trans_node->setPos(rand_pos());
         m_pScene->addItem(trans_node);
         node_map.insert(node.idx, trans_node);
         // find the parent and add edge

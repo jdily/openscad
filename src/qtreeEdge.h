@@ -21,6 +21,7 @@ class qtreeEdge : public QGraphicsItem {
         QPointF sourcePoint;
         QPointF destPoint;
         qreal arrowSize;
+        QLineF line;
     protected:
         // QRectF boundingRect() const override;
         // void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;

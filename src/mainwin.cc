@@ -98,6 +98,7 @@
 #include "QSettingsCached.h"
 
 #include "CSGVisitor.h"
+#include <random>
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 #include <QTextDocument>
@@ -575,6 +576,9 @@ MainWindow::MainWindow(const QString &filename)
 
 	setAcceptDrops(true);
 	clearCurrentOutput();
+
+	srand((unsigned)time(0));
+
 }
 
 void MainWindow::initActionIcon(QAction *action, const char *darkResource, const char *lightResource)

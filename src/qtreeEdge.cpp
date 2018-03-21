@@ -33,17 +33,22 @@ QRectF qtreeEdge::boundingRect() const {
     qreal penWidth = 1;
     qreal extra = (penWidth + arrowSize) / 2.0;
 
-    return QRectF(sourcePoint, QSizeF(destPoint.x() - sourcePoint.x(),
-                                      destPoint.y() - sourcePoint.y()))
-        .normalized()
-        .adjusted(-extra, -extra, extra, extra);
+    return QRectF(source->pos(), QSizeF(dest->pos().x()-source->pos().x(),
+                                       dest->pos().y()-source->pos().y()))
+        .normalized().adjusted(-extra, -extra, extra, extra);
+    // return QRectF(sourcePoint, QSizeF(destPoint.x() - sourcePoint.x(),
+    //                                   destPoint.y() - sourcePoint.y()))
+    //     .normalized()
+    //     .adjusted(-extra, -extra, extra, extra);
 }
 
 // TODO : make the edge stick with two end nodes .
 void qtreeEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     if (!source || !dest)
         return;
-    QLineF line(sourcePoint, destPoint);
+    line.setP1(source->pos());
+    line.setP2(dest->pos());
+    // QLineF line(sourcePoint, destPoint);
     // QLineF line(source->pos(), dest->pos());
     if (qFuzzyCompare(line.length(), qreal(0.)))
         return;
@@ -63,7 +68,7 @@ void qtreeEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     QPointF destArrowP2 = destPoint + QPointF(sin(angle - M_PI + M_PI / 3) * arrowSize,
                                               cos(angle - M_PI + M_PI / 3) * arrowSize);
 
-    painter->setBrush(Qt::black);
-    painter->drawPolygon(QPolygonF() << line.p1() << sourceArrowP1 << sourceArrowP2);
-    painter->drawPolygon(QPolygonF() << line.p2() << destArrowP1 << destArrowP2);
+    // painter->setBrush(Qt::black);
+    // painter->drawPolygon(QPolygonF() << line.p1() << sourceArrowP1 << sourceArrowP2);
+    // painter->drawPolygon(QPolygonF() << line.p2() << destArrowP1 << destArrowP2);
 }
