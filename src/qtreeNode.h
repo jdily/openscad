@@ -7,6 +7,7 @@
 class qtreeEdge;
 class treeViewer;
 using namespace std;
+
 class qtreeNode : public QGraphicsItem {
     public:
         qtreeNode(treeViewer *viewer);
@@ -25,6 +26,5 @@ class qtreeNode : public QGraphicsItem {
         QList<qtreeNode*> childList;
         qtreeNode *parent_node;
         QMap<string, QColor> color_map;
-
     protected:  
 };

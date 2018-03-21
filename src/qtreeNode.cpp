@@ -24,6 +24,10 @@ qtreeNode::qtreeNode(treeViewer *viewer, string node_type) {
     setCacheMode(DeviceCoordinateCache);
     setZValue(-1);
     type = node_type;
+
+    color_map["root"] = QColor(Qt::red);
+    color_map["poly"] = QColor(Qt::blue);
+    color_map["trans"] = QColor(Qt::green);
 }
 
 qtreeNode::~qtreeNode() {}
@@ -55,22 +59,25 @@ QPainterPath qtreeNode::shape() const
 // add different paint style for different node...
 void qtreeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
-    painter->setPen(Qt::NoPen);
-    painter->setBrush(Qt::darkGray);
-    painter->drawEllipse(-7, -7, 20, 20);
+    // painter->setPen(Qt::NoPen);
+    // painter->setBrush(Qt::darkGray);
+    // painter->drawEllipse(-7, -7, 20, 20);
 
-    QRadialGradient gradient(-3, -3, 10);
-    if (option->state & QStyle::State_Sunken) {
-        gradient.setCenter(3, 3);
-        gradient.setFocalPoint(3, 3);
-        gradient.setColorAt(1, QColor(Qt::yellow).light(120));
-        gradient.setColorAt(0, QColor(Qt::darkYellow).light(120));
-    } else {
-        gradient.setColorAt(0, Qt::yellow);
-        gradient.setColorAt(1, Qt::darkYellow);
-    }
-    painter->setBrush(gradient);
+    // // QRadialGradient gradient(-3, -3, 10);
+    // if (option->state & QStyle::State_Sunken) {
+    //     gradient.setCenter(3, 3);
+    //     gradient.setFocalPoint(3, 3);
+    //     gradient.setColorAt(1, QColor(Qt::yellow).light(120));
+    //     gradient.setColorAt(0, QColor(Qt::darkYellow).light(120));
+    // } else {
+    //     gradient.setColorAt(0, Qt::yellow);
+    //     gradient.setColorAt(1, Qt::darkYellow);
+    // }
+    // painter->setBrush(gradient);
 
-    painter->setPen(QPen(Qt::black, 0));
+    // painter->setPen(QPen(Qt::black, 0));
+    painter->setPen(QPen(Qt::black, 1));
+    painter->setBrush(QBrush(color_map[type]));
+    // painter->setPen(QPen(color_map[type], 1));
     painter->drawEllipse(-10, -10, 20, 20);
 }

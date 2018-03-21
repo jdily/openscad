@@ -8,6 +8,7 @@
 #include "CSGTreeEvaluator.h"
 #include "GeometryEvaluator.h"
 #include "CSGVisitor.h"
+#include <random>
 
 class qtreeNode;
 

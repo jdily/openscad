@@ -212,8 +212,14 @@ Response treeViewer::visit(State &state, const CsgOpNode &node) {
     if (state.isPrefix()) {
         std::cout << "draw csg opt node" << std::endl;
         qtreeNode* csgopt_node = new qtreeNode(this, "csg_opt");
+        csgopt_node->setPos(rand_pos());
         m_pScene->addItem(csgopt_node);
         node_map.insert(node.idx, csgopt_node);
+        if (state.parent() != nullptr) {
+            int parent_id = state.parent()->idx;
+            qtreeEdge *edge = new qtreeEdge(csgopt_node, node_map[parent_id]);
+            m_pScene->addItem(edge);
+        }
     }
     return Response::ContinueTraversal;
 }
