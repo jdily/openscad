@@ -14,10 +14,12 @@
 #include "editor.h"
 #include "export.h"
 #include <vector>
+#include <string>
 #include <QMutex>
 #include <QTime>
 #include <QIODevice>
 #include "treeViewer.h"
+#include "geomTransferer.h"
 
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
@@ -127,6 +129,7 @@ private:
 
 	EditorInterface *editor;
 	treeViewer *qtreeViewer;
+	geomTransferer* transferer;
 
   class LibraryInfoDialog* library_info_dialog;
   class FontListDialog *font_list_dialog;
@@ -261,6 +264,8 @@ public slots:
 	void autoReloadSet(bool);
 	void setContentsChanged();
 
+	// ichao slots
+	void transModeTransferOne();
 private:
 	static void report_func(const class AbstractNode*, void *vp, int mark);
 	static bool mdiMode;

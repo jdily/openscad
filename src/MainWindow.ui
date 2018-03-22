@@ -255,6 +255,8 @@
          <addaction name="viewActionShowAxes"/>
          <addaction name="viewActionShowScaleProportional"/>
          <addaction name="viewActionShowEdges"/>
+         <addaction name="separator"/>
+         <addaction name="transActionTransferOne"/>
         </widget>
        </item>
       </layout>
@@ -1402,6 +1404,18 @@
    </property>
    <property name="text">
     <string>Hide Customizer</string>
+   </property>
+  </action>
+  <action name="transActionTransferOne">
+   <property name="icon">
+    <iconset resource="../openscad.qrc">
+     <normaloff>:/images/Rotation-32.png</normaloff>:/images/cross.png</iconset>
+   </property>
+   <property name="text">
+    <string>Transfer Test</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+t</string>
    </property>
   </action>
  </widget>

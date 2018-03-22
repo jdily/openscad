@@ -98,6 +98,7 @@
 #include "QSettingsCached.h"
 
 #include "CSGVisitor.h"
+
 #include <random>
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
@@ -411,6 +412,9 @@ MainWindow::MainWindow(const QString &filename)
 	connect(this->helpActionLibraryInfo, SIGNAL(triggered()), this, SLOT(helpLibrary()));
 	connect(this->helpActionFontInfo, SIGNAL(triggered()), this, SLOT(helpFontInfo()));
 
+	// ichao actions
+	connect(this->transActionTransferOne, SIGNAL(triggered()), this, SLOT(transModeTransferOne()));
+
 #ifdef OPENSCAD_UPDATER
 	this->menuBar()->addMenu(AutoUpdater::updater()->updateMenu);
 #endif
@@ -578,7 +582,7 @@ MainWindow::MainWindow(const QString &filename)
 	clearCurrentOutput();
 
 	srand((unsigned)time(0));
-
+	transferer = nullptr;
 }
 
 void MainWindow::initActionIcon(QAction *action, const char *darkResource, const char *lightResource)
@@ -1132,6 +1136,8 @@ void MainWindow::instantiateRoot()
 			this->tree.getString(*this->root_node);
 			// // ichao : set graph here and draw it.
 			qtreeViewer->setTree(&this->tree);	
+			// ichao : initialize the transferer
+			transferer = new geomTransferer(&this->tree);
 		}
 	}
 
@@ -1177,7 +1183,6 @@ void MainWindow::compileCSG(bool procevents)
 		// ichao : set graph here and draw it.
 		// qtreeViewer->setTree(&this->tree);	
 		this->csgRoot = csgrenderer.buildCSGTree(*root_node);
-		
 #endif
 		GeometryCache::instance()->print();
 #ifdef ENABLE_CGAL
@@ -2820,4 +2825,37 @@ void MainWindow::setContentsChanged()
 void MainWindow::processEvents()
 {
 	if (this->procevents) QApplication::processEvents();
+}
+
+
+// ichao : transfer test function..
+void MainWindow::transModeTransferOne() {
+	// std::cout << "transfer one test function here" << std::endl;
+	PRINT("[ichao] transfer one test function here...");
+	this->processEvents();
+	// set output to console 
+	setCurrentOutput();
+	QString example_file("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
+	// QString example_file("C:\Users\jdily\Desktop\project\ddCAD\data\manual_transfer/\two_rect_cover");
+    QFile file(example_file);
+    // load the file
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+			PRINTB("Failed to open file %s: %s",
+						 this->fileName.toLocal8Bit().constData() % file.errorString().toLocal8Bit().constData());
+	} else {
+        QTextStream reader(&file);
+		reader.setCodec("UTF-8");
+		auto text = reader.readAll();
+		PRINTB("Loaded example design '%s'.", example_file.toLocal8Bit().constData());
+		PRINT(text.toLocal8Bit().constData());
+
+			// if (editor->toPlainText() != text) {
+			// 	editor->setPlainText(text);
+			// 	this->contentschanged = true;
+			// }
+    }
+    
+	// if (this->transferer != nullptr) {
+		// this->transferer->load_example_file(example_file);
+	// }
 }

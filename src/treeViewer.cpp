@@ -52,12 +52,13 @@ QPointF treeViewer::rand_pos() {
     return QPointF(top_left.x()+rand_w, top_left.y()+rand_h);
 }
 
+// might be problematic..
 void treeViewer::setTree(Tree* tree) {
     m_pTree = tree;
     // GeometryEvaluator geomevaluator(*m_pTree);
     // CSGTreeEvaluator csgrenderer(*m_pTree, &geomevaluator);
     // this->csgRoot = csgrenderer.buildCSGTree(*m_pTree->root());
-    buildVizTree(m_pTree);
+    // buildVizTree(m_pTree);
 }
 
 void treeViewer::draw_and_traverse(const AbstractNode &node, qtreeNode *parent_node) {
@@ -208,19 +209,20 @@ Response treeViewer::visit(State &state, const TransformNode &node) {
     return Response::ContinueTraversal;
 }
 
+// might be problematic..
 Response treeViewer::visit(State &state, const CsgOpNode &node) {
-    if (state.isPrefix()) {
-        std::cout << "draw csg opt node" << std::endl;
-        qtreeNode* csgopt_node = new qtreeNode(this, "csg_opt");
-        csgopt_node->setPos(rand_pos());
-        m_pScene->addItem(csgopt_node);
-        node_map.insert(node.idx, csgopt_node);
-        if (state.parent() != nullptr) {
-            int parent_id = state.parent()->idx;
-            qtreeEdge *edge = new qtreeEdge(csgopt_node, node_map[parent_id]);
-            m_pScene->addItem(edge);
-        }
-    }
+    // if (state.isPrefix()) {
+    //     std::cout << "draw csg opt node" << std::endl;
+    //     qtreeNode* csgopt_node = new qtreeNode(this, "csg_opt");
+    //     csgopt_node->setPos(rand_pos());
+    //     m_pScene->addItem(csgopt_node);
+    //     node_map.insert(node.idx, csgopt_node);
+    //     if (state.parent() != nullptr) {
+    //         int parent_id = state.parent()->idx;
+    //         qtreeEdge *edge = new qtreeEdge(csgopt_node, node_map[parent_id]);
+    //         m_pScene->addItem(edge);
+    //     }
+    // }
     return Response::ContinueTraversal;
 }
 
