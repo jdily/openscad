@@ -46,29 +46,37 @@ QRectF qtreeEdge::boundingRect() const {
 void qtreeEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     if (!source || !dest)
         return;
-    line.setP1(source->pos());
-    line.setP2(dest->pos());
+    // line.setP1(source->pos());
+    // line.setP2(dest->pos());
     // QLineF line(sourcePoint, destPoint);
-    // QLineF line(source->pos(), dest->pos());
-    if (qFuzzyCompare(line.length(), qreal(0.)))
+    QLineF cur_line(source->pos(), dest->pos());
+    if (qFuzzyCompare(cur_line.length(), qreal(0.)))
         return;
+    setLine(cur_line);
     // Draw the line itself
     painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-    painter->drawLine(line);
+    painter->drawLine(line());
 
     // // Draw the arrows
-    double angle = std::atan2(-line.dy(), line.dx());
+    // double angle = std::atan2(-line.dy(), line.dx());
 
-    QPointF sourceArrowP1 = sourcePoint + QPointF(sin(angle + M_PI / 3) * arrowSize,
-                                                  cos(angle + M_PI / 3) * arrowSize);
-    QPointF sourceArrowP2 = sourcePoint + QPointF(sin(angle + M_PI - M_PI / 3) * arrowSize,
-                                                  cos(angle + M_PI - M_PI / 3) * arrowSize);
-    QPointF destArrowP1 = destPoint + QPointF(sin(angle - M_PI / 3) * arrowSize,
-                                              cos(angle - M_PI / 3) * arrowSize);
-    QPointF destArrowP2 = destPoint + QPointF(sin(angle - M_PI + M_PI / 3) * arrowSize,
-                                              cos(angle - M_PI + M_PI / 3) * arrowSize);
+    // QPointF sourceArrowP1 = sourcePoint + QPointF(sin(angle + M_PI / 3) * arrowSize,
+    //                                               cos(angle + M_PI / 3) * arrowSize);
+    // QPointF sourceArrowP2 = sourcePoint + QPointF(sin(angle + M_PI - M_PI / 3) * arrowSize,
+    //                                               cos(angle + M_PI - M_PI / 3) * arrowSize);
+    // QPointF destArrowP1 = destPoint + QPointF(sin(angle - M_PI / 3) * arrowSize,
+    //                                           cos(angle - M_PI / 3) * arrowSize);
+    // QPointF destArrowP2 = destPoint + QPointF(sin(angle - M_PI + M_PI / 3) * arrowSize,
+    //                                           cos(angle - M_PI + M_PI / 3) * arrowSize);
 
     // painter->setBrush(Qt::black);
     // painter->drawPolygon(QPolygonF() << line.p1() << sourceArrowP1 << sourceArrowP2);
     // painter->drawPolygon(QPolygonF() << line.p2() << destArrowP1 << destArrowP2);
+}
+
+void qtreeEdge::updatePosition() {
+    // line.setP1(source->pos());
+    // line.setP2(dest->pos());    
+    QLineF line(mapFromItem(source, 0, 0), mapFromItem(dest, 0, 0));
+    setLine(line);
 }

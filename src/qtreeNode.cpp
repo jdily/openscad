@@ -81,3 +81,14 @@ void qtreeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     // painter->setPen(QPen(color_map[type], 1));
     painter->drawEllipse(-10, -10, 20, 20);
 }
+
+QVariant qtreeNode::itemChange(GraphicsItemChange change, const QVariant &value)
+{
+    if (change == QGraphicsItem::ItemPositionChange) {
+        foreach (qtreeEdge *edge, edgeList) {
+            edge->updatePosition();
+        }
+    }
+
+    return value;
+}

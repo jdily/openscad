@@ -27,4 +27,5 @@ class qtreeNode : public QGraphicsItem {
         qtreeNode *parent_node;
         QMap<string, QColor> color_map;
     protected:  
+        QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 };
