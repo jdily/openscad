@@ -23,6 +23,7 @@ public:
 	// get the height of the node
 	// int height(AbstractNode &node);
 	// 
+	int child_count();
 private:
 	const AbstractNode *root_node;
   mutable NodeCache nodecache;

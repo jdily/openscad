@@ -69,6 +69,9 @@ void Tree::setRoot(const AbstractNode *root)
 	this->nodecache.clear();
 }
 
+int Tree::child_count() {
+	return this->nodecache.count();
+}
 // int Tree::height(std::vector<AbstractNode*> nodes) {
 // 	// if (nodes.size()==0) {
 // 	// 	return -1;

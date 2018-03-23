@@ -46,6 +46,10 @@ public:
 		this->cache.clear();
 	}
 
+  int count() {
+    return (int)cache.size();
+  }
+
 private:
   std::vector<shared_ptr<std::string>> cache;
 	std::string nullvalue;

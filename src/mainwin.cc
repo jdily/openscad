@@ -98,7 +98,6 @@
 #include "QSettingsCached.h"
 
 #include "CSGVisitor.h"
-
 #include <random>
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
@@ -936,7 +935,6 @@ void MainWindow::compile(bool reload, bool forcedone, bool rebuildParameterWidge
 
 	compileErrors = 0;
 	compileWarnings = 0;
-
 	this->renderingTime.start();
 
 	// Reload checks the timestamp of the toplevel file and refreshes if necessary,
@@ -1762,7 +1760,7 @@ bool MainWindow::fileChangedOnDisk()
 void MainWindow::compileTopLevelDocument(bool rebuildParameterWidget)
 {
 	resetSuppressedMessages();
-
+	std::cout << "compile top level document" << std::endl;
 	this->last_compiled_doc = editor->toPlainText();
 
 	auto fulltext =
@@ -2835,9 +2833,10 @@ void MainWindow::transModeTransferOne() {
 	this->processEvents();
 	// set output to console 
 	setCurrentOutput();
-	QString example_file("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
+	QString exp_filename("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/two_rect.scad");
 	// QString example_file("C:\Users\jdily\Desktop\project\ddCAD\data\manual_transfer/\two_rect_cover");
-    QFile file(example_file);
+    QFile file(exp_filename);
+	QString loaded_text;
     // load the file
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
 			PRINTB("Failed to open file %s: %s",
@@ -2845,17 +2844,51 @@ void MainWindow::transModeTransferOne() {
 	} else {
         QTextStream reader(&file);
 		reader.setCodec("UTF-8");
-		auto text = reader.readAll();
-		PRINTB("Loaded example design '%s'.", example_file.toLocal8Bit().constData());
-		PRINT(text.toLocal8Bit().constData());
-
-			// if (editor->toPlainText() != text) {
-			// 	editor->setPlainText(text);
-			// 	this->contentschanged = true;
-			// }
+		loaded_text = reader.readAll();
+		PRINTB("Loaded example design '%s'.", exp_filename.toLocal8Bit().constData());
     }
-    
-	// if (this->transferer != nullptr) {
-		// this->transferer->load_example_file(example_file);
-	// }
+
+	Tree *example_tree = new Tree();
+	FileModule *exp_parsed_module = nullptr;
+	FileModule *exp_module = nullptr;
+	// this->last_compiled_doc = editor->toPlainText();
+	// auto fulltext =
+	// 	std::string(this->last_compiled_doc.toUtf8().constData()) +
+	// 	"\n" + commandline_commands;
+	auto fulltext = loaded_text.toUtf8().toStdString();
+	auto fnameba = exp_filename.toLocal8Bit();
+	const char* fname = exp_filename.isEmpty() ? "" : fnameba;
+	delete exp_parsed_module;
+	exp_module = parse(exp_parsed_module, fulltext.c_str(), fname, false) ? exp_parsed_module : nullptr;
+	AbstractNode* exp_abs_node;
+	AbstractNode* exp_root_node;
+	if (exp_module) {
+		std::cout << "load examples..." << std::endl;
+		AbstractNode::resetIndexCounter();
+		auto mi = ModuleInstantiation( "group" );
+		ModuleInstantiation exp_inst = mi;
+		BuiltinContext exp_ctx;
+		FileContext filectx(&exp_ctx);
+		exp_abs_node = exp_module->instantiateWithFileContext(&filectx, &exp_inst, nullptr);
+		if (exp_abs_node) {
+			std::cout << "done exp_abs_node" << std::endl;
+			exp_root_node = exp_abs_node;
+			example_tree->setRoot(exp_root_node);
+			example_tree->getString(*exp_root_node);
+		}
+	}
+	QString csg_filename("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/transfer_test/test_two_rect.csg");
+	std::ofstream fstream(csg_filename.toLocal8Bit());
+	if (!fstream.is_open()) {
+		PRINTB("Can't open file \"%s\" for export", csg_filename.toLocal8Bit().constData());
+	}
+	else {
+		fstream << example_tree->getString(*exp_root_node) << "\n";
+		fstream.close();
+		PRINT("CSG export finished.");
+	}
+
+	std::cout << tree.child_count() << std::endl;
+	// why the child_count is different?
+	std::cout << example_tree->child_count() << std::endl;
 }
