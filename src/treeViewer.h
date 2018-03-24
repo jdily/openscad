@@ -27,7 +27,7 @@ class treeViewer : public QGraphicsView, public NodeVisitor {
         Response visit(State &state, const AbstractPolyNode &node) override;
         Response visit(State &state, const TransformNode &node) override;
         Response visit(State &state, const CsgOpNode &node) override;
-
+        Response visit(State &state, const GroupNode &node) override;
     private:
         void buildVizTree(Tree* tree);
         void simpleVizTree(Tree* tree);

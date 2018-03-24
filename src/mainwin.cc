@@ -1133,7 +1133,7 @@ void MainWindow::instantiateRoot()
 			// FIXME: We shouldn't really need to do this explicitly..
 			this->tree.getString(*this->root_node);
 			// // ichao : set graph here and draw it.
-			qtreeViewer->setTree(&this->tree);	
+			// qtreeViewer->setTree(&this->tree);	
 			// ichao : initialize the transferer
 			transferer = new geomTransferer(&this->tree);
 		}
@@ -2833,7 +2833,7 @@ void MainWindow::transModeTransferOne() {
 	this->processEvents();
 	// set output to console 
 	setCurrentOutput();
-	QString exp_filename("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/two_rect.scad");
+	QString exp_filename("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
 	// QString example_file("C:\Users\jdily\Desktop\project\ddCAD\data\manual_transfer/\two_rect_cover");
     QFile file(exp_filename);
 	QString loaded_text;
@@ -2877,18 +2877,25 @@ void MainWindow::transModeTransferOne() {
 			example_tree->getString(*exp_root_node);
 		}
 	}
-	QString csg_filename("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/transfer_test/test_two_rect.csg");
-	std::ofstream fstream(csg_filename.toLocal8Bit());
-	if (!fstream.is_open()) {
-		PRINTB("Can't open file \"%s\" for export", csg_filename.toLocal8Bit().constData());
-	}
-	else {
-		fstream << example_tree->getString(*exp_root_node) << "\n";
-		fstream.close();
-		PRINT("CSG export finished.");
-	}
+	// QString csg_filename("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/transfer_test/test_two_rect.csg");
+	// std::ofstream fstream(csg_filename.toLocal8Bit());
+	// if (!fstream.is_open()) {
+	// 	PRINTB("Can't open file \"%s\" for export", csg_filename.toLocal8Bit().constData());
+	// }
+	// else {
+	// 	fstream << example_tree->getString(*exp_root_node) << "\n";
+	// 	fstream.close();
+	// 	PRINT("CSG export finished.");
+	// }
 
 	std::cout << tree.child_count() << std::endl;
-	// why the child_count is different?
 	std::cout << example_tree->child_count() << std::endl;
+
+	transferer->add_example_tree(example_tree);
+	// traverse the example tree
+	// treeViewer *exp_treeviewer = new treeViewer(this);
+	 qtreeViewer->setTree(example_tree);
+
+
+
 }

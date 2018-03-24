@@ -58,7 +58,7 @@ void treeViewer::setTree(Tree* tree) {
     // GeometryEvaluator geomevaluator(*m_pTree);
     // CSGTreeEvaluator csgrenderer(*m_pTree, &geomevaluator);
     // this->csgRoot = csgrenderer.buildCSGTree(*m_pTree->root());
-    // buildVizTree(m_pTree);
+    buildVizTree(m_pTree);
 }
 
 void treeViewer::draw_and_traverse(const AbstractNode &node, qtreeNode *parent_node) {
@@ -156,11 +156,9 @@ Response treeViewer::visit(State &state, const AbstractPolyNode &node) {
         poly_node->setPos(rand_pos());
         m_pScene->addItem(poly_node);
         node_map.insert(node.idx, poly_node);
-        // find the parent and add edge
+        // // find the parent and add edge
         if (state.parent() != nullptr) {
             int parent_id = state.parent()->idx;
-            // std::cout << "self id : " << node.idx << std::endl;
-            // std::cout << "parent id : " << parent_id << std::endl;
             qtreeEdge *edge = new qtreeEdge(poly_node, node_map[parent_id]);
             m_pScene->addItem(edge);
         }
@@ -179,8 +177,7 @@ Response treeViewer::visit(State &state, const RootNode &node)
     }
 	// if (isCached(node)) return Response::PruneTraversal;
 	if (state.isPostfix()) {
-        std::cout << "in treeviewer go pass root.." << std::endl;
-
+        // std::cout << "in treeviewer go pass root.." << std::endl;
 	// 	std::stringstream dump;
 	// 	dump << dumpChildren(node);
 	// 	this->cache.insert(node, dump.str());
@@ -197,11 +194,11 @@ Response treeViewer::visit(State &state, const TransformNode &node) {
         trans_node->setPos(rand_pos());
         m_pScene->addItem(trans_node);
         node_map.insert(node.idx, trans_node);
-        // find the parent and add edge
+        // // find the parent and add edge
         if (state.parent() != nullptr) {
             int parent_id = state.parent()->idx;
-            // std::cout << "self id : " << node.idx << std::endl;
-            // std::cout << "parent id : " << parent_id << std::endl;
+        //     // std::cout << "self id : " << node.idx << std::endl;
+        //     // std::cout << "parent id : " << parent_id << std::endl;
             qtreeEdge *edge = new qtreeEdge(trans_node, node_map[parent_id]);
             m_pScene->addItem(edge);
         }
@@ -211,19 +208,40 @@ Response treeViewer::visit(State &state, const TransformNode &node) {
 
 // might be problematic..
 Response treeViewer::visit(State &state, const CsgOpNode &node) {
-    // if (state.isPrefix()) {
-    //     std::cout << "draw csg opt node" << std::endl;
-    //     qtreeNode* csgopt_node = new qtreeNode(this, "csg_opt");
-    //     csgopt_node->setPos(rand_pos());
-    //     m_pScene->addItem(csgopt_node);
-    //     node_map.insert(node.idx, csgopt_node);
-    //     if (state.parent() != nullptr) {
-    //         int parent_id = state.parent()->idx;
-    //         qtreeEdge *edge = new qtreeEdge(csgopt_node, node_map[parent_id]);
-    //         m_pScene->addItem(edge);
-    //     }
-    // }
+    if (state.isPrefix()) {
+        std::cout << "draw csg opt node" << std::endl;
+        qtreeNode* csgopt_node = new qtreeNode(this, "csg_opt");
+        csgopt_node->setPos(rand_pos());
+        m_pScene->addItem(csgopt_node);
+        node_map.insert(node.idx, csgopt_node);
+        if (state.parent() != nullptr) {
+            int parent_id = state.parent()->idx;
+            qtreeEdge *edge = new qtreeEdge(csgopt_node, node_map[parent_id]);
+            m_pScene->addItem(edge);
+        }
+    }
     return Response::ContinueTraversal;
+}
+
+Response treeViewer::visit(State &state, const GroupNode &node)
+{
+    if (state.isPrefix()) {
+        std::cout << "draw group node"  << std::endl;
+        qtreeNode *group_node = new qtreeNode(this, "group");
+        group_node->setPos(rand_pos());
+        m_pScene->addItem(group_node);
+        node_map.insert(node.idx, group_node);
+        if (state.parent() != nullptr) {
+            int parent_id = state.parent()->idx;
+            qtreeEdge *edge = new qtreeEdge(group_node, node_map[parent_id]);
+            m_pScene->addItem(edge);
+        }
+    }
+	// if (state.isPostfix()) {
+	// 	applyToChildren(state, node, OpenSCADOperator::UNION);
+	// 	addToParent(state, node);
+	// }
+	return Response::ContinueTraversal;
 }
 
 // Node definition
