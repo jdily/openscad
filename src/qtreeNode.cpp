@@ -13,6 +13,7 @@ qtreeNode::qtreeNode(treeViewer *viewer) {
     setFlag(ItemIsMovable);
     setFlag(ItemSendsGeometryChanges);
     setCacheMode(DeviceCoordinateCache);
+    setAcceptHoverEvents(true);
     setZValue(-1);
     type = "";
 }
@@ -84,6 +85,9 @@ void qtreeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     painter->drawEllipse(-10, -10, 20, 20);
 }
 
+void qtreeNode::set_id(int id) { idx = id; }
+int qtreeNode::get_id() { return idx; }
+
 QVariant qtreeNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == QGraphicsItem::ItemPositionChange) {
@@ -93,4 +97,14 @@ QVariant qtreeNode::itemChange(GraphicsItemChange change, const QVariant &value)
     }
 
     return value;
+}
+
+// void qtreeNode::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
+//     std::cout << "hovering" << std::endl;
+//     update();
+// }
+
+void qtreeNode::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+    std::cout << "press" << std::endl;
+    std::cout << idx << " " << type << std::endl;
 }

@@ -18,6 +18,9 @@ class qtreeNode : public QGraphicsItem {
         QRectF boundingRect() const override;
         QPainterPath shape() const override;
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+        // set the node idx in the corresponding Tree
+        void set_id(int idx);
+        int get_id();
     private:
         QList<qtreeEdge*> edgeList;
         QPointF newPos;
@@ -26,6 +29,10 @@ class qtreeNode : public QGraphicsItem {
         QList<qtreeNode*> childList;
         qtreeNode *parent_node;
         QMap<string, QColor> color_map;
+
+        int idx;
     protected:  
         QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+        void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+        // void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
 };

@@ -2896,6 +2896,6 @@ void MainWindow::transModeTransferOne() {
 	// treeViewer *exp_treeviewer = new treeViewer(this);
 	 qtreeViewer->setTree(example_tree);
 
-
+	transferer->transfer(2, 4);
 
 }

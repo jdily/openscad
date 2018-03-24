@@ -153,6 +153,7 @@ Response treeViewer::visit(State &state, const AbstractPolyNode &node) {
     if (state.isPrefix()) {
         std::cout << "draw poly node" << std::endl;
         qtreeNode* poly_node = new qtreeNode(this, "poly");
+        poly_node->set_id(node.idx);
         poly_node->setPos(rand_pos());
         m_pScene->addItem(poly_node);
         node_map.insert(node.idx, poly_node);
@@ -171,6 +172,7 @@ Response treeViewer::visit(State &state, const RootNode &node)
     if (state.isPrefix()) {
         std::cout << "draw root node" << std::endl;
         qtreeNode* root_node = new qtreeNode(this, "root");
+        root_node->set_id(node.idx);
         root_node->setPos(-150, -150);
         m_pScene->addItem(root_node);
         node_map.insert(node.idx, root_node);
@@ -191,6 +193,7 @@ Response treeViewer::visit(State &state, const TransformNode &node) {
     if (state.isPrefix()) {
         std::cout << "draw transformation node" << std::endl;
         qtreeNode* trans_node = new qtreeNode(this, "trans");
+        trans_node->set_id(node.idx);
         trans_node->setPos(rand_pos());
         m_pScene->addItem(trans_node);
         node_map.insert(node.idx, trans_node);
@@ -211,6 +214,7 @@ Response treeViewer::visit(State &state, const CsgOpNode &node) {
     if (state.isPrefix()) {
         std::cout << "draw csg opt node" << std::endl;
         qtreeNode* csgopt_node = new qtreeNode(this, "csg_opt");
+        csgopt_node->set_id(node.idx);
         csgopt_node->setPos(rand_pos());
         m_pScene->addItem(csgopt_node);
         node_map.insert(node.idx, csgopt_node);
@@ -228,6 +232,7 @@ Response treeViewer::visit(State &state, const GroupNode &node)
     if (state.isPrefix()) {
         std::cout << "draw group node"  << std::endl;
         qtreeNode *group_node = new qtreeNode(this, "group");
+        group_node->set_id(node.idx);
         group_node->setPos(rand_pos());
         m_pScene->addItem(group_node);
         node_map.insert(node.idx, group_node);
