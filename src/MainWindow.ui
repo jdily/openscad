@@ -1409,7 +1409,7 @@
   <action name="transActionTransferOne">
    <property name="icon">
     <iconset resource="../openscad.qrc">
-     <normaloff>:/images/Rotation-32.png</normaloff>:/images/cross.png</iconset>
+     <normaloff>:/images/cross.png</normaloff>:/images/cross.png</iconset>
    </property>
    <property name="text">
     <string>Transfer Test</string>
