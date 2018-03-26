@@ -13,6 +13,12 @@ Tree::~Tree()
 	this->nodeidcache.clear();
 }
 
+Tree::Tree(const Tree &obj) {
+	root_node = obj.root_node;
+	nodecache = obj.nodecache;
+	nodeidcache = obj.nodeidcache;
+}
+
 /*!
 	Returns the cached string representation of the subtree rooted by \a node.
 	If node is not cached, the cache will be rebuilt.
@@ -69,7 +75,7 @@ void Tree::setRoot(const AbstractNode *root)
 	this->nodecache.clear();
 }
 
-int Tree::child_count() {
+int Tree::node_count() {
 	return this->nodecache.count();
 }
 // int Tree::height(std::vector<AbstractNode*> nodes) {
@@ -79,3 +85,11 @@ int Tree::child_count() {
 
 // 	// return 1+height()
 // }
+
+void Tree::remove_node(int idx) {
+	// nodecache->remove()
+}
+
+void Tree::remove_node(AbstractNode* node) {
+	nodecache.remove(*node);
+}

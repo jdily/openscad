@@ -14,6 +14,9 @@ public:
 	Tree(const AbstractNode *root = nullptr) : root_node(root) {}
 	~Tree();
 
+	// ichao : add copy constructor
+	Tree(const Tree &obj);
+
 	void setRoot(const AbstractNode *root);
 	const AbstractNode *root() const { return this->root_node; }
 
@@ -23,7 +26,17 @@ public:
 	// get the height of the node
 	// int height(AbstractNode &node);
 	// 
-	int child_count();
+	int node_count();
+	// manipulation operators
+	void remove_node(int idx);
+	void remove_node(AbstractNode *node);
+	
+	bool contains(AbstractNode *node) {
+		return nodecache.contains(*node);
+	}
+
+	NodeCache& get_cache() { return this->nodecache; } 	
+	
 private:
 	const AbstractNode *root_node;
   mutable NodeCache nodecache;

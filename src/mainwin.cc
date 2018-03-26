@@ -1133,7 +1133,7 @@ void MainWindow::instantiateRoot()
 			// FIXME: We shouldn't really need to do this explicitly..
 			this->tree.getString(*this->root_node);
 			// // ichao : set graph here and draw it.
-			// qtreeViewer->setTree(&this->tree);	
+			qtreeViewer->setTree(&this->tree);	
 			// ichao : initialize the transferer
 			transferer = new geomTransferer(&this->tree);
 		}
@@ -2888,14 +2888,12 @@ void MainWindow::transModeTransferOne() {
 	// 	PRINT("CSG export finished.");
 	// }
 
-	std::cout << tree.child_count() << std::endl;
-	std::cout << example_tree->child_count() << std::endl;
+	std::cout << tree.node_count() << std::endl;
+	std::cout << example_tree->node_count() << std::endl;
 
 	transferer->add_example_tree(example_tree);
 	// traverse the example tree
 	// treeViewer *exp_treeviewer = new treeViewer(this);
-	 qtreeViewer->setTree(example_tree);
-
-	transferer->transfer(2, 4);
-
+	// qtreeViewer->setTree(example_tree);
+	transferer->transfer(3, 2);
 }

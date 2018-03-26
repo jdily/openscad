@@ -17,7 +17,14 @@ public:
   virtual ~NodeCache() { }
 
 	bool contains(const AbstractNode &node) const {
-		if (this->cache.size() > node.index()) return this->cache[node.index()].get();
+    // std::cout << node.index() << std::endl;
+		if (this->cache.size() > node.index()) {
+      // std::cout << "size > index" << std::endl;
+      // if (this->cache[node.index()].get() == nullptr) {
+        // std::cout << "nullptr it is " << std::endl;
+      // }
+      return this->cache[node.index()].get();
+    }
 		return false;
 	}
 
@@ -38,8 +45,11 @@ public:
     return *this->cache[node.index()];
   }
 
+  // do some check
   void remove(const class AbstractNode &node) {
     if (this->cache.size() > node.index()) this->cache[node.index()].reset();
+    // std::cout << "In remove " << std::endl;
+    // std::cout << "cache length : " << this->cache.size() << std::endl;
   }
 
 	void clear() {
@@ -47,7 +57,15 @@ public:
 	}
 
   int count() {
-    return (int)cache.size();
+    // count the non-nullptr pointer in cache..
+    int count = 0;
+    for (int i = 0; i < (int)cache.size(); i++) {
+      if (this->cache[i].get()) {
+        count += 1;
+      }
+    }
+    return count;
+    // return (int)cache.size();
   }
 
 private:
