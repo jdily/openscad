@@ -52,6 +52,14 @@ std::string AbstractNode::toString() const
 	return this->name() + "()";
 }
 
+void AbstractNode::remove_child(int index) {
+	std::cout << "index to be removed : " << index << std::endl;
+	std::cout << "child count before remove : " << (int)children.size() << std::endl; 
+	// children.erase(children.begin(), children.begin()+index);
+	children.erase(children.begin()+index);
+	std::cout << "child count after remove : " << (int)children.size() << std::endl; 
+}
+
 std::string GroupNode::name() const
 {
 	return "group";
