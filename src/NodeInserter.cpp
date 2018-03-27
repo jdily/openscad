@@ -43,6 +43,8 @@ void NodeInserter::insert_node(const AbstractNode &parent_node, const AbstractNo
     // parent_node.children.push_back(&insert_node);
     // add insert_node and all the children into cache..
     // traverse(insert_node);
+
+    const_cast<AbstractNode&>(parent_node).children.push_back(&const_cast<AbstractNode&>(insert_node));
 }
 
 void NodeInserter::insert_children(const AbstractNode &node) {

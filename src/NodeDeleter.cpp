@@ -32,7 +32,6 @@ void NodeDeleter::remove_node(const AbstractNode &node, const AbstractNode &pare
             const_cast<AbstractNode &>(parent).children.erase(e);
         }
         std::cout << "after remove, cache count : " << cache.count() << std::endl;
-    
     }
 }
 

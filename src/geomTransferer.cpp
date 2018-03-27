@@ -60,11 +60,11 @@ Tree* geomTransferer::transfer(int self_node_id, int exp_node_id) {
     deleter->remove_node(*out_tree->root()->children[0], *out_tree->root());
     std::cout << "remain node count : " << out_tree->get_cache().count() << std::endl;
     // 2. insert the desire subtree into the original tree
-    // NodeInserter *inserter = new NodeInserter(m_pSelf);
+    NodeInserter *inserter = new NodeInserter(out_tree);
     // TODO : deal with the index compatible prolbme, i.e. the index in two trees will not be sync
     // create a dummy node
     // PrimitiveNode *dummpy_poly = new PrimitiveNode(primitive_type_e::CUBE);
-    // inserter->insert_node(*m_pSelf->root(), *m_pExample->root()->children[0]);
+    inserter->insert_node(*out_tree->root(), *m_pExample->root()->children[0]);
     // 3. adapt the geometry..
 
 
