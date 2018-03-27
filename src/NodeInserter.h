@@ -28,8 +28,9 @@ private:
     std::map<int, ChildList> visitedchildren;
     // the id that can be inserted into the tree.
     int cur_id;
-    void insert_children(const AbstractNode &node);
-    void insert_children_block(const AbstractNode &node);
+    bool isCached(const AbstractNode &node) const;
+    std::string insert_children(const AbstractNode &node);
+    std::string insert_children_block(const AbstractNode &node);
     void handleVisitedChildren(const State &state, const AbstractNode &node);
     void handleIndent(const State &state);
 };

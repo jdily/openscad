@@ -1,10 +1,16 @@
 #include "NodeInserter.h"
+#include "state.h"
+#include "module.h"
+#include "ModuleInstantiation.h"
 
+#include <string>
+#include <sstream>
+#include <assert.h>
 
 Response NodeInserter::visit(State &state, const AbstractNode &node) {
     if (state.isPrefix()) {
         std::cout << "insert visit abstract node " << std::endl;
-        std::cout << "cur index to insert : " << cur_id << std::endl;   
+        // std::cout << "cur index to insert : " << cur_id << std::endl;   
         // in prefix stage, change the index of each node..
         // node.idx = cur_id;
         const_cast<AbstractNode &>(node).idx = cur_id;
@@ -16,12 +22,17 @@ Response NodeInserter::visit(State &state, const AbstractNode &node) {
         std::stringstream dump;
         dump << this->currindent;
         if (this->idprefix) dump << "n" << node.index() << ":";
+        dump << node;
+        dump << insert_children_block(node);
+        this->cache.insert(node, dump.str());
     }
-    // handleVisitedChildren(state, node);
+    handleVisitedChildren(state, node);
     return Response::ContinueTraversal;
 }
 
-
+bool NodeInserter::isCached(const AbstractNode &node) const {
+    return this->cache.contains(node);
+}
 // Response NodeInserter::visit(State &state, const RootNode &node) {
 //     // handleVisitedChildren(state, node);
 //     return Response::ContinueTraversal;
@@ -40,20 +51,39 @@ void NodeInserter::insert_node(const AbstractNode &parent_node, const AbstractNo
     std::cout << insert_node.index() << " " << insert_node.name() << std::endl;
     std::cout << "the insert node has " << (int)insert_node.children.size() << " child" << std::endl;
 
-    // parent_node.children.push_back(&insert_node);
     // add insert_node and all the children into cache..
-    // traverse(insert_node);
-
+    traverse(insert_node);
+    // add the insert node in the childrn list of parent node...
     const_cast<AbstractNode&>(parent_node).children.push_back(&const_cast<AbstractNode&>(insert_node));
 }
 
-void NodeInserter::insert_children(const AbstractNode &node) {
-
+std::string NodeInserter::insert_children(const AbstractNode &node) {
+    std::stringstream dump;
+    for (auto child : this->visitedchildren[node.index()]) {
+        assert(isCached(*child));
+        const auto &str = this->cache[*child];
+        if (!str.empty()) {
+            if (child != this->visitedchildren[node.index()].front()) dump << "\n";
+			if (child->modinst->isBackground()) dump << "%";
+			if (child->modinst->isHighlight()) dump << "#";
+			dump << str;
+        }
+    }
+    return dump.str();
 }
 
-void NodeInserter::insert_children_block(const AbstractNode &node) {
-
-    
+std::string NodeInserter::insert_children_block(const AbstractNode &node) {
+	std::stringstream dump;
+	if (!this->visitedchildren[node.index()].empty()) {
+		dump << " {\n";
+		const auto &chstr = insert_children(node);
+		if (!chstr.empty()) dump << chstr << "\n";
+		dump << this->currindent << "}";
+	}
+	else {
+		dump << ";";
+	}
+	return dump.str();
 }
 
 void NodeInserter::handleVisitedChildren(const State &state, const AbstractNode &node) {
