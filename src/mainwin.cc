@@ -956,7 +956,8 @@ void MainWindow::compile(bool reload, bool forcedone, bool rebuildParameterWidge
 	else {
 		shouldcompiletoplevel = true;
 	}
-
+	std::cout << "if should compile  " << shouldcompiletoplevel << std::endl;
+	// shouldcompiletoplevel = true;
 	if (!shouldcompiletoplevel && this->parsed_module) {
 		auto mtime = this->parsed_module->includesChanged();
 		if (mtime > this->includes_mtime) {
@@ -2897,5 +2898,9 @@ void MainWindow::transModeTransferOne() {
 	// qtreeViewer->setTree(example_tree);
 	Tree* result_tree = transferer->transfer(3, 2);
 	std::cout << "result tree node count : " << result_tree->get_cache().count() << std::endl;
+	// redraw the tree viz..
 	qtreeViewer->setTree(result_tree);
+	this->root_node = const_cast<AbstractNode *>(result_tree->root());
+	csgReloadRender();
+	
 }
