@@ -53,7 +53,7 @@ Tree* geomTransferer::transfer(int self_node_id, int exp_node_id) {
     // std::cout << "self tree still contains ? " << m_pSelf->contains(m_pSelf->root()->children[0]) << std::endl;
     // std::cout << "self tree still contains ? " << m_pSelf->contains(m_pSelf->root()->children[1]->children[0]) << std::endl;
 
-    // Process : replace a subtree
+    // Process : replace a subtree (**box** in this example)
     // 1. remove it from the original tree..
     // TODO : how to propagate this modification back to the rendered and text editor...
     NodeDeleter *deleter = new NodeDeleter(out_tree);
@@ -67,9 +67,8 @@ Tree* geomTransferer::transfer(int self_node_id, int exp_node_id) {
     inserter->insert_node(*out_tree->root(), *m_pExample->root()->children[0]);
     // 3. adapt the geometry..
 
-
-    
-
+    deleter->remove_node(*out_tree->root()->children[0], *out_tree->root());
+    inserter->insert_node(*out_tree->root(), *m_pExample->root()->children[1]);
     return out_tree;
 }
 
