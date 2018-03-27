@@ -361,9 +361,10 @@ HEADERS += src/version_check.h \
            src/treeViewer.h \
            src/qtreeNode.h \
            src/qtreeEdge.h \ 
-           src/CSGVisitor.h \ 
            src/geomTransferer.h \ 
-           src/nodeDeleter.h
+           src/nodeDeleter.h \ 
+           src/nodeInserter.h 
+           # src/NodeModifier.h
 
 SOURCES += \
            src/libsvg/libsvg.cc \
@@ -509,9 +510,10 @@ SOURCES += \
            src/treeViewer.cpp \ 
            src/qtreeNode.cpp \
            src/qtreeEdge.cpp \ 
-           src/CSGVisitor.cc \ 
            src/geomTransferer.cpp \ 
-           src/nodeDeleter.cpp
+           src/nodeDeleter.cpp \ 
+           src/nodeInserter.cpp 
+           # src/NodeModifier.cpp
 
 # CGAL
 HEADERS += src/ext/CGAL/convex_hull_3_bugfix.h \

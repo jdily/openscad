@@ -21,7 +21,7 @@ class treeViewer : public QGraphicsView, public NodeVisitor {
 
         void setTree(Tree *tree);
         QPointF rand_pos();
-
+        void  clear_scene();
         Response visit(State &state, const AbstractNode &node) override;
         Response visit(State &state, const RootNode &node) override;
         Response visit(State &state, const AbstractPolyNode &node) override;

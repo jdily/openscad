@@ -38,7 +38,7 @@ public:
 	NodeCache& get_cache() { return this->nodecache; } 	
 	
 private:
-	const AbstractNode *root_node;
+  const AbstractNode *root_node;
   mutable NodeCache nodecache;
   mutable NodeCache nodeidcache;
 };

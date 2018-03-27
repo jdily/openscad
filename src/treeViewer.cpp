@@ -58,7 +58,12 @@ void treeViewer::setTree(Tree* tree) {
     // GeometryEvaluator geomevaluator(*m_pTree);
     // CSGTreeEvaluator csgrenderer(*m_pTree, &geomevaluator);
     // this->csgRoot = csgrenderer.buildCSGTree(*m_pTree->root());
+    clear_scene();
     buildVizTree(m_pTree);
+}
+
+void treeViewer::clear_scene() {
+    m_pScene->clear();
 }
 
 void treeViewer::draw_and_traverse(const AbstractNode &node, qtreeNode *parent_node) {

@@ -35,6 +35,9 @@
 
 size_t AbstractNode::idx_counter;
 
+// TODO : check if the index is right...
+AbstractNode::AbstractNode(int i) : idx(idx_counter++) {}
+
 AbstractNode::AbstractNode(const ModuleInstantiation *mi) : modinst(mi), idx(idx_counter++)
 {
 }

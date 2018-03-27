@@ -65,6 +65,7 @@ class PrimitiveNode : public LeafNode
 {
 public:
 	VISITABLE();
+	PrimitiveNode(primitive_type_e type) : LeafNode(), type(type) {}
 	PrimitiveNode(const ModuleInstantiation *mi, primitive_type_e type) : LeafNode(mi), type(type) { }
 	std::string toString() const override;
 	std::string name() const override {

@@ -2895,5 +2895,7 @@ void MainWindow::transModeTransferOne() {
 	// traverse the example tree
 	// treeViewer *exp_treeviewer = new treeViewer(this);
 	// qtreeViewer->setTree(example_tree);
-	transferer->transfer(3, 2);
+	Tree* result_tree = transferer->transfer(3, 2);
+	std::cout << "result tree node count : " << result_tree->get_cache().count() << std::endl;
+	qtreeViewer->setTree(result_tree);
 }

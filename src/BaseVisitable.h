@@ -40,3 +40,38 @@ protected:
 	Response accept(class State &state, BaseVisitor &visitor) const override { \
 		return acceptImpl(state, *this, visitor); \
   }
+
+// class BaseModifier
+// {
+// public:
+// 	virtual ~BaseModifier() {}
+// };
+// template <class T>
+// class Modifier 
+// {
+// public: 
+// 	virtual Response visit(class State &state, T&) = 0;
+// };
+
+// class BaseModifiable
+// {
+// public:
+// 	virtual ~BaseModifiable() {}
+// 	virtual Response accept(class State&, BaseModifier&) const = 0;
+// protected:
+// 	template <class T>
+// 	static Response acceptImpl(class State &state, T &node, BaseModifier &modifier) {
+// 		if (Modifier<T> *p = dynamic_cast<Modifier<T>*>(&modifier)) {
+// 			return p->visit(state, node);
+// 		}
+// 		// FIXME: If we want to allow for missing nodes in visitors, we need
+// 		// to handle it here, e.g. by calling some handler.
+// 		// See e.g. page 225 of Alexandrescu's "Modern C++ Design" 
+// 		return Response::AbortTraversal;
+// 	}
+// };
+
+// #define MODIFIABLE() \
+// 	Response accept(class State &state, BaseModifier &modifier) override { \
+// 		return acceptImpl(state, *this, modifier); \
+//   }

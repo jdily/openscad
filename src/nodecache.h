@@ -67,6 +67,9 @@ public:
     return count;
     // return (int)cache.size();
   }
+  int cur_size() {
+    return (int)this->cache.size();
+  }
 
 private:
   std::vector<shared_ptr<std::string>> cache;

@@ -27,8 +27,11 @@ class AbstractNode : public BaseVisitable
 	static size_t idx_counter;   // Node instantiation index
 public:
 	VISITABLE();
+	AbstractNode(int i);
 	AbstractNode(const class ModuleInstantiation *mi);
 	~AbstractNode();
+	// ichao added constructor for dummy test
+	
 	virtual std::string toString() const;
 	/*! The 'OpenSCAD name' of this node, defaults to classname, but can be 
 	    overloaded to provide specialization for e.g. CSG nodes, primitive nodes etc.
@@ -38,8 +41,11 @@ public:
 	const std::vector<AbstractNode*> &getChildren() const { 
 		return this->children;
 	}
+
+	void remove_child(int index);
 	size_t index() const { return this->idx; }
 
+	// IMPORTANT RESET: have to call this before generate a new tree
 	static void resetIndexCounter() { idx_counter = 1; }
 
 	// FIXME: Make protected
@@ -69,6 +75,7 @@ class AbstractPolyNode : public AbstractNode
 {
 public:
 	VISITABLE();
+	AbstractPolyNode() : AbstractNode(-1) { }
 	AbstractPolyNode(const ModuleInstantiation *mi) : AbstractNode(mi) { };
 	~AbstractPolyNode() { };
 
@@ -108,6 +115,7 @@ class LeafNode : public AbstractPolyNode
 {
 public:
 	VISITABLE();
+	LeafNode() : AbstractPolyNode() {}
 	LeafNode(const ModuleInstantiation *mi) : AbstractPolyNode(mi) { };
 	~LeafNode() { };
 	virtual const class Geometry *createGeometry() const = 0;
