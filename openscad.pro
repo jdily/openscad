@@ -363,7 +363,8 @@ HEADERS += src/version_check.h \
            src/qtreeEdge.h \ 
            src/geomTransferer.h \ 
            src/nodeDeleter.h \ 
-           src/nodeInserter.h 
+           src/nodeInserter.h \ 
+           src/nodeAdapter.h
            # src/NodeModifier.h
 
 SOURCES += \
@@ -512,7 +513,8 @@ SOURCES += \
            src/qtreeEdge.cpp \ 
            src/geomTransferer.cpp \ 
            src/nodeDeleter.cpp \ 
-           src/nodeInserter.cpp 
+           src/nodeInserter.cpp  \
+           src/nodeAdapter.cpp
            # src/NodeModifier.cpp
 
 # CGAL

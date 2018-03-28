@@ -67,6 +67,8 @@ Tree* geomTransferer::transfer(int self_node_id, int exp_node_id) {
     inserter->insert_node(*out_tree->root(), *m_pExample->root()->children[0]);
     // 3. adapt the geometry..
 
+
+    // for another part of the geometry
     deleter->remove_node(*out_tree->root()->children[0], *out_tree->root());
     inserter->insert_node(*out_tree->root(), *m_pExample->root()->children[1]);
     return out_tree;
