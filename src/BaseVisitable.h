@@ -71,7 +71,7 @@ protected:
 // 	}
 // };
 
-// #define MODIFIABLE() \
-// 	Response accept(class State &state, BaseModifier &modifier) override { \
-// 		return acceptImpl(state, *this, modifier); \
+// #define MODIFIABLE() 
+// 	Response accept(class State &state, BaseModifier &modifier) override { 
+// 		return acceptImpl(state, *this, modifier); 
 //   }

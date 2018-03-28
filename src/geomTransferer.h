@@ -5,8 +5,9 @@
 #include <QString>
 #include "Tree.h"
 #include "NodeVisitor.h"
+#include "node.h"
 
-
+// class PrimitiveNode;
 // should we make it as a subclass of NodeVisitor???
 
 // class geomTransferer : public NodeVisitor {
