@@ -2900,7 +2900,9 @@ void MainWindow::transModeTransferOne() {
 	std::cout << "result tree node count : " << result_tree->get_cache().count() << std::endl;
 	// redraw the tree viz..
 	qtreeViewer->setTree(result_tree);
-	this->root_node = const_cast<AbstractNode *>(result_tree->root());
+	this->root_node = const_cast<AbstractNode*>(result_tree->root());
+	// clean the cache first and re-dump again..
+	this->tree.clear_cache();
+	this->tree.getString(*this->root_node);
 	csgReloadRender();
-	
 }

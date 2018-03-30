@@ -60,24 +60,37 @@ Tree* geomTransferer::transfer(int self_node_id, int exp_node_id) {
     // TODO : how to propagate this modification back to the rendered and text editor...
     // NodeDeleter *deleter = new NodeDeleter(out_tree);
     // deleter->remove_node(*out_tree->root()->children[0], *out_tree->root());
-    // 2. insert the desire subtree into the original tree
+    // // 2. insert the desire subtree into the original tree
     // NodeInserter *inserter = new NodeInserter(out_tree);
-    // TODO : deal with the index compatible problem, i.e. the index in two trees will not be sync
-    // PrimitiveNode *dummpy_poly = new PrimitiveNode(primitive_type_e::CUBE);
+    // // TODO : deal with the index compatible problem, i.e. the index in two trees will not be sync
+    // // PrimitiveNode *dummpy_poly = new PrimitiveNode(primitive_type_e::CUBE);
     // inserter->insert_node(*out_tree->root(), *m_pExample->root()->children[0]);
-    // 3. adapt the geometry..
-
-    NodeAdapter *adapter = new NodeAdapter(m_pSelf);
-    QMap<QString, float> adapt_info;
-    // std::cout << m_pSelf->root()->children[0]->children[0]->name() << std::endl;
-    // PrimitiveNode* tar_node = (class PrimitiveNode*)m_pSelf->root()->children[0]->children[0];
-    // std::cout << tar_node->name() << std::endl;
-    // adapter->adapt_param(*tar_node, QString("cube"), adapt_info);
-    adapter->adapt_param(*m_pSelf->root()->children[0]->children[0], QString("cube"), adapt_info);
 
     // for another part of the geometry
     // deleter->remove_node(*out_tree->root()->children[0], *out_tree->root());
     // inserter->insert_node(*out_tree->root(), *m_pExample->root()->children[1]);
+
+    // 3. adapt the geometry..
+
+    NodeAdapter *adapter = new NodeAdapter(out_tree);
+    QMap<QString, float> adapt_info;
+    adapt_info[QString("x")] = 10.0;
+    adapt_info[QString("center")] = 1;
+    adapter->adapt_param(*out_tree->root()->children[0]->children[0], QString("cube"), adapt_info);
+    PrimitiveNode* tar_node = (class PrimitiveNode*)m_pSelf->root()->children[0]->children[0];
+    std::cout << "the x value : " << tar_node->x << std::endl;
+    std::cout << "the center value : " << tar_node->center << std::endl;
+    
+    std::cout << "evaluate cache issue " << std::endl;
+    out_tree->getString(*tar_node);
+    
+
+    // std::cout << m_pSelf->root()->children[0]->children[0]->name() << std::endl;
+    // PrimitiveNode* tar_node = (class PrimitiveNode*)m_pSelf->root()->children[0]->children[0];
+    // std::cout << tar_node->name() << std::endl;
+    // adapter->adapt_param(*tar_node, QString("cube"), adapt_info);
+    // std::cout << "the x value : " << out_tree->root()->children[0]->children[0]->x << std::endl;
+
     return out_tree;
 }
 

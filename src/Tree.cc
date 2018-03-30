@@ -27,12 +27,22 @@ const std::string &Tree::getString(const AbstractNode &node) const
 {
 	assert(this->root_node);
 	if (!this->nodecache.contains(node)) {
+		std::cout << "get string to rebuild the cache " << std::endl;
 		this->nodecache.clear();
 		this->nodeidcache.clear();
 		NodeDumper dumper(this->nodecache, false);
 		dumper.traverse(*this->root_node);
 		assert(this->nodecache.contains(*this->root_node) &&
 					 "NodeDumper failed to create a cache");
+	} else {
+		std::cout << "already contain the node" << std::endl;
+		// update the content of cache node..
+		// update node it's own.
+		// NodeDumper dumper(this->nodecache, false);
+		// dumper.traverse(node);
+		// dumper.traverse(*this->root_node);
+		// update node's parent.
+
 	}
 	return this->nodecache[node];
 }
@@ -73,6 +83,11 @@ void Tree::setRoot(const AbstractNode *root)
 {
 	this->root_node = root; 
 	this->nodecache.clear();
+}
+
+void Tree::clear_cache() {
+	this->nodecache.clear();
+	this->nodeidcache.clear();
 }
 
 int Tree::node_count() {

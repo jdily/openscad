@@ -364,7 +364,8 @@ HEADERS += src/version_check.h \
            src/geomTransferer.h \ 
            src/nodeDeleter.h \ 
            src/nodeInserter.h \ 
-           src/nodeAdapter.h
+           src/nodeAdapter.h \
+           src/primitives.h 
            # src/NodeModifier.h
 
 SOURCES += \

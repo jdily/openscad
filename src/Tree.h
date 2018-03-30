@@ -36,7 +36,7 @@ public:
 	}
 
 	NodeCache& get_cache() { return this->nodecache; } 	
-	
+	void clear_cache();
 private:
   const AbstractNode *root_node;
   mutable NodeCache nodecache;
