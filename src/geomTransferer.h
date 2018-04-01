@@ -7,6 +7,8 @@
 #include "NodeVisitor.h"
 #include "node.h"
 
+#include "transformnode.h"
+
 // class PrimitiveNode;
 // should we make it as a subclass of NodeVisitor???
 

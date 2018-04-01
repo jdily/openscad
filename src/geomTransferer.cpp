@@ -5,7 +5,6 @@
 #include "NodeInserter.h"
 #include "NodeAdapter.h"
 
-
 geomTransferer::geomTransferer(Tree *ori) : m_pSelf(ori), m_pExample(nullptr) {}
 
 geomTransferer::geomTransferer(Tree *ori, Tree *example) : m_pSelf(ori), m_pExample(example) {
@@ -73,17 +72,23 @@ Tree* geomTransferer::transfer(int self_node_id, int exp_node_id) {
     // 3. adapt the geometry..
 
     NodeAdapter *adapter = new NodeAdapter(out_tree);
-    QMap<QString, float> adapt_info;
-    adapt_info[QString("x")] = 10.0;
-    adapt_info[QString("center")] = 1;
-    adapter->adapt_param(*out_tree->root()->children[0]->children[0], QString("cube"), adapt_info);
-    PrimitiveNode* tar_node = (class PrimitiveNode*)m_pSelf->root()->children[0]->children[0];
-    std::cout << "the x value : " << tar_node->x << std::endl;
-    std::cout << "the center value : " << tar_node->center << std::endl;
-    
-    std::cout << "evaluate cache issue " << std::endl;
-    out_tree->getString(*tar_node);
-    
+    // the update values..
+    QMap<QString, VectorXd> adapt_info;
+    // test for primitive node adaptation (cube)
+    // adapt_info[QString("x")] = 10.0;
+    // adapt_info[QString("center")] = 1;
+    // adapter->adapt_param(*out_tree->root()->children[0]->children[0], QString("cube"), adapt_info);
+    // PrimitiveNode* prim_node = (class PrimitiveNode*)m_pSelf->root()->children[0]->children[0];
+
+    // test for transformation node adaptation (translate)
+    TransformNode* trans_node = (class TransformNode*)m_pSelf->root()->children[1];
+    // std::cout << trans_node->name() << std::endl;
+    // std::cout << trans_node->matrix(2,3) << std::endl;
+    VectorXd translate(3);
+    translate(0) = 0.0; translate(1) = 0.0; translate(2) = 2.0;
+    adapt_info["translate"] = translate;
+    std::cout << "before adapt transformation" << std::endl;
+    adapter->adapt_param(*trans_node, QString("transform"), adapt_info);
 
     // std::cout << m_pSelf->root()->children[0]->children[0]->name() << std::endl;
     // PrimitiveNode* tar_node = (class PrimitiveNode*)m_pSelf->root()->children[0]->children[0];
