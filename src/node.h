@@ -59,6 +59,7 @@ public:
 	void progress_report() const;
 
 	int idx; // Node index (unique per tree)
+	std::string aux_name;
 };
 
 class AbstractIntersectionNode : public AbstractNode

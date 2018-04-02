@@ -4,6 +4,8 @@
 #include "NodeDeleter.h"
 #include "NodeInserter.h"
 #include "NodeAdapter.h"
+#include "NodeRecorder.h"
+
 
 geomTransferer::geomTransferer(Tree *ori) : m_pSelf(ori), m_pExample(nullptr) {}
 
@@ -33,8 +35,17 @@ void geomTransferer::add_example_tree(Tree* example) {
 // 1. first version use the node id pair 
 Tree* geomTransferer::transfer(int self_node_id, int exp_node_id) {
     std::cout << "do transfer from " << self_node_id << " to " << exp_node_id << std::endl;
-    // Tree *out_tree = new Tree(m_pSelf->root());
+    NodeRecoder *recorder = new NodeRecoder(m_pSelf, aux_to_node);
     Tree *out_tree = new Tree(*m_pSelf);
+    aux_to_node = recorder->append_aux_name("src", *out_tree->root());
+    aux_to_node = recorder->append_aux_name("exp", *m_pExample->root());
+
+    // check the count of the map
+    std::cout << "size of the recorder : " << aux_to_node.size() << std::endl;
+
+    std::map<std::string, int> test_map;
+    // Tree *out_tree = new Tree(m_pSelf->root());
+    
     // std::cout << "original node count : " << m_pSelf->node_count() << std::endl;
     // std::cout << "out node count : " << out_tree->node_count() << std::endl;
     
@@ -57,13 +68,13 @@ Tree* geomTransferer::transfer(int self_node_id, int exp_node_id) {
     // Process : replace a subtree (**box** in this example)
     // 1. remove it from the original tree..
     // TODO : how to propagate this modification back to the rendered and text editor...
-    // NodeDeleter *deleter = new NodeDeleter(out_tree);
-    // deleter->remove_node(*out_tree->root()->children[0], *out_tree->root());
+    NodeDeleter *deleter = new NodeDeleter(out_tree);
+    deleter->remove_node(*out_tree->root()->children[0], *out_tree->root());
     // // 2. insert the desire subtree into the original tree
-    // NodeInserter *inserter = new NodeInserter(out_tree);
+    NodeInserter *inserter = new NodeInserter(out_tree);
     // // TODO : deal with the index compatible problem, i.e. the index in two trees will not be sync
     // // PrimitiveNode *dummpy_poly = new PrimitiveNode(primitive_type_e::CUBE);
-    // inserter->insert_node(*out_tree->root(), *m_pExample->root()->children[0]);
+    inserter->insert_node(*out_tree->root(), *m_pExample->root()->children[0]);
 
     // for another part of the geometry
     // deleter->remove_node(*out_tree->root()->children[0], *out_tree->root());
@@ -71,9 +82,9 @@ Tree* geomTransferer::transfer(int self_node_id, int exp_node_id) {
 
     // 3. adapt the geometry..
 
-    NodeAdapter *adapter = new NodeAdapter(out_tree);
+    // NodeAdapter *adapter = new NodeAdapter(out_tree);
     // the update values..
-    QMap<QString, VectorXd> adapt_info;
+    // QMap<QString, VectorXd> adapt_info;
     // test for primitive node adaptation (cube)
     // adapt_info[QString("x")] = 10.0;
     // adapt_info[QString("center")] = 1;
@@ -81,14 +92,12 @@ Tree* geomTransferer::transfer(int self_node_id, int exp_node_id) {
     // PrimitiveNode* prim_node = (class PrimitiveNode*)m_pSelf->root()->children[0]->children[0];
 
     // test for transformation node adaptation (translate)
-    TransformNode* trans_node = (class TransformNode*)m_pSelf->root()->children[1];
-    // std::cout << trans_node->name() << std::endl;
-    // std::cout << trans_node->matrix(2,3) << std::endl;
-    VectorXd translate(3);
-    translate(0) = 0.0; translate(1) = 0.0; translate(2) = 2.0;
-    adapt_info["translate"] = translate;
-    std::cout << "before adapt transformation" << std::endl;
-    adapter->adapt_param(*trans_node, QString("transform"), adapt_info);
+    // TransformNode* trans_node = (class TransformNode*)m_pSelf->root()->children[1];
+    // VectorXd translate(3);
+    // translate(0) = 0.0; translate(1) = 0.0; translate(2) = 2.0;
+    // adapt_info["translate"] = translate;
+    // std::cout << "before adapt transformation" << std::endl;
+    // adapter->adapt_param(*trans_node, QString("transform"), adapt_info);
 
     // std::cout << m_pSelf->root()->children[0]->children[0]->name() << std::endl;
     // PrimitiveNode* tar_node = (class PrimitiveNode*)m_pSelf->root()->children[0]->children[0];

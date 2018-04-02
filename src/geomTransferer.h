@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 #include <QList>
 #include <QString>
 #include "Tree.h"
@@ -32,5 +33,6 @@ class geomTransferer {
         Tree *m_pSelf;
         Tree *m_pExample;
         QList<Tree*> m_pExamples;
+        QMap<std::string, const AbstractNode*> aux_to_node;
     protected:
 };

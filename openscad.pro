@@ -365,7 +365,8 @@ HEADERS += src/version_check.h \
            src/nodeDeleter.h \ 
            src/nodeInserter.h \ 
            src/nodeAdapter.h \
-           src/primitives.h 
+           src/primitives.h \
+           src/NodeRecorder.h
            # src/NodeModifier.h
 
 SOURCES += \
@@ -515,7 +516,8 @@ SOURCES += \
            src/geomTransferer.cpp \ 
            src/nodeDeleter.cpp \ 
            src/nodeInserter.cpp  \
-           src/nodeAdapter.cpp
+           src/nodeAdapter.cpp \ 
+           src/NodeRecorder.cpp
            # src/NodeModifier.cpp
 
 # CGAL

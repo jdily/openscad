@@ -1,5 +1,5 @@
 #pragma once
-// #include <boost/graph/adjacency_list.hpp>
+
 // #include <boost/graph/graphviz.hpp>
 #include <QGraphicsView>
 #include <QGraphicsItem>
@@ -9,6 +9,11 @@
 #include "GeometryEvaluator.h"
 #include "CSGVisitor.h"
 #include <random>
+
+#include <boost/graph/adjacency_list.hpp>
+
+// TODO : test boost graph things
+
 
 class qtreeNode;
 
