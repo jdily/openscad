@@ -40,7 +40,10 @@ Tree* geomTransferer::transfer_cylinder() {
     aux_to_node = recorder->append_aux_name("exp", *m_pExample->root());
     // check the count of the map
     std::cout << "size of the recorder : " << aux_to_node.size() << std::endl;
-    // src_3
+    // test about the parant things.
+    std::cout << "parent of first child : " << aux_to_node["src_2"]->parent->aux_name << std::endl;
+    std::cout << "parent of src_3 : " << aux_to_node["src_3"]->parent->aux_name << std::endl;
+
 
     NodeDeleter *deleter = new NodeDeleter(out_tree);
     deleter->remove_node(*aux_to_node["src_2"], *out_tree->root());
@@ -48,6 +51,10 @@ Tree* geomTransferer::transfer_cylinder() {
     NodeInserter *inserter = new NodeInserter(out_tree);
     inserter->insert_node(*out_tree->root(), *aux_to_node["exp_2"]);
     // inserter->insert_node(*out_tree->root(), *m_pExample->root()->children[0]);
+
+    deleter->remove_node(*aux_to_node["src_4"], *out_tree->root());
+    inserter->insert_node(*out_tree->root(), *aux_to_node["exp_7"]);
+
     return out_tree;
 }
 
