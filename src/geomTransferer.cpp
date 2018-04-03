@@ -32,6 +32,25 @@ void geomTransferer::add_example_tree(Tree* example) {
     // m_pExamples.append(example);
 }
 
+Tree* geomTransferer::transfer_cylinder() {
+    std::cout << "transfer cylinder example" << std::endl;
+    NodeRecoder *recorder = new NodeRecoder(m_pSelf, aux_to_node);
+    Tree *out_tree = new Tree(*m_pSelf);
+    aux_to_node = recorder->append_aux_name("src", *out_tree->root());
+    aux_to_node = recorder->append_aux_name("exp", *m_pExample->root());
+    // check the count of the map
+    std::cout << "size of the recorder : " << aux_to_node.size() << std::endl;
+    // src_3
+
+    NodeDeleter *deleter = new NodeDeleter(out_tree);
+    deleter->remove_node(*aux_to_node["src_2"], *out_tree->root());
+    // deleter->remove_node(*out_tree->root()->children[0], *out_tree->root());
+    NodeInserter *inserter = new NodeInserter(out_tree);
+    inserter->insert_node(*out_tree->root(), *aux_to_node["exp_2"]);
+    // inserter->insert_node(*out_tree->root(), *m_pExample->root()->children[0]);
+    return out_tree;
+}
+
 // 1. first version use the node id pair 
 Tree* geomTransferer::transfer(int self_node_id, int exp_node_id) {
     std::cout << "do transfer from " << self_node_id << " to " << exp_node_id << std::endl;
@@ -42,28 +61,22 @@ Tree* geomTransferer::transfer(int self_node_id, int exp_node_id) {
 
     // check the count of the map
     std::cout << "size of the recorder : " << aux_to_node.size() << std::endl;
-
-    std::map<std::string, int> test_map;
-    // Tree *out_tree = new Tree(m_pSelf->root());
-    
-    // std::cout << "original node count : " << m_pSelf->node_count() << std::endl;
-    // std::cout << "out node count : " << out_tree->node_count() << std::endl;
-    
-    // test some tree manipulation.....
-    // e.g. remove the self node...
-    
-    // std::cout << "original node count : " << m_pSelf->node_count() << std::endl;
-    // std::cout << "root child count : " << m_pSelf->root()->children.size() << std::endl;
-    // std::cout << "child 0 id : " << m_pSelf->root()->children[0]->idx << std::endl;
-    // std::cout << "child 1 id : " << m_pSelf->root()->children[1]->idx << std::endl;
-
-    // std::cout << "self tree contains ? " << m_pSelf->contains(m_pSelf->root()->children[0]) << std::endl;
-    // // std::cout << "self tree contains ? " << m_pSelf->contains(m_pSelf->root()->children[1]->children[0]) << std::endl;
-    // m_pSelf->remove_node(m_pSelf->root()->children[0]);
-    // std::cout << "after node count : " << m_pSelf->node_count() << std::endl;
-    // std::cout << "child 0 id : " << m_pSelf->root()->children[0]->idx << std::endl;
-    // std::cout << "self tree still contains ? " << m_pSelf->contains(m_pSelf->root()->children[0]) << std::endl;
-    // std::cout << "self tree still contains ? " << m_pSelf->contains(m_pSelf->root()->children[1]->children[0]) << std::endl;
+    // src_3
+    std::cout << aux_to_node[std::string("src_3")]->name() << std::endl;
+    PrimitiveNode* src_3 = (class PrimitiveNode*)aux_to_node[std::string("src_3")];
+    std::cout << src_3->x << " " << src_3->y << " " << src_3->z << std::endl;
+    // exp_4
+    std::cout << aux_to_node[std::string("exp_4")]->name() << std::endl;
+    PrimitiveNode* exp_4 = (class PrimitiveNode*)aux_to_node[std::string("exp_4")];
+    std::cout << exp_4->x << " " << exp_4->y << " " << exp_4->z << std::endl;
+    PrimitiveNode* exp_5 = (class PrimitiveNode*)aux_to_node[std::string("exp_5")];
+    PrimitiveNode* exp_6 = (class PrimitiveNode*)aux_to_node[std::string("exp_6")];
+    // compute the scaling and xxx ratio between them...
+    // TODO:different alignment
+    VectorXd scale_src2tar(3);
+    scale_src2tar(0) = src_3->x / exp_4->x;
+    scale_src2tar(1) = src_3->y / exp_4->y;
+    scale_src2tar(2) = src_3->z / exp_4->z;
 
     // Process : replace a subtree (**box** in this example)
     // 1. remove it from the original tree..
@@ -79,12 +92,17 @@ Tree* geomTransferer::transfer(int self_node_id, int exp_node_id) {
     // for another part of the geometry
     // deleter->remove_node(*out_tree->root()->children[0], *out_tree->root());
     // inserter->insert_node(*out_tree->root(), *m_pExample->root()->children[1]);
-
+    
     // 3. adapt the geometry..
-
-    // NodeAdapter *adapter = new NodeAdapter(out_tree);
-    // the update values..
-    // QMap<QString, VectorXd> adapt_info;
+    NodeAdapter *adapter = new NodeAdapter(out_tree);
+    QMap<QString, VectorXd> adapt_info;
+    adapt_info["scale"] = scale_src2tar;
+    adapter->adapt_param(*exp_4, QString("cube"), adapt_info);
+    adapter->adapt_param(*exp_6, QString("cube"), adapt_info);
+    // how to position the adapted geometry....
+    // TODO : https://trello.com/c/gTJFviAl
+    adapter->adapt_param(*exp_5, QString("trans"), adapt_info);
+    
     // test for primitive node adaptation (cube)
     // adapt_info[QString("x")] = 10.0;
     // adapt_info[QString("center")] = 1;
@@ -104,7 +122,6 @@ Tree* geomTransferer::transfer(int self_node_id, int exp_node_id) {
     // std::cout << tar_node->name() << std::endl;
     // adapter->adapt_param(*tar_node, QString("cube"), adapt_info);
     // std::cout << "the x value : " << out_tree->root()->children[0]->children[0]->x << std::endl;
-
     return out_tree;
 }
 

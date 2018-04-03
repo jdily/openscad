@@ -27,6 +27,8 @@ class geomTransferer {
         // how to manually assign part for testing ?
         // 1. first version use the node id pair 
         Tree* transfer(int self_node_id, int exp_node_id);
+        // the test function for two_cylinder transfer cases.
+        Tree* transfer_cylinder();
 
         void param_change(std::string target, int node_id, std::string property, float tar_val);
     private:

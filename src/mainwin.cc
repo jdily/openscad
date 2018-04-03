@@ -2834,7 +2834,8 @@ void MainWindow::transModeTransferOne() {
 	this->processEvents();
 	// set output to console 
 	setCurrentOutput();
-	QString exp_filename("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
+	// QString exp_filename("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
+	QString exp_filename("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_cylinder_cover.scad");
 	// QString example_file("C:\Users\jdily\Desktop\project\ddCAD\data\manual_transfer/\two_rect_cover");
     QFile file(exp_filename);
 	QString loaded_text;
@@ -2878,30 +2879,20 @@ void MainWindow::transModeTransferOne() {
 			example_tree->getString(*exp_root_node);
 		}
 	}
-	// QString csg_filename("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/transfer_test/test_two_rect.csg");
-	// std::ofstream fstream(csg_filename.toLocal8Bit());
-	// if (!fstream.is_open()) {
-	// 	PRINTB("Can't open file \"%s\" for export", csg_filename.toLocal8Bit().constData());
-	// }
-	// else {
-	// 	fstream << example_tree->getString(*exp_root_node) << "\n";
-	// 	fstream.close();
-	// 	PRINT("CSG export finished.");
-	// }
 
-	std::cout << tree.node_count() << std::endl;
-	std::cout << example_tree->node_count() << std::endl;
+	// qtreeViewer->setTree(example_tree);
+
+	// std::cout << tree.node_count() << std::endl;
+	// std::cout << example_tree->node_count() << std::endl;
 
 	transferer->add_example_tree(example_tree);
-	// traverse the example tree
-	// treeViewer *exp_treeviewer = new treeViewer(this);
-	// qtreeViewer->setTree(example_tree);
-	Tree* result_tree = transferer->transfer(3, 2);
-	std::cout << "result tree node count : " << result_tree->get_cache().count() << std::endl;
-	// redraw the tree viz..
+	// transfer rect case
+	// Tree* result_tree = transferer->transfer(3, 2);
+	Tree* result_tree = transferer->transfer_cylinder();
+	// // redraw the tree viz..
 	qtreeViewer->setTree(result_tree);
 	this->root_node = const_cast<AbstractNode*>(result_tree->root());
-	// clean the cache first and re-dump again..
+	// // clean the cache first and re-dump again..
 	this->tree.clear_cache();
 	this->tree.getString(*this->root_node);
 	csgReloadRender();
