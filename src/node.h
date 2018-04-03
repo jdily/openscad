@@ -52,6 +52,8 @@ public:
 	std::vector<AbstractNode*> children;
 	const ModuleInstantiation *modinst;
 
+	AbstractNode *parent;
+
 	// progress_mark is a running number used for progress indication
 	// FIXME: Make all progress handling external, put it in the traverser class?
 	int progress_mark;

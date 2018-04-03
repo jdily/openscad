@@ -366,7 +366,8 @@ HEADERS += src/version_check.h \
            src/nodeInserter.h \ 
            src/nodeAdapter.h \
            src/primitives.h \
-           src/NodeRecorder.h
+           src/NodeRecorder.h \ 
+           src/graphConverter.h
            # src/NodeModifier.h
 
 SOURCES += \
@@ -517,7 +518,8 @@ SOURCES += \
            src/nodeDeleter.cpp \ 
            src/nodeInserter.cpp  \
            src/nodeAdapter.cpp \ 
-           src/NodeRecorder.cpp
+           src/NodeRecorder.cpp \ 
+           src/graphConverter.cpp
            # src/NodeModifier.cpp
 
 # CGAL
