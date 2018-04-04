@@ -2885,15 +2885,21 @@ void MainWindow::transModeTransferOne() {
 	// std::cout << tree.node_count() << std::endl;
 	// std::cout << example_tree->node_count() << std::endl;
 
+	graphConverter *converter = new graphConverter(&tree);
+	bTree boost_graph = converter->convert_tree(&tree);
+	int node_count = converter->count_node();
+	std::cout << "node count : " << num_vertices(boost_graph) << std::endl;
+	std::cout << "edge count : " << num_edges(boost_graph) << std::endl;
+
 	transferer->add_example_tree(example_tree);
 	// transfer rect case
 	// Tree* result_tree = transferer->transfer(3, 2);
-	Tree* result_tree = transferer->transfer_cylinder();
-	// // redraw the tree viz..
-	qtreeViewer->setTree(result_tree);
-	this->root_node = const_cast<AbstractNode*>(result_tree->root());
-	// // clean the cache first and re-dump again..
-	this->tree.clear_cache();
-	this->tree.getString(*this->root_node);
-	csgReloadRender();
+	// Tree* result_tree = transferer->transfer_cylinder();
+	// // // redraw the tree viz..
+	// qtreeViewer->setTree(result_tree);
+	// this->root_node = const_cast<AbstractNode*>(result_tree->root());
+	// // // clean the cache first and re-dump again..
+	// this->tree.clear_cache();
+	// this->tree.getString(*this->root_node);
+	// csgReloadRender();
 }

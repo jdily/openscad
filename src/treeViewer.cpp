@@ -80,6 +80,10 @@ void treeViewer::draw_and_traverse(const AbstractNode &node, qtreeNode *parent_n
     // }
 }
 
+void treeViewer::setBTree(bTree *btree) {
+    
+}
+
 void treeViewer::buildVizTree(Tree *tree) {
     // simple test for edge
     // qtreeNode* node0 = new qtreeNode(this);

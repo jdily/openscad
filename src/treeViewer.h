@@ -10,10 +10,10 @@
 #include "CSGVisitor.h"
 #include <random>
 
-#include <boost/graph/adjacency_list.hpp>
-
+// #include <boost/graph/adjacency_list.hpp>
 // TODO : test boost graph things
 
+#include "graphConverter.h"
 
 class qtreeNode;
 
@@ -25,6 +25,7 @@ class treeViewer : public QGraphicsView, public NodeVisitor {
         ~treeViewer();
 
         void setTree(Tree *tree);
+        void setBTree(bTree *btree);
         QPointF rand_pos();
         void  clear_scene();
         Response visit(State &state, const AbstractNode &node) override;

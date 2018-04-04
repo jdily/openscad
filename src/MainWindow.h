@@ -20,6 +20,7 @@
 #include <QIODevice>
 #include "treeViewer.h"
 #include "geomTransferer.h"
+#include "graphConverter.h"
 
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
