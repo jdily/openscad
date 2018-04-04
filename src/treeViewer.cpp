@@ -81,7 +81,54 @@ void treeViewer::draw_and_traverse(const AbstractNode &node, qtreeNode *parent_n
 }
 
 void treeViewer::setBTree(bTree *btree) {
-    
+    clear_scene();
+    QMap<int, qtreeNode*> qtreenodes;
+    std::vector<qtreeEdge*> qtreeedges;
+    auto vs = boost::vertices(*btree);
+    int index = 0;
+    for (auto vit = vs.first; vit != vs.second; ++vit) {
+        NODETYPE type = (*btree)[*vit].type;
+        if (type == NODETYPE::ROOT) {
+            qtreeNode* qnode = new qtreeNode(this, "root");
+            qnode->set_id((*btree)[*vit].idx);
+            qnode->setPos(rand_pos());
+            qtreenodes.insert((*btree)[*vit].idx, qnode);
+            m_pScene->addItem(qnode);
+        } else if (type == NODETYPE::GROUP) {
+            qtreeNode* qnode = new qtreeNode(this, "group");
+            qnode->set_id((*btree)[*vit].idx);
+            qnode->setPos(rand_pos());
+            qtreenodes.insert((*btree)[*vit].idx, qnode);
+            m_pScene->addItem(qnode);
+        } else if (type == NODETYPE::AB_POLY) {
+            qtreeNode* qnode = new qtreeNode(this, "poly");
+            qnode->set_id((*btree)[*vit].idx);
+            qnode->setPos(rand_pos());
+            qtreenodes.insert((*btree)[*vit].idx, qnode);
+            m_pScene->addItem(qnode);
+        } else if (type == NODETYPE::TRANSFORMATION) {
+            qtreeNode* qnode = new qtreeNode(this, "trans");
+            qnode->set_id((*btree)[*vit].idx);
+            qnode->setPos(rand_pos());
+            qtreenodes.insert((*btree)[*vit].idx, qnode);
+            m_pScene->addItem(qnode);
+        } else if (type == NODETYPE::CSGOPT) {
+            qtreeNode* qnode = new qtreeNode(this, "csg_opt");
+            qnode->set_id((*btree)[*vit].idx);
+            qnode->setPos(rand_pos());
+            qtreenodes.insert((*btree)[*vit].idx, qnode);
+            m_pScene->addItem(qnode);
+        }
+    }
+
+    auto es = boost::edges(*btree);
+    for (auto eit = es.first; eit != es.second; ++eit) {
+        vertex_d src = source(*eit, *btree), tar = target(*eit, *btree);
+        std::cout << src << " " << tar << std::endl;
+        qtreeEdge *edge = new qtreeEdge(qtreenodes[(*btree)[src].idx], qtreenodes[(*btree)[tar].idx]);
+        m_pScene->addItem(edge);
+    }
+     
 }
 
 void treeViewer::buildVizTree(Tree *tree) {

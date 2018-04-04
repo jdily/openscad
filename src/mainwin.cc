@@ -2890,7 +2890,7 @@ void MainWindow::transModeTransferOne() {
 	int node_count = converter->count_node();
 	std::cout << "node count : " << num_vertices(boost_graph) << std::endl;
 	std::cout << "edge count : " << num_edges(boost_graph) << std::endl;
-
+	qtreeViewer->setBTree(&boost_graph);
 	transferer->add_example_tree(example_tree);
 	// transfer rect case
 	// Tree* result_tree = transferer->transfer(3, 2);
