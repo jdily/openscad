@@ -2887,11 +2887,13 @@ void MainWindow::transModeTransferOne() {
 
 	graphConverter *converter = new graphConverter(&tree);
 	bTree boost_graph = converter->convert_tree(&tree);
-	int node_count = converter->count_node();
-	std::cout << "node count : " << num_vertices(boost_graph) << std::endl;
-	std::cout << "edge count : " << num_edges(boost_graph) << std::endl;
+	// std::vector<topo_point> topo_pos = converter->make_layout(&boost_graph);
+	// int node_count = converter->count_node();
+	// std::cout << "node count : " << num_vertices(boost_graph) << std::endl;
+	// std::cout << "edge count : " << num_edges(boost_graph) << std::endl;
 	qtreeViewer->setBTree(&boost_graph);
-	transferer->add_example_tree(example_tree);
+	// transferer->add_example_tree(example_tree);
+	
 	// transfer rect case
 	// Tree* result_tree = transferer->transfer(3, 2);
 	// Tree* result_tree = transferer->transfer_cylinder();

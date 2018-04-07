@@ -99,7 +99,7 @@ mingw* {
   # needed to prevent compilation error on MSYS2:
   # as.exe: objects/cgalutils.o: too many sections (76541)
   # using -Wa,-mbig-obj did not help
-  debug: QMAKE_CXXFLAGS += -O1
+  debug: QMAKE_CXXFLAGS += -O1 
 }
 
 CONFIG += qt
@@ -132,6 +132,7 @@ netbsd* {
 # See Dec 2011 OpenSCAD mailing list, re: CGAL/GCC bugs.
 *g++* {
   QMAKE_CXXFLAGS *= -fno-strict-aliasing
+  QMAKE_CXXFLAGS += -fext-numeric-literals
   QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-local-typedefs # ignored before 4.8
 }
 
@@ -146,6 +147,7 @@ netbsd* {
   QMAKE_CXXFLAGS_WARN_ON += -Wno-format-security
   # might want to actually turn this on once in a while
   QMAKE_CXXFLAGS_WARN_ON += -Wno-sign-compare
+  QMAKE_CXXFLAGS += -fext-numeric-literals
 }
 
 !lessThan(QT_VERSION, 5.9): CONFIG += ccache

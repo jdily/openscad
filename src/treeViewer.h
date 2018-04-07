@@ -42,7 +42,8 @@ class treeViewer : public QGraphicsView, public NodeVisitor {
         QGraphicsScene *m_pScene;
         // potential issue : the idx of abstractnode is unique per tree only
         QMap<int, qtreeNode*> node_map; 
-
+        int scene_width;
+        int scene_height;
 
         void draw_and_traverse(const AbstractNode &node, qtreeNode *parent_node);
     protected:

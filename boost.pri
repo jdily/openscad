@@ -38,7 +38,7 @@ boost {
         BOOST_LINK_FLAGS = -lboost_thread-mt -lboost_program_options-mt -lboost_filesystem-mt -lboost_system-mt -lboost_regex-mt
       } else {
         exists($$OPENSCAD_LIBDIR/lib/libboost*thread*) {
-          BOOST_LINK_FLAGS = -lboost_thread -lboost_program_options -lboost_filesystem -lboost_system -lboost_regex
+          BOOST_LINK_FLAGS = -lboost_thread -lboost_program_options -lboost_filesystem -lboost_system -lboost_regex -lboost_graph
         }
       }
     }
@@ -49,10 +49,10 @@ boost {
     BOOST_DIR = $$(BOOSTDIR)
     !isEmpty(BOOST_DIR) {
       exists($$BOOST_DIR/lib/libboost*thread-mt*) {
-        BOOST_LINK_FLAGS = -lboost_thread-mt -lboost_program_options-mt -lboost_filesystem-mt -lboost_system-mt -lboost_regex-mt
+        BOOST_LINK_FLAGS = -lboost_thread-mt -lboost_program_options-mt -lboost_filesystem-mt -lboost_system-mt -lboost_regex-mt 
       } else {
         exists($$BOOST_DIR/lib/libboost*thread*) {
-          BOOST_LINK_FLAGS = -lboost_thread -lboost_program_options -lboost_filesystem -lboost_system -lboost_regex
+          BOOST_LINK_FLAGS = -lboost_thread -lboost_program_options -lboost_filesystem -lboost_system -lboost_regex -lboost_graph
         }
       }
     }
@@ -73,7 +73,7 @@ boost {
 
   isEmpty(BOOST_LINK_FLAGS) {
     unix|macx {
-      BOOST_LINK_FLAGS = -lboost_thread -lboost_program_options -lboost_filesystem -lboost_system -lboost_regex
+      BOOST_LINK_FLAGS = -lboost_thread -lboost_program_options -lboost_filesystem -lboost_system -lboost_regex -lboost_graph
     }
   }
 

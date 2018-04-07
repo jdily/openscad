@@ -16,7 +16,10 @@ treeViewer::treeViewer(QWidget *parent) : QGraphicsView(parent) {
     m_pScene->setItemIndexMethod(QGraphicsScene::NoIndex);
     // set background color.
     // setBackgroundBrush(QBrush(Qt::red, Qt::SolidPattern));
-    m_pScene->setSceneRect(-200, -200, 400, 400);
+    // m_pScene->setSceneRect(-200, -200, 400, 400);
+    m_pScene->setSceneRect(0, 0, 300, 300);
+    scene_width = m_pScene->width();
+    scene_height = m_pScene->height();
     setScene(m_pScene);
     setCacheMode(CacheBackground);
     setViewportUpdateMode(BoundingRectViewportUpdate);
@@ -44,11 +47,11 @@ treeViewer::~treeViewer() {}
 
 QPointF treeViewer::rand_pos() {
     QRectF scene_rect = m_pScene->sceneRect();
-    int width = scene_rect.width();
-    int height = scene_rect.height();
+    // int width = scene_rect.width();
+    // int height = scene_rect.height();
     QPointF top_left = scene_rect.topLeft();
-    float rand_w = rand()%width;
-    float rand_h = rand()%height;
+    float rand_w = rand()%scene_width;
+    float rand_h = rand()%scene_height;
     return QPointF(top_left.x()+rand_w, top_left.y()+rand_h);
 }
 
@@ -87,38 +90,68 @@ void treeViewer::setBTree(bTree *btree) {
     auto vs = boost::vertices(*btree);
     int index = 0;
     for (auto vit = vs.first; vit != vs.second; ++vit) {
-        NODETYPE type = (*btree)[*vit].type;
-        if (type == NODETYPE::ROOT) {
-            qtreeNode* qnode = new qtreeNode(this, "root");
-            qnode->set_id((*btree)[*vit].idx);
-            qnode->setPos(rand_pos());
-            qtreenodes.insert((*btree)[*vit].idx, qnode);
-            m_pScene->addItem(qnode);
-        } else if (type == NODETYPE::GROUP) {
-            qtreeNode* qnode = new qtreeNode(this, "group");
-            qnode->set_id((*btree)[*vit].idx);
-            qnode->setPos(rand_pos());
-            qtreenodes.insert((*btree)[*vit].idx, qnode);
-            m_pScene->addItem(qnode);
-        } else if (type == NODETYPE::AB_POLY) {
-            qtreeNode* qnode = new qtreeNode(this, "poly");
-            qnode->set_id((*btree)[*vit].idx);
-            qnode->setPos(rand_pos());
-            qtreenodes.insert((*btree)[*vit].idx, qnode);
-            m_pScene->addItem(qnode);
-        } else if (type == NODETYPE::TRANSFORMATION) {
-            qtreeNode* qnode = new qtreeNode(this, "trans");
-            qnode->set_id((*btree)[*vit].idx);
-            qnode->setPos(rand_pos());
-            qtreenodes.insert((*btree)[*vit].idx, qnode);
-            m_pScene->addItem(qnode);
-        } else if (type == NODETYPE::CSGOPT) {
-            qtreeNode* qnode = new qtreeNode(this, "csg_opt");
-            qnode->set_id((*btree)[*vit].idx);
-            qnode->setPos(rand_pos());
-            qtreenodes.insert((*btree)[*vit].idx, qnode);
-            m_pScene->addItem(qnode);
-        }
+        // NODETYPE type = (*btree)[*vit].type;
+        std::string type = (*btree)[*vit].type;
+        qtreeNode* qnode = new qtreeNode(this, type);
+        qnode->set_id((*btree)[*vit].idx);
+        QPointF pos;
+        pos.setX((*btree)[*vit].pos[0]);
+        pos.setY((*btree)[*vit].pos[1]);
+        qnode->setPos(pos);
+        // qnode->setPos(rand_pos());
+        qtreenodes.insert((*btree)[*vit].idx, qnode);
+        m_pScene->addItem(qnode);
+        // if (type == NODETYPE::ROOT) {
+        //     qtreeNode* qnode = new qtreeNode(this, "root");
+        //     qnode->set_id((*btree)[*vit].idx);
+        //     // QPointF pos;
+        //     // pos.setX((*btree)[*vit].pos[0]*scene_width);
+        //     // pos.setY((*btree)[*vit].pos[1]*scene_height);
+        //     // qnode->setPos(pos);
+        //     qnode->setPos(rand_pos());
+        //     qtreenodes.insert((*btree)[*vit].idx, qnode);
+        //     m_pScene->addItem(qnode);
+        // } else if (type == NODETYPE::GROUP) {
+        //     qtreeNode* qnode = new qtreeNode(this, "group");
+        //     qnode->set_id((*btree)[*vit].idx);
+        //     // QPointF pos;
+        //     // pos.setX((*btree)[*vit].pos[0]*scene_width);
+        //     // pos.setY((*btree)[*vit].pos[1]*scene_height);
+        //     // qnode->setPos(pos);
+        //     qnode->setPos(rand_pos());
+        //     qtreenodes.insert((*btree)[*vit].idx, qnode);
+        //     m_pScene->addItem(qnode);
+        // } else if (type == NODETYPE::AB_POLY) {
+        //     qtreeNode* qnode = new qtreeNode(this, "poly");
+        //     qnode->set_id((*btree)[*vit].idx);
+        //     // QPointF pos;
+        //     // pos.setX((*btree)[*vit].pos[0]*scene_width);
+        //     // pos.setY((*btree)[*vit].pos[1]*scene_height);
+        //     // qnode->setPos(pos);
+        //     qnode->setPos(rand_pos());
+        //     qtreenodes.insert((*btree)[*vit].idx, qnode);
+        //     m_pScene->addItem(qnode);
+        // } else if (type == NODETYPE::TRANSFORMATION) {
+        //     qtreeNode* qnode = new qtreeNode(this, "trans");
+        //     qnode->set_id((*btree)[*vit].idx);
+        //     // QPointF pos;
+        //     // pos.setX((*btree)[*vit].pos[0]*scene_width);
+        //     // pos.setY((*btree)[*vit].pos[1]*scene_height);
+        //     // qnode->setPos(pos);
+        //     qnode->setPos(rand_pos());
+        //     qtreenodes.insert((*btree)[*vit].idx, qnode);
+        //     m_pScene->addItem(qnode);
+        // } else if (type == NODETYPE::CSGOPT) {
+        //     qtreeNode* qnode = new qtreeNode(this, "csg_opt");
+        //     qnode->set_id((*btree)[*vit].idx);
+        //     // QPointF pos;
+        //     // pos.setX((*btree)[*vit].pos[0]*scene_width);
+        //     // pos.setY((*btree)[*vit].pos[1]*scene_height);
+        //     // qnode->setPos(pos);
+        //     qnode->setPos(rand_pos());
+        //     qtreenodes.insert((*btree)[*vit].idx, qnode);
+        //     m_pScene->addItem(qnode);
+        // }
     }
 
     auto es = boost::edges(*btree);
@@ -128,7 +161,7 @@ void treeViewer::setBTree(bTree *btree) {
         qtreeEdge *edge = new qtreeEdge(qtreenodes[(*btree)[src].idx], qtreenodes[(*btree)[tar].idx]);
         m_pScene->addItem(edge);
     }
-     
+    std::cout << "there are " << m_pScene->items().size() << " items in the scene" << std::endl;
 }
 
 void treeViewer::buildVizTree(Tree *tree) {
