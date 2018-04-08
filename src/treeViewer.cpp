@@ -17,7 +17,7 @@ treeViewer::treeViewer(QWidget *parent) : QGraphicsView(parent) {
     // set background color.
     // setBackgroundBrush(QBrush(Qt::red, Qt::SolidPattern));
     // m_pScene->setSceneRect(-200, -200, 400, 400);
-    m_pScene->setSceneRect(0, 0, 300, 300);
+    m_pScene->setSceneRect(0, 0, 400, 400);
     scene_width = m_pScene->width();
     scene_height = m_pScene->height();
     setScene(m_pScene);
@@ -25,7 +25,7 @@ treeViewer::treeViewer(QWidget *parent) : QGraphicsView(parent) {
     setViewportUpdateMode(BoundingRectViewportUpdate);
     setRenderHint(QPainter::Antialiasing);
     setTransformationAnchor(AnchorUnderMouse);
-    scale(qreal(0.8), qreal(0.8));
+    // scale(qreal(0.8), qreal(0.8));   
     setMinimumSize(200, 200);
     m_pTree = NULL;
     // std::cout << "tree viewer " << std::endl;
@@ -52,7 +52,8 @@ QPointF treeViewer::rand_pos() {
     QPointF top_left = scene_rect.topLeft();
     float rand_w = rand()%scene_width;
     float rand_h = rand()%scene_height;
-    return QPointF(top_left.x()+rand_w, top_left.y()+rand_h);
+    return QPointF(rand_w, rand_h);
+    // return QPointF(top_left.x()+rand_w, top_left.y()+rand_h);
 }
 
 // might be problematic..
@@ -95,8 +96,8 @@ void treeViewer::setBTree(bTree *btree) {
         qtreeNode* qnode = new qtreeNode(this, type);
         qnode->set_id((*btree)[*vit].idx);
         QPointF pos;
-        pos.setX((*btree)[*vit].pos[0]);
-        pos.setY((*btree)[*vit].pos[1]);
+        pos.setX(scene_width-(*btree)[*vit].pos[0]);
+        pos.setY(scene_height-(*btree)[*vit].pos[1]);
         qnode->setPos(pos);
         // qnode->setPos(rand_pos());
         qtreenodes.insert((*btree)[*vit].idx, qnode);
@@ -262,7 +263,8 @@ Response treeViewer::visit(State &state, const RootNode &node)
         std::cout << "draw root node" << std::endl;
         qtreeNode* root_node = new qtreeNode(this, "root");
         root_node->set_id(node.idx);
-        root_node->setPos(-150, -150);
+        // root_node->setPos(-150, -150);
+        root_node->setPos(rand_pos());
         m_pScene->addItem(root_node);
         node_map.insert(node.idx, root_node);
     }

@@ -99,6 +99,8 @@
 
 #include "CSGVisitor.h"
 #include <random>
+#include <boost/algorithm/string.hpp>
+
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 #include <QTextDocument>
@@ -2886,14 +2888,25 @@ void MainWindow::transModeTransferOne() {
 	// std::cout << example_tree->node_count() << std::endl;
 
 	graphConverter *converter = new graphConverter(&tree);
-	bTree boost_graph = converter->convert_tree(&tree);
+	std::cout << "fileName : " << this->fileName.toStdString() << std::endl;
+	std::vector<std::string> tmps;
+	std::string _filename = this->fileName.toStdString();
+    boost::split(tmps, _filename, boost::is_any_of("/"));
+	std::vector<std::string> strs;
+	boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
+	std::cout << strs[0] << std::endl;
+	bTree boost_graph = converter->convert_tree(&tree, QString(strs[0].c_str()));
 	// std::vector<topo_point> topo_pos = converter->make_layout(&boost_graph);
 	// int node_count = converter->count_node();
 	// std::cout << "node count : " << num_vertices(boost_graph) << std::endl;
 	// std::cout << "edge count : " << num_edges(boost_graph) << std::endl;
 	qtreeViewer->setBTree(&boost_graph);
 	// transferer->add_example_tree(example_tree);
-	
+
+	// example tree
+	// graphConverter *converter2 = new graphConverter(example_tree);
+	bTree example_graph = converter2->convert_tree(example_tree, QString("two_cylinder_cover"));
+	qtreeViewer->setBTree(&example_graph);
 	// transfer rect case
 	// Tree* result_tree = transferer->transfer(3, 2);
 	// Tree* result_tree = transferer->transfer_cylinder();
