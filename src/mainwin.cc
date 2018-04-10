@@ -2882,7 +2882,7 @@ void MainWindow::transModeTransferOne() {
 		}
 	}
 
-	// qtreeViewer->setTree(example_tree);
+	qtreeViewer->setTree(example_tree);
 
 	// std::cout << tree.node_count() << std::endl;
 	// std::cout << example_tree->node_count() << std::endl;
@@ -2905,7 +2905,7 @@ void MainWindow::transModeTransferOne() {
 
 	// example tree
 	// graphConverter *converter2 = new graphConverter(example_tree);
-	bTree example_graph = converter2->convert_tree(example_tree, QString("two_cylinder_cover"));
+	bTree example_graph = converter->convert_tree(example_tree, QString("two_cylinder_cover"));
 	qtreeViewer->setBTree(&example_graph);
 	// transfer rect case
 	// Tree* result_tree = transferer->transfer(3, 2);

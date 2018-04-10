@@ -369,7 +369,10 @@ HEADERS += src/version_check.h \
            src/nodeAdapter.h \
            src/primitives.h \
            src/NodeRecorder.h \ 
-           src/graphConverter.h
+           src/graphConverter.h \
+           src/iTree.h \ 
+           src/DistMeasure.h \ 
+           src/stree.h
            # src/NodeModifier.h
 
 SOURCES += \
@@ -521,7 +524,9 @@ SOURCES += \
            src/nodeInserter.cpp  \
            src/nodeAdapter.cpp \ 
            src/NodeRecorder.cpp \ 
-           src/graphConverter.cpp
+           src/graphConverter.cpp \ 
+           src/iTree.cpp \ 
+           src/DistMeasure.cpp
            # src/NodeModifier.cpp
 
 # CGAL

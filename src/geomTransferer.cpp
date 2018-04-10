@@ -24,7 +24,6 @@ void geomTransferer::load_example_file(QString filename) {
     // if (file.exists()) {
     //     QTextStream 
     // }
-    
 }
 
 void geomTransferer::add_example_tree(Tree* example) {
@@ -43,7 +42,6 @@ Tree* geomTransferer::transfer_cylinder() {
     // test about the parant things.
     std::cout << "parent of first child : " << aux_to_node["src_2"]->parent->aux_name << std::endl;
     std::cout << "parent of src_3 : " << aux_to_node["src_3"]->parent->aux_name << std::endl;
-
 
     NodeDeleter *deleter = new NodeDeleter(out_tree);
     deleter->remove_node(*aux_to_node["src_2"], *out_tree->root());

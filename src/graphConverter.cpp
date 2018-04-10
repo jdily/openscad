@@ -101,7 +101,7 @@ bTree graphConverter::convert_tree(Tree* tree, QString tree_filename) {
 
     QString layout_dot_filename = QString("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/graph_viz/%1_layout.dot").arg(tree_filename);
     QString cmd = QString("dot -Tdot %1 -o %2").arg(dot_filename).arg(layout_dot_filename);
-    system(cmd.toUtf8());
+    std::system(cmd.toUtf8());
     // boost::write_graphviz(dotfile, m_BTree, 
                         //   boost::make_label_writer(boost::get(&Node::type, m_BTree)));
     // load dot
