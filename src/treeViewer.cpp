@@ -84,6 +84,37 @@ void treeViewer::draw_and_traverse(const AbstractNode &node, qtreeNode *parent_n
     // }
 }
 
+void treeViewer::setSTree(tree_hnode* htree) {
+    clear_scene();
+    QMap<int, qtreeNode*> qtreenodes;
+	tree_hnode::sibling_iterator children;
+	tree_hnode::iterator iterator;
+	iterator = htree->begin();
+    while(iterator!= htree->end()) {
+        std::string type = (*iterator).type;
+        qtreeNode *qnode = new qtreeNode(this, type);
+        qnode->set_id((*iterator).idx);
+        qnode->setPos(rand_pos());
+        qtreenodes.insert((*iterator).idx, qnode);
+        m_pScene->addItem(qnode);
+        ++iterator;
+    }
+    iterator = htree->begin();
+    while (iterator!=htree->end()) {
+        children = htree->begin(iterator);
+        int self_idx = (*iterator).idx;
+        while(children != htree->end(iterator)) {
+            int child_idx = (*children).idx;
+            qtreeEdge *edge = new qtreeEdge(qtreenodes[self_idx], qtreenodes[child_idx]);
+            m_pScene->addItem(edge);
+            ++children;
+        }
+        ++iterator;
+    }
+    std::cout << "there are " << m_pScene->items().size() << " items in the scene" << std::endl;
+
+}
+
 void treeViewer::setBTree(bTree *btree) {
     clear_scene();
     QMap<int, qtreeNode*> qtreenodes;

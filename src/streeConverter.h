@@ -17,6 +17,7 @@ typedef stree<hnode> tree_hnode;
 
 class streeConverter : public NodeVisitor {
 public:
+    streeConverter();
     streeConverter(Tree *tree);
     ~streeConverter();
     Response visit(State &state, const AbstractNode &node) override;
@@ -26,7 +27,7 @@ public:
     Response visit(State &state, const CsgOpNode &node) override;
     Response visit(State &state, const GroupNode &node) override;
 
-    tree_hnode* convert_graph(Tree *tree);
+    tree_hnode* convert_tree(Tree *tree);
     // int count_node();
 private:
     typedef std::vector<hnode*> childNodeList;
@@ -38,6 +39,7 @@ private:
     void add_children(tree_hnode::iterator parent_node, childNodeList childs);
     
     // std::vector<hnode*> hnodes;
+    // std::map<hnode*> hnodes;
     QMap<int, hnode*> hnodes;
     QMap<int, tree_hnode::iterator> hnode_iters;
     // std::vector<tree_hnode::iterator> node_iters;

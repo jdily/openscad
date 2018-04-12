@@ -14,8 +14,11 @@
 // TODO : test boost graph things
 
 #include "graphConverter.h"
+#include "iTree.h"
 
 class qtreeNode;
+typedef stree<hnode> tree_hnode;
+
 
 class treeViewer : public QGraphicsView, public NodeVisitor {
     Q_OBJECT
@@ -26,6 +29,8 @@ class treeViewer : public QGraphicsView, public NodeVisitor {
 
         void setTree(Tree *tree);
         void setBTree(bTree *btree);
+        void setSTree(tree_hnode* htree);
+
         QPointF rand_pos();
         void  clear_scene();
         Response visit(State &state, const AbstractNode &node) override;
