@@ -17,6 +17,7 @@
 
 #include "transformnode.h"
 #include "csgops.h"
+#include "stree.h"
 
 enum NODETYPE { ROOT, GROUP, AB_POLY, TRANSFORMATION, CSGOPT };
 typedef boost::square_topology<boost::mt19937>::point_type topo_point;
@@ -72,6 +73,8 @@ public:
 
     bTree convert_tree(Tree* tree, QString tree_name);
     std::vector<topo_point> make_layout(bTree* btree);
+
+    // stree<AbstractNode*> convert_to_stree(Tree* tree, QString tree_name);
     int count_node();
 
 private:

@@ -6,27 +6,31 @@
 
 #include "stree.h"
 
-class commonSubTree {
+
+class commonSubtree {
+typedef stree<hnode> tree_hnode;
+typedef tree_hnode::iterator node;
 public:
-    commonSubTree(iTree *tree1, iTree *tree2);
-    ~commonSubTree();
+    commonSubtree(iTree *tree1, iTree *tree2);
+    ~commonSubtree();
 	void findMaxMatch();
 	double distance();
 
 private:
-	commonSubTree findAnchoredMaxMatch(Node n1, Node n2);
+	commonSubtree findAnchoredMaxMatch(node n1, node n2);
 	std::vector<int> findBestAssignment(Eigen::MatrixXd S);
     iTree *tree1;
     iTree *tree2;
-    std::vector< QPair<Node, Node> > mapping;
+    std::vector< QPair<node, node> > mapping;
 	std::vector< double > pairSimilarity;
+    double similarity;
+	double totalWeight;
 };
 
 class DistMeasure {
 public:
     DistMeasure();
     ~DistMeasure();
-
-    static commonSubTree between_trees(iTree *tree1, iTree *tree2);
+    static commonSubtree between_trees(iTree *tree1, iTree *tree2);
 private:
 };

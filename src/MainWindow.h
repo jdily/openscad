@@ -21,6 +21,7 @@
 #include "treeViewer.h"
 #include "geomTransferer.h"
 #include "graphConverter.h"
+#include "streeConverter.h"
 
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {

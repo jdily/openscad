@@ -10,12 +10,12 @@ iTree::iTree(Tree* _tree, QString tree_name) {
 }
 iTree::iTree(bTree* _tree, QString tree_name) {
     // copy constructor..
-    m_Tree = bTree(*_tree);
-    this->tree_name = tree_name;
+    // m_Tree = bTree(*_tree);
+    // this->tree_name = tree_name;
 }
 iTree::~iTree() {}
 
 
 void iTree::clear() {
-    m_Tree.clear();
+    // m_Tree.clear();
 }

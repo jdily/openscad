@@ -1,7 +1,8 @@
 #include "graphConverter.h"
 #include <boost/algorithm/string.hpp>
 
-
+// #include <boost/type_index.hpp>
+#include <typeinfo>
 
 graphConverter::graphConverter(Tree *tree) {
     // m_pBTree = new bTree;
@@ -10,10 +11,12 @@ graphConverter::graphConverter(Tree *tree) {
 graphConverter::~graphConverter() {}
 
 Response graphConverter::visit(State &state, const AbstractNode &node) {
+    std::cout << "type id test : " << typeid(node).name() << std::endl;
     return Response::ContinueTraversal;
 }
 
 Response graphConverter::visit(State &state, const RootNode &node) {
+    std::cout << "type id test : " << typeid(node).name() << std::endl;
     vertex_d root;
     if (state.isPostfix()) {
         // vertex_d root;
@@ -29,6 +32,7 @@ Response graphConverter::visit(State &state, const RootNode &node) {
 }
 
 Response graphConverter::visit(State &state, const TransformNode &node) {
+    std::cout << "type id test : " << typeid(node).name() << std::endl;
     vertex_d trans;
     if (state.isPostfix()) {
         // vertex_d trans;
@@ -42,6 +46,7 @@ Response graphConverter::visit(State &state, const TransformNode &node) {
     return Response::ContinueTraversal;
 }
 Response graphConverter::visit(State &state, const CsgOpNode &node) {
+    std::cout << "type id test : " << typeid(node).name() << std::endl;
     vertex_d csgopt;
     if (state.isPostfix()) {
         csgopt = add_vertex(m_BTree);
@@ -54,6 +59,7 @@ Response graphConverter::visit(State &state, const CsgOpNode &node) {
     return Response::ContinueTraversal;
 }
 Response graphConverter::visit(State &state, const GroupNode &node) {
+    std::cout << "type id test : " << typeid(node).name() << std::endl;
     vertex_d group;
     if (state.isPostfix()) {
         group = add_vertex(m_BTree);
@@ -66,6 +72,7 @@ Response graphConverter::visit(State &state, const GroupNode &node) {
     return Response::ContinueTraversal;
 }
 Response graphConverter::visit(State &state, const AbstractPolyNode &node) {
+    std::cout << "type id test : " << typeid(node).name() << std::endl;
     vertex_d abpoly;
     if (state.isPostfix()) {
         abpoly = add_vertex(m_BTree);
@@ -79,6 +86,7 @@ Response graphConverter::visit(State &state, const AbstractPolyNode &node) {
 }
 
 void graphConverter::set_relation(const AbstractNode& node, vertex_d vert) {
+    // std::cout << "type id test : " << typeid(node).name() << std::endl;
     for (auto child : this->visitedchildren[node.index()]) {
         add_edge(vert, child, m_BTree);
     }

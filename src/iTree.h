@@ -4,7 +4,7 @@
 #include <utility>
 #include <algorithm>
 #include "Tree.h"
-
+#include "node.h"
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/random_layout.hpp>
@@ -14,6 +14,7 @@
 #include <boost/graph/detail/read_graphviz_new.hpp>
 #include <boost/property_map/dynamic_property_map.hpp>
 
+#include "stree.h"
 typedef boost::square_topology<boost::mt19937>::point_type topo_point;
 
 // class graphConverter;
@@ -54,16 +55,32 @@ typedef boost::property_map<bTree, topo_point Node::*>::type PositionMap;
 // 
 // 1. how to iterate sibling
 
+// hierachy node
+class hnode {
+public:
+    std::string type;
+    int idx;
+    int parent_idx;
+    // for layout
+    std::string posstr;
+    float pos_x;
+    float pos_y;
+    const AbstractNode *node;
+};
 
 class iTree {
+typedef stree<hnode> tree_hnode;
+typedef tree_hnode::iterator node;
 public:
     iTree(Tree *tree, QString tree_name);
     iTree(bTree *_tree, QString tree_name);
     ~iTree();
 
     void clear();
-private:
+
+// private:
     // internal boost tree data structure.
-    bTree m_Tree;
-    QString tree_name;
+    // bTree m_Tree;
+    // QString tree_name;
+    tree_hnode* data;
 };

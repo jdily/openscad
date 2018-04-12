@@ -372,7 +372,9 @@ HEADERS += src/version_check.h \
            src/graphConverter.h \
            src/iTree.h \ 
            src/DistMeasure.h \ 
-           src/stree.h
+           src/stree.h \
+           src/vizTools.h \ 
+           src/streeConverter.h
            # src/NodeModifier.h
 
 SOURCES += \
@@ -526,7 +528,9 @@ SOURCES += \
            src/NodeRecorder.cpp \ 
            src/graphConverter.cpp \ 
            src/iTree.cpp \ 
-           src/DistMeasure.cpp
+           src/DistMeasure.cpp \
+           src/vizTools.cpp \ 
+           src/streeConverter.cpp
            # src/NodeModifier.cpp
 
 # CGAL
