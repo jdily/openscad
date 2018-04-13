@@ -91,20 +91,20 @@ void treeViewer::setSTree(tree_hnode* htree) {
 	tree_hnode::iterator iterator;
 	iterator = htree->begin();
     while(iterator!= htree->end()) {
-        std::string type = (*iterator).type;
+        std::string type = (*iterator)->type;
         qtreeNode *qnode = new qtreeNode(this, type);
-        qnode->set_id((*iterator).idx);
+        qnode->set_id((*iterator)->idx);
         qnode->setPos(rand_pos());
-        qtreenodes.insert((*iterator).idx, qnode);
+        qtreenodes.insert((*iterator)->idx, qnode);
         m_pScene->addItem(qnode);
         ++iterator;
     }
     iterator = htree->begin();
     while (iterator!=htree->end()) {
         children = htree->begin(iterator);
-        int self_idx = (*iterator).idx;
+        int self_idx = (*iterator)->idx;
         while(children != htree->end(iterator)) {
-            int child_idx = (*children).idx;
+            int child_idx = (*children)->idx;
             qtreeEdge *edge = new qtreeEdge(qtreenodes[self_idx], qtreenodes[child_idx]);
             m_pScene->addItem(edge);
             ++children;

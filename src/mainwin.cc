@@ -2888,8 +2888,16 @@ void MainWindow::transModeTransferOne() {
 	streeConverter *sconv = new streeConverter();
 	std::cout << "start convert" << std::endl;
 	tree_hnode* htree = sconv->convert_tree(&tree);
+	std::vector<std::string> tmps;
+	std::string _filename = this->fileName.toStdString();
+    boost::split(tmps, _filename, boost::is_any_of("/"));
+	std::vector<std::string> strs;
+	boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
+	std::cout << strs[0] << std::endl;
 	std::cout << "finish convert" << std::endl;
+	vizTools::vizTree_graphviz(htree, QString(strs[0].c_str()));
 	qtreeViewer->setSTree(htree);
+	
 
 	/////// Boost version...
 	// graphConverter *converter = new graphConverter(&tree);

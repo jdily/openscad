@@ -22,6 +22,7 @@
 #include "geomTransferer.h"
 // #include "graphConverter.h"
 #include "streeConverter.h"
+#include "vizTools.h"
 
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {

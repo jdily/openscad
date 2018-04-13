@@ -17,7 +17,7 @@
 #include "iTree.h"
 
 class qtreeNode;
-typedef stree<hnode> tree_hnode;
+typedef stree<hnode*> tree_hnode;
 
 
 class treeViewer : public QGraphicsView, public NodeVisitor {

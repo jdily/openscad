@@ -121,9 +121,9 @@ tree_hnode* streeConverter::convert_tree(Tree *tree) {
         int parent_id = hnodes[k]->parent_idx;
         if (parent_id == -1) {
             newNodeIter = m_Tree->begin();
-            newNodeIter = m_Tree->insert(newNodeIter, *hnodes[k]);
+            newNodeIter = m_Tree->insert(newNodeIter, hnodes[k]);
         } else {
-            newNodeIter = m_Tree->append_child(hnode_iters[parent_id], *hnodes[k]);
+            newNodeIter = m_Tree->append_child(hnode_iters[parent_id], hnodes[k]);
         }
         hnode_iters.insert(k, newNodeIter);
     }

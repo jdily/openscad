@@ -13,7 +13,7 @@
 
 #include "transformnode.h"
 #include "csgops.h"
-typedef stree<hnode> tree_hnode;
+typedef stree<hnode*> tree_hnode;
 
 class streeConverter : public NodeVisitor {
 public:
