@@ -1,6 +1,7 @@
 #pragma once
 // #include "tree.h"
 #include <QString>
+#include <QMap>
 #include <QTextStream>
 #include "qfile.h"
 // #include "Interaction.h"
@@ -8,11 +9,14 @@
 #include "stree.h"
 #include "node.h"
 #include "iTree.h"
-
-class vizTools {
 typedef stree<hnode*> tree_hnode;
+class vizTools {
+
     public:
         static void vizTree_graphviz(tree_hnode *tree, QString path);
+        static tree_hnode* read_graphviz(QString path);
+        static tree_hnode* make_layout_graphviz(tree_hnode *tree, QString path);
+        static void parse_node_content(QString content);
     private:
 };
 // struct vizTools

@@ -2895,7 +2895,7 @@ void MainWindow::transModeTransferOne() {
 	boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
 	std::cout << strs[0] << std::endl;
 	std::cout << "finish convert" << std::endl;
-	vizTools::vizTree_graphviz(htree, QString(strs[0].c_str()));
+	tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()));
 	qtreeViewer->setSTree(htree);
 	
 
