@@ -59,7 +59,7 @@ tree_hnode* vizTools::make_layout_graphviz(tree_hnode *tree, QString filename) {
     // read it back
     tree_hnode* layout_tree = vizTools::read_graphviz(layout_dot_filename);
 
-    return tree;
+    return layout_tree;
 }
 
 void vizTools::parse_node_content(QString content) {
@@ -72,7 +72,7 @@ void vizTools::parse_node_content(QString content) {
 }
 
 tree_hnode* vizTools::read_graphviz(QString filename) {
-    tree_hnode* out = new tree_hnode;
+    tree_hnode* out = new tree_hnode();
     std::ifstream myfile (filename.toUtf8());
     std::string tmp;
     char delimeter(';');
@@ -80,7 +80,7 @@ tree_hnode* vizTools::read_graphviz(QString filename) {
     QMap<int, hnode*> hnodes;
     if (myfile.is_open()) {
         while (std::getline(myfile, tmp, delimeter)) {
-            std::cout << line_no << std::endl;
+            // std::cout << line_no << std::endl;
             line_no += 1;
             std::size_t found1 = tmp.find("{");
             std::size_t found2 = tmp.find("}");
@@ -88,9 +88,10 @@ tree_hnode* vizTools::read_graphviz(QString filename) {
                 // 1. split thr string
                 QString qtmp(tmp.c_str());
                 QStringList tmps = qtmp.split(" ");
-                std::cout << "split size : " << tmps.size() << std::endl;
+                // std::cout << "split size : " << tmps.size() << std::endl;
+                // std::cout << tmps[0].toStdString() << std::endl;
                 // 2. split into two situation, node or edge
-                if (tmps.size() == 2 && tmps[0] != "node") {
+                if (tmps.size() == 2 && tmps[0].trimmed() != "node") {
                     // node
                     hnode* _node = new hnode();
                     int node_id = tmps[0].toInt();
@@ -99,56 +100,62 @@ tree_hnode* vizTools::read_graphviz(QString filename) {
                     int first = tmps[1].indexOf("[");
                     int last = tmps[1].indexOf("]");
                     QString detailstr = tmps[1].mid(first+1, last-first-1);
-                    std::cout << "detail : " << detailstr.toStdString() << std::endl;
+                    // std::cout << "detail : " << detailstr.toStdString() << std::endl;
                     QStringList details = detailstr.split(",");
                     int pos_index = 0;
                     for (int i = 0; i < details.size(); i++) {
                     // for (auto d : details) {
                         QString d = details[i].trimmed();
-                        std::cout << d.toStdString() << std::endl;
+                        // std::cout << d.toStdString() << std::endl;
                         if (d.contains("pos")) {
                             // merge the next one...
                             pos_index = i;
                         } else if (d.contains("\"")) {
-                            std::cout << "skip" << std::endl;
+                            // std::cout << "skip" << std::endl;
                             continue;
                         } else {
                             // else properties..
                             QStringList parse = d.split("=");
                             if (parse[0] == "label") {
                                 _node->type = parse[1].toStdString();
-                            } else if (parse[1] == "parent_id") {
+                            } else if (parse[0] == "parent_id") {
                                 _node->parent_idx = parse[1].toInt();
+                                // std::cout << "check parent_id : " << parse[1].toInt() << std::endl;
                             }
                         }
                     }
                     _node->pos_x = details[pos_index].split("\"")[1].toFloat();
                     _node->pos_y = details[pos_index+1].split("\"")[0].toFloat();
-                    std::cout << _node->pos_x  << " " << _node->pos_y << std::endl;
+                    hnodes.insert(node_id, _node);
+                    // std::cout << _node->pos_x  << " " << _node->pos_y << std::endl;
                     // QString pos_str = details[pos_index].split("\"")[1]+details[pos_index+1].split("\"")[0];
                     // std::cout << "pos_str : " << pos_str.toStdString() << std::endl;
                 } else if (tmps.size() == 8) {
                     // edge
+                    // std::cout << "edge case" << std::endl;
+                    // std::cout << "edge case : " << tmps[0].trimmed().toStdString() << std::endl;
+                    // std::cout << "edge case : " << tmps[1].trimmed().toStdString() << std::endl;
+                    // std::cout << "edge case : " << tmps[2].trimmed().toStdString() << std::endl;
                 }
-                // 3.   
-
             }
 
         }
         myfile.close();
     }
-    std::cout << "line count : " << line_no << std::endl;
-    
-    // QFile file(filename);
-    // if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    //     QTextStream in(&file);
-    //     int line_no = 0;
-    //     while (!in.atEnd()) {
-    //         QString line = in.readLine();
-    //         line_no ++;
-    //     }
-    //     file.close(); 
-    //     std::cout << "line count : " << line_no << std::endl;
-    // }
+    // std::cout << "line count : " << line_no << std::endl;
+    QList<int> keys = hnodes.keys();    
+    QMap<int, tree_hnode::iterator> hnode_iters;
+
+    for (int k : keys) {
+        tree_hnode::iterator newNodeIter;
+        int parent_id = hnodes[k]->parent_idx;
+        if (parent_id == -1) {
+            newNodeIter = out->begin();
+            newNodeIter = out->insert(newNodeIter, hnodes[k]);
+        } else {
+            newNodeIter = out->append_child(hnode_iters[parent_id], hnodes[k]);
+        }
+        hnode_iters.insert(k, newNodeIter);
+    }
     return out;
 }

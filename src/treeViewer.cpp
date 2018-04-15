@@ -94,7 +94,11 @@ void treeViewer::setSTree(tree_hnode* htree) {
         std::string type = (*iterator)->type;
         qtreeNode *qnode = new qtreeNode(this, type);
         qnode->set_id((*iterator)->idx);
-        qnode->setPos(rand_pos());
+        QPointF pos;
+        pos.setX(scene_width-(*iterator)->pos_x);
+        pos.setY(scene_height-(*iterator)->pos_y);
+        qnode->setPos(pos);
+        // qnode->setPos(rand_pos());
         qtreenodes.insert((*iterator)->idx, qnode);
         m_pScene->addItem(qnode);
         ++iterator;

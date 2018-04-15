@@ -2896,7 +2896,7 @@ void MainWindow::transModeTransferOne() {
 	std::cout << strs[0] << std::endl;
 	std::cout << "finish convert" << std::endl;
 	tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()));
-	qtreeViewer->setSTree(htree);
+	qtreeViewer->setSTree(layout_tree);
 	
 
 	/////// Boost version...
