@@ -131,7 +131,7 @@ tree_hnode* vizTools::read_graphviz(QString filename) {
                     // QString pos_str = details[pos_index].split("\"")[1]+details[pos_index+1].split("\"")[0];
                     // std::cout << "pos_str : " << pos_str.toStdString() << std::endl;
                 } else if (tmps.size() == 8) {
-                    // edge
+                    // edge -> looks like we don't need the edge info, cuz we record parent id in the node already.
                     // std::cout << "edge case" << std::endl;
                     // std::cout << "edge case : " << tmps[0].trimmed().toStdString() << std::endl;
                     // std::cout << "edge case : " << tmps[1].trimmed().toStdString() << std::endl;
