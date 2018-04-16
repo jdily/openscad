@@ -254,6 +254,7 @@ HEADERS += src/version_check.h \
            src/CGAL_OGL_Polyhedron.h \
            src/QGLView.h \
            src/GLView.h \
+           src/GLViewer_suggest.h \
            src/MainWindow.h \
            src/OpenSCADApp.h \
            src/WindowManager.h \
@@ -458,6 +459,7 @@ SOURCES += \
            src/editor.cc \
            src/GLView.cc \
            src/QGLView.cc \
+           src/GLViewer_suggest.cpp \ 
            src/AutoUpdater.cc \
            \
            src/hash.cc \

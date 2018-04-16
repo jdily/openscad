@@ -25,5 +25,5 @@ public:
     QGLView *m_sugViewer2;
     QGLView *m_mainViewer;
 private:
-
+    
 };

@@ -269,6 +269,7 @@ public slots:
 
 	// ichao slots
 	void transModeTransferOne();
+	void retrieveExamples();
 private:
 	static void report_func(const class AbstractNode*, void *vp, int mark);
 	static bool mdiMode;

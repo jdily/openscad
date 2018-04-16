@@ -150,7 +150,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QGLView" name="qglview" native="true">
+        <widget class="GLViewer_suggest" name="qglviewer_suggest" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -257,6 +257,7 @@
          <addaction name="viewActionShowEdges"/>
          <addaction name="separator"/>
          <addaction name="transActionTransferOne"/>
+         <addaction name="retrieveSimilarExamples"/>
         </widget>
        </item>
       </layout>
@@ -1418,6 +1419,18 @@
     <string>Ctrl+t</string>
    </property>
   </action>
+  <action name="retrieveSimilarExamples">
+   <property name="icon">
+    <iconset resource="../openscad.qrc">
+     <normaloff>:/images/Command-Reset-32.png</normaloff>:/images/Command-Reset-32.png</iconset>
+   </property>
+   <property name="text">
+    <string>Retrieve Test</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+t</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -1430,6 +1443,12 @@
    <class>treeViewer</class>
    <extends>QWidget</extends>
    <header>treeViewer.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GLViewer_suggest</class>
+   <extends>QWidget</extends>
+   <header>GLViewer_suggest.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
