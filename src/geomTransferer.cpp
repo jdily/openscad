@@ -59,11 +59,12 @@ Tree* geomTransferer::transfer_cylinder() {
 // 1. first version use the node id pair 
 Tree* geomTransferer::transfer(int self_node_id, int exp_node_id) {
     std::cout << "do transfer from " << self_node_id << " to " << exp_node_id << std::endl;
+    // debug here
     NodeRecoder *recorder = new NodeRecoder(m_pSelf, aux_to_node);
     Tree *out_tree = new Tree(*m_pSelf);
     aux_to_node = recorder->append_aux_name("src", *out_tree->root());
     aux_to_node = recorder->append_aux_name("exp", *m_pExample->root());
-
+    std::cout << "finish record the data" << std::endl;
     // check the count of the map
     std::cout << "size of the recorder : " << aux_to_node.size() << std::endl;
     // src_3
@@ -82,6 +83,7 @@ Tree* geomTransferer::transfer(int self_node_id, int exp_node_id) {
     scale_src2tar(0) = src_3->x / exp_4->x;
     scale_src2tar(1) = src_3->y / exp_4->y;
     scale_src2tar(2) = src_3->z / exp_4->z;
+    // std::cout << "scale :　" << scale_src2tar(0) << " " << scale_src2tar(1) << " " << scale_src2tar(2) << std::endl;
 
     // Process : replace a subtree (**box** in this example)
     // 1. remove it from the original tree..
@@ -95,18 +97,18 @@ Tree* geomTransferer::transfer(int self_node_id, int exp_node_id) {
     inserter->insert_node(*out_tree->root(), *m_pExample->root()->children[0]);
 
     // for another part of the geometry
-    // deleter->remove_node(*out_tree->root()->children[0], *out_tree->root());
-    // inserter->insert_node(*out_tree->root(), *m_pExample->root()->children[1]);
+    deleter->remove_node(*out_tree->root()->children[0], *out_tree->root());
+    inserter->insert_node(*out_tree->root(), *m_pExample->root()->children[1]);
     
     // 3. adapt the geometry..
-    NodeAdapter *adapter = new NodeAdapter(out_tree);
-    QMap<QString, VectorXd> adapt_info;
-    adapt_info["scale"] = scale_src2tar;
-    adapter->adapt_param(*exp_4, QString("cube"), adapt_info);
-    adapter->adapt_param(*exp_6, QString("cube"), adapt_info);
-    // how to position the adapted geometry....
-    // TODO : https://trello.com/c/gTJFviAl
-    adapter->adapt_param(*exp_5, QString("trans"), adapt_info);
+    // NodeAdapter *adapter = new NodeAdapter(out_tree);
+    // QMap<QString, VectorXd> adapt_info;
+    // adapt_info["scale"] = scale_src2tar;
+    // adapter->adapt_param(*exp_4, QString("cube"), adapt_info);
+    // adapter->adapt_param(*exp_6, QString("cube"), adapt_info);
+    // // how to position the adapted geometry....
+    // // TODO : https://trello.com/c/gTJFviAl
+    // adapter->adapt_param(*exp_5, QString("trans"), adapt_info);
     
     // test for primitive node adaptation (cube)
     // adapt_info[QString("x")] = 10.0;

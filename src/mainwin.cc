@@ -255,6 +255,7 @@ MainWindow::MainWindow(const QString &filename)
 
 	this->qglviewer_suggest->m_mainViewer->statusLabel = new QLabel(this);
 	this->qglviewer_suggest->m_mainViewer->statusLabel->setMinimumWidth(100);
+	// this->qglviewer_suggest->m_mainViewer->statusLabel->setStyleSheet("border:5px solid #ff0000;");
 	statusBar()->addWidget(this->qglviewer_suggest->m_mainViewer->statusLabel);
 	// this->qglview->statusLabel = new QLabel(this);
 	// this->qglview->statusLabel->setMinimumWidth(100);
@@ -422,7 +423,9 @@ MainWindow::MainWindow(const QString &filename)
 	// ichao actions
 	connect(this->transActionTransferOne, SIGNAL(triggered()), this, SLOT(transModeTransferOne()));
 	connect(this->retrieveSimilarExamples, SIGNAL(triggered()), this, SLOT(retrieveExamples()));
-
+	connect(this->qglviewer_suggest->m_sugViewers[0], SIGNAL(exampleSelected(int)), this, SLOT(example_selectedSlot(int)));
+	connect(this->qglviewer_suggest->m_sugViewers[1], SIGNAL(exampleSelected(int)), this, SLOT(example_selectedSlot(int)));
+	connect(this->qglviewer_suggest->m_sugViewers[2], SIGNAL(exampleSelected(int)), this, SLOT(example_selectedSlot(int)));
 #ifdef OPENSCAD_UPDATER
 	this->menuBar()->addMenu(AutoUpdater::updater()->updateMenu);
 #endif
@@ -1111,9 +1114,21 @@ void MainWindow::instantiateRoot()
 	delete this->absolute_root_node;
 	this->absolute_root_node = nullptr;
 
+	this->exp_abs_root_nodes = std::vector<AbstractNode*>(3, nullptr);
+	this->exp_root_nodes = std::vector<AbstractNode*>(3, nullptr);
+	this->exp_trees = std::vector<Tree*>(3, nullptr);
+
 	this->csgRoot.reset();
 	this->normalizedRoot.reset();
 	this->root_products.reset();
+	// ichao : init the exp csgroots list
+	this->exp_csgRoots = std::vector<shared_ptr<class CSGNode>>(3, nullptr);
+	this->exp_normalizedRoots = std::vector<shared_ptr<CSGNode>>(3, nullptr);
+	this->exp_root_products = std::vector<shared_ptr<class CSGProducts>>(3, nullptr);
+	this->exp_highlights_products = std::vector<shared_ptr<CSGProducts>>(3, nullptr);
+	this->exp_background_products = std::vector<shared_ptr<CSGProducts>>(3, nullptr);
+	this->exp_opencsgRenderer = std::vector<class OpenCSGRenderer*>(3, nullptr);
+	this->exp_thrownTogetherRenderer = std::vector<class ThrownTogetherRenderer*>(3, nullptr);
 
 	this->root_node = nullptr;
 	this->tree.setRoot(nullptr);
@@ -1158,6 +1173,116 @@ void MainWindow::instantiateRoot()
 		}
 		this->processEvents();
 	}
+}
+
+void MainWindow::example_compileCSG(int example_id, bool procevents) {
+	assert(this->exp_root_nodes[example_id]);
+	// QString messege = QString("Compiling example %1 (CSG Products generation)...").arg(example_id);
+	// PRINT(messege.toStdString().c_str());
+	PRINTB("Compiling example %d design (CSG Products generation)...", example_id);
+	this->processEvents();
+	// Main CSG evaluation
+	this->progresswidget = new ProgressWidget(this);
+	connect(this->progresswidget, SIGNAL(requestShow()), this, SLOT(showProgress()));
+#ifdef ENABLE_CGAL
+		GeometryEvaluator geomevaluator(*this->exp_trees[example_id]);
+#else
+		// FIXME: Will we support this?
+#endif
+#ifdef ENABLE_OPENCSG
+		CSGTreeEvaluator csgrenderer(*this->exp_trees[example_id], &geomevaluator);
+#endif
+	progress_report_prep(this->exp_root_nodes[example_id], report_func, this);
+	try {
+#ifdef ENABLE_OPENCSG
+		this->processEvents();
+		// ichao : set graph here and draw it.
+		// qtreeViewer->setTree(&this->tree);	
+		this->exp_csgRoots[example_id] = csgrenderer.buildCSGTree(*this->exp_root_nodes[example_id]);
+		// this->csgRoot = csgrenderer.buildCSGTree(*root_node);
+#endif
+		GeometryCache::instance()->print();
+#ifdef ENABLE_CGAL
+		CGALCache::instance()->print();
+#endif
+		this->processEvents();
+	} catch (const ProgressCancelException &e) {
+		PRINT("CSG generation cancelled.");
+	}
+	progress_report_fin();
+	updateStatusBar(nullptr);
+
+	PRINT("Compiling design (CSG Products normalization)...");
+	this->processEvents();
+	size_t normalizelimit = 2 * Preferences::inst()->getValue("advanced/openCSGLimit").toUInt();
+	CSGTreeNormalizer normalizer(normalizelimit);
+	if (this->exp_csgRoots[example_id]) {
+		this->exp_normalizedRoots[example_id] = normalizer.normalize(this->exp_csgRoots[example_id]);
+		// this->normalizedRoot = normalizer.normalize(this->csgRoot);
+		if (this->exp_normalizedRoots[example_id]) {
+			this->exp_root_products[example_id].reset(new CSGProducts());
+			this->exp_root_products[example_id]->import(this->exp_normalizedRoots[example_id]);
+			// this->root_products.reset(new CSGProducts());
+			// this->root_products->import(this->normalizedRoot);
+		}
+		else {
+			this->exp_root_products[example_id].reset();
+			// this->root_products.reset();
+			PRINTB("WARNING: example %d CSG normalization resulted in an empty tree", example_id);
+			this->processEvents();
+		}
+	}
+
+	const std::vector<shared_ptr<CSGNode> > &highlight_terms = csgrenderer.getHighlightNodes();
+	if (highlight_terms.size() > 0) {
+		PRINTB("Compiling highlights (%d CSG Trees)...", highlight_terms.size());
+		this->processEvents();
+		this->exp_highlights_products[example_id].reset(new CSGProducts());
+		for (unsigned int i = 0; i < highlight_terms.size(); i++) {
+			auto nterm = normalizer.normalize(highlight_terms[i]);
+			this->exp_highlights_products[example_id]->import(nterm);
+		}
+	}
+	else {
+		this->exp_highlights_products[example_id].reset();
+	}
+	const auto &background_terms = csgrenderer.getBackgroundNodes();
+	if (background_terms.size() > 0) {
+		PRINTB("Compiling background (%d CSG Trees)...", background_terms.size());
+		this->processEvents();
+		this->exp_background_products[example_id].reset(new CSGProducts());
+		for (unsigned int i = 0; i < background_terms.size(); i++) {
+			auto nterm = normalizer.normalize(background_terms[i]);
+			this->exp_background_products[example_id]->import(nterm);
+		}
+	}
+	else {
+		this->exp_background_products[example_id].reset();
+	}
+	if (this->exp_root_products[example_id] &&
+			(this->exp_root_products[example_id]->size() >
+			 Preferences::inst()->getValue("advanced/openCSGLimit").toUInt())) {
+		PRINTB("WARNING: Normalized tree has %d elements!", this->exp_root_products[example_id]->size());
+		PRINT("WARNING: OpenCSG rendering has been disabled.");
+	}
+#ifdef ENABLE_OPENCSG
+	else {
+		// modify here of the viewers
+		PRINTB("Normalized CSG tree has %d elements",
+					 (this->exp_root_products[example_id] ? this->exp_root_products[example_id]->size() : 0));
+		this->exp_opencsgRenderer[example_id] = new OpenCSGRenderer(this->exp_root_products[example_id],
+																								this->exp_highlights_products[example_id],
+																								this->exp_background_products[example_id],
+																								this->qglviewer_suggest->m_sugViewers[example_id]->shaderinfo);
+	}
+#endif
+	this->exp_thrownTogetherRenderer[example_id] = new ThrownTogetherRenderer(this->exp_root_products[example_id],
+																			  this->exp_highlights_products[example_id],
+																			  this->exp_background_products[example_id]);
+	PRINT("Compile and preview finished.");
+	int s = this->renderingTime.elapsed() / 1000;
+	PRINTB("Total rendering time: %d hours, %d minutes, %d seconds", (s / (60*60)) % ((s / 60) % 60) % (s % 60));
+	this->processEvents();
 }
 
 /*!
@@ -1856,6 +1981,30 @@ void MainWindow::actionReloadRenderPreview()
 	compile(true);
 }
 
+void MainWindow::example_csgReloadRender(int example_id) {
+	// std::cout << "example_csgReloadRender " << std::endl;
+	if (this->exp_root_nodes[example_id]) {
+		// std::cout << "inside " << std::endl;
+		// PRINTB("example %d is being reload and need to be compiled ...", example_id);
+		this->processEvents();
+		// compileCSG(true);
+		example_compileCSG(example_id, true);
+	}
+	if (viewActionThrownTogether->isChecked()) {
+		// std::cout << "inside action thrown together " << std::endl;
+		viewModeThrownTogether_exp(example_id);
+	}
+	else {
+#ifdef ENABLE_OPENCSG
+		// std::cout << "before view  mode preview" << std::endl;
+		viewModePreview_exp(example_id);
+#else
+		viewModeThrownTogether_exp(example_id);
+#endif
+	}
+	compileEnded();
+}
+
 void MainWindow::csgReloadRender()
 {
 	if (this->root_node) compileCSG(true);
@@ -1897,6 +2046,39 @@ void MainWindow::actionRenderPreview(bool rebuildParameterWidget)
 		// it must be called from the mainloop
 		QTimer::singleShot(0, this, SLOT(actionRenderPreview()));
 	}
+}
+
+void MainWindow::example_csgRender(int example_id) {
+	if (this->exp_root_nodes[example_id]) example_compileCSG(example_id, !viewActionAnimate->isChecked());
+	// Go to non-CGAL view mode
+	if (viewActionThrownTogether->isChecked()) {
+		viewModeThrownTogether_exp(example_id);
+	}
+	else {
+#ifdef ENABLE_OPENCSG
+		viewModePreview_exp(example_id);
+#else
+		viewModeThrownTogether_exp(example_id);
+#endif
+	}
+	if (e_dump->isChecked() && animate_timer->isActive()) {
+		if (anim_dumping && anim_dump_start_step == anim_step) {
+			anim_dumping=false;
+			e_dump->setChecked(false);
+		} else {
+			if (!anim_dumping) {
+				anim_dumping = true;
+				anim_dump_start_step = anim_step;
+			}
+			// Force reading from front buffer. Some configurations will read from the back buffer here.
+			glReadBuffer(GL_FRONT);
+			QImage img = this->qglviewer_suggest->m_sugViewers[example_id]->grabFrameBuffer();
+			QString filename;
+			filename.sprintf("frame%05d.png", this->anim_step);
+			img.save(filename, "PNG");
+		}
+	}
+	compileEnded();
 }
 
 void MainWindow::csgRender()
@@ -2328,6 +2510,21 @@ void MainWindow::viewModeActionsUncheck()
 
 #ifdef ENABLE_OPENCSG
 
+void MainWindow::viewModePreview_exp(int example_id) {
+	std::cout << "inside view mode preview" << std::endl;
+	if (this->qglviewer_suggest->m_sugViewers[example_id]->hasOpenCSGSupport()) {
+		// std::cout << "inside view mode preview : hasOpenCSGSupport" << std::endl;
+		// if (this->exp_opencsgRenderer[example_id] == nullptr) {
+			// std::cout << "null opencsgrenderer" << std::endl;
+		// }
+		this->qglviewer_suggest->m_sugViewers[example_id]->setRenderer(this->exp_opencsgRenderer[example_id] ? (Renderer *)this->exp_opencsgRenderer[example_id] : (Renderer *)this->exp_thrownTogetherRenderer[example_id]);
+		this->qglviewer_suggest->m_sugViewers[example_id]->updateColorScheme();
+		this->qglviewer_suggest->m_sugViewers[example_id]->updateGL();
+	} else {
+		viewModeThrownTogether_exp(example_id);
+	}
+}
+
 /*!
 	Go to the OpenCSG view mode.
 	Falls back to thrown together mode if OpenCSG is not available
@@ -2370,6 +2567,13 @@ void MainWindow::viewModeWireframe()
 }
 
 #endif /* ENABLE_CGAL */
+
+// TODO : check if we need to set action uncheck things....
+void MainWindow::viewModeThrownTogether_exp(int example_id) {
+	this->qglviewer_suggest->m_sugViewers[example_id]->setRenderer(this->exp_thrownTogetherRenderer[example_id]);
+	this->qglviewer_suggest->m_sugViewers[example_id]->updateColorScheme();
+	this->qglviewer_suggest->m_sugViewers[example_id]->updateGL();
+}
 
 void MainWindow::viewModeThrownTogether()
 {
@@ -2845,8 +3049,8 @@ void MainWindow::transModeTransferOne() {
 	this->processEvents();
 	// set output to console 
 	setCurrentOutput();
-	// QString exp_filename("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
-	QString exp_filename("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_cylinder_cover.scad");
+	QString exp_filename("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
+	// QString exp_filename("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_cylinder_cover.scad");
 	// QString example_file("C:\Users\jdily\Desktop\project\ddCAD\data\manual_transfer/\two_rect_cover");
     QFile file(exp_filename);
 	QString loaded_text;
@@ -2891,21 +3095,21 @@ void MainWindow::transModeTransferOne() {
 		}
 	}
 
-	// qtreeViewer->setTree(example_tree);
+	qtreeViewer->setTree(example_tree);
 
 	// stree convert
-	streeConverter *sconv = new streeConverter();
-	std::cout << "start convert" << std::endl;
-	tree_hnode* htree = sconv->convert_tree(&tree);
-	std::vector<std::string> tmps;
-	std::string _filename = this->fileName.toStdString();
-    boost::split(tmps, _filename, boost::is_any_of("/"));
-	std::vector<std::string> strs;
-	boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
-	std::cout << strs[0] << std::endl;
-	std::cout << "finish convert" << std::endl;
-	tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()));
-	qtreeViewer->setSTree(layout_tree);
+	// streeConverter *sconv = new streeConverter();
+	// std::cout << "start convert" << std::endl;
+	// tree_hnode* htree = sconv->convert_tree(&tree);
+	// std::vector<std::string> tmps;
+	// std::string _filename = this->fileName.toStdString();
+    // boost::split(tmps, _filename, boost::is_any_of("/"));
+	// std::vector<std::string> strs;
+	// boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
+	// std::cout << strs[0] << std::endl;
+	// std::cout << "finish convert" << std::endl;
+	// tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()));
+	// qtreeViewer->setSTree(layout_tree);
 	
 
 	/////// Boost version...
@@ -2926,17 +3130,105 @@ void MainWindow::transModeTransferOne() {
 
 	
 	// transfer rect case
-	// Tree* result_tree = transferer->transfer(3, 2);
+	transferer->add_example_tree(example_tree);
+	Tree* result_tree = transferer->transfer(3, 2);
 	// Tree* result_tree = transferer->transfer_cylinder();
 	// // // redraw the tree viz..
-	// qtreeViewer->setTree(result_tree);
-	// this->root_node = const_cast<AbstractNode*>(result_tree->root());
+	qtreeViewer->setTree(result_tree);
+	this->root_node = const_cast<AbstractNode*>(result_tree->root());
 	// // // clean the cache first and re-dump again..
-	// this->tree.clear_cache();
-	// this->tree.getString(*this->root_node);
-	// csgReloadRender();
+	this->tree.clear_cache();
+	this->tree.getString(*this->root_node);
+	csgReloadRender();
+}
+
+void MainWindow::tmp_loadSimilarExample(int example_id, QString exp_filename) {
+	QFile file(exp_filename);
+	QString loaded_text;
+    // load the file
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+			PRINTB("Failed to open file %s: %s",
+						 exp_filename.toLocal8Bit().constData() % file.errorString().toLocal8Bit().constData());
+	} else {
+        QTextStream reader(&file);
+		reader.setCodec("UTF-8");
+		loaded_text = reader.readAll();
+		PRINTB("Loaded example design '%s'.", exp_filename.toLocal8Bit().constData());
+    }
+	Tree *example_tree = new Tree();
+	FileModule *exp_parsed_module = nullptr;
+	FileModule *exp_module = nullptr;
+
+	auto fulltext = loaded_text.toUtf8().toStdString();
+	auto fnameba = exp_filename.toLocal8Bit();
+	const char* fname = exp_filename.isEmpty() ? "" : fnameba;
+	delete exp_parsed_module;
+	exp_module = parse(exp_parsed_module, fulltext.c_str(), fname, false) ? exp_parsed_module : nullptr;
+	AbstractNode* exp_abs_node;
+	AbstractNode* exp_root_node;
+	if (exp_module) {
+		std::cout << "load examples..." << std::endl;
+		AbstractNode::resetIndexCounter();
+		auto mi = ModuleInstantiation( "group" );
+		ModuleInstantiation exp_inst = mi;
+		BuiltinContext exp_ctx;
+		FileContext filectx(&exp_ctx);
+		exp_abs_node = exp_module->instantiateWithFileContext(&filectx, &exp_inst, nullptr);
+		if (exp_abs_node) {
+			std::cout << "done exp_abs_node" << std::endl;
+			exp_root_node = exp_abs_node;
+			example_tree->setRoot(exp_root_node);
+			example_tree->getString(*exp_root_node);
+		}
+	}
+	exp_root_nodes[example_id] = exp_root_node;
+	exp_abs_root_nodes[example_id] = exp_abs_node;	
+	exp_trees[example_id] = example_tree;
 }
 
 void MainWindow::retrieveExamples() {
-	std::cout << "retrieve" << std::endl;
+	// std::cout << "retrieve" << std::endl;
+	PRINT("[ichao] retrieve test function here...");
+	this->processEvents();
+	setCurrentOutput();
+	QString exp_filename0("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
+	tmp_loadSimilarExample(0, exp_filename0);
+	example_csgReloadRender(0);
+	// this->root_node = const_cast<AbstractNode*>(result_tree->root());
+	// // clean the cache first and re-dump again..
+	// this->tree.clear_cache();
+	// this->tree.getString(*this->root_node);
+	// csgReloadRender();
+	QString exp_filename1("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
+	tmp_loadSimilarExample(1, exp_filename1);
+	example_csgReloadRender(1);
+	QString exp_filename2("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
+	tmp_loadSimilarExample(2, exp_filename2);
+	example_csgReloadRender(2);
+}
+
+void MainWindow::example_selectedSlot(int example_id) {
+	std::cout << example_id << "th example is selected " << std::endl;
+	int fixed_example_id = 0;
+	transferer->add_example_tree(exp_trees[fixed_example_id]);
+
+	Tree* result_tree = transferer->transfer(3, 2);
+	this->root_node = const_cast<AbstractNode*>(result_tree->root());
+	// // // clean the cache first and re-dump again..
+	this->tree.clear_cache();
+	this->tree.getString(*this->root_node);
+	csgReloadRender();
+
+	// transfer the selected tree
+	streeConverter *sconv = new streeConverter();
+	tree_hnode* htree = sconv->convert_tree(&tree);
+	std::vector<std::string> tmps;
+	std::string _filename = this->fileName.toStdString();
+    boost::split(tmps, _filename, boost::is_any_of("/"));
+	std::vector<std::string> strs;
+	boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
+	std::cout << strs[0] << std::endl;
+	std::cout << "finish convert" << std::endl;
+	tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()));
+	qtreeViewer->setSTree(layout_tree);
 }

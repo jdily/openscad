@@ -59,6 +59,10 @@ public:
 	void resetView();
 	void viewAll();
 
+	// ichao added -> for multiple suggest viewer cases
+	void set_viewer_id(int id);
+	int viewer_id;
+
 public slots:
 	void ZoomIn(void);
 	void ZoomOut(void);
@@ -98,4 +102,5 @@ private slots:
 
 signals:
 	void doAnimateUpdate();
+	void exampleSelected(int exp_id);
 };

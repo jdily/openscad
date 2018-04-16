@@ -53,6 +53,11 @@ public:
 	AbstractNode *absolute_root_node; // Result of tree evaluation
 	AbstractNode *root_node;		  // Root if the root modifier (!) is used
 	Tree tree;
+	// for examples
+	std::vector<AbstractNode*> exp_abs_root_nodes;
+	std::vector<AbstractNode*> exp_root_nodes;
+	std::vector<Tree*> exp_trees;
+	
 
 #ifdef ENABLE_CGAL
 	shared_ptr<const class Geometry> root_geom;
@@ -60,8 +65,11 @@ public:
 #endif
 #ifdef ENABLE_OPENCSG
 	class OpenCSGRenderer *opencsgRenderer;
+	// ichao added
+	std::vector<class OpenCSGRenderer*> exp_opencsgRenderer;
 #endif
 	class ThrownTogetherRenderer *thrownTogetherRenderer;
+	std::vector<class ThrownTogetherRenderer*> exp_thrownTogetherRenderer;
 
 	QString last_compiled_doc;
 
@@ -188,6 +196,14 @@ private slots:
 	void actionRenderPreview(bool rebuildParameterWidget=true);
 	void csgRender();
 	void csgReloadRender();
+
+	// ichao added
+	void example_csgRender(int example_id);
+	void example_csgReloadRender(int example_id);
+	void example_compileCSG(int example_id, bool procevents);
+	
+
+
 #ifdef ENABLE_CGAL
 	void actionRender();
 	void actionRenderDone(shared_ptr<const class Geometry>);
@@ -228,11 +244,16 @@ public slots:
 
 #ifdef ENABLE_OPENCSG
 	void viewModePreview();
+	void viewModePreview_exp(int example_id);
 #endif
 #ifdef ENABLE_CGAL
 	void viewModeSurface();
 	void viewModeWireframe();
 #endif
+
+	// ichao added
+	void viewModeThrownTogether_exp(int example_id);
+
 	void viewModeThrownTogether();
 	void viewModeShowEdges();
 	void viewModeShowAxes();
@@ -270,6 +291,9 @@ public slots:
 	// ichao slots
 	void transModeTransferOne();
 	void retrieveExamples();
+	void example_selectedSlot(int example_id);
+	// tmp function for loading
+	void tmp_loadSimilarExample(int example_id, QString exp_filename);
 private:
 	static void report_func(const class AbstractNode*, void *vp, int mark);
 	static bool mdiMode;
@@ -282,6 +306,14 @@ private:
  	shared_ptr<class CSGProducts> root_products;
 	shared_ptr<CSGProducts> highlights_products;
 	shared_ptr<CSGProducts> background_products;
+
+	// ichao: for examples
+	std::vector<shared_ptr<class CSGNode>> exp_csgRoots;
+	std::vector<shared_ptr<CSGNode>> exp_normalizedRoots;
+	std::vector<shared_ptr<class CSGProducts>> exp_root_products;
+	std::vector<shared_ptr<CSGProducts>> exp_highlights_products;
+	std::vector<shared_ptr<CSGProducts>> exp_background_products;
+
 
 	char const * afterCompileSlot;
 	bool procevents;

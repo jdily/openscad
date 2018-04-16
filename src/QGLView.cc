@@ -74,6 +74,7 @@ void QGLView::init()
 
   setMouseTracking(true);
 
+  viewer_id = -1;
 
 
 #if defined(_WIN32) && !defined(USE_QOPENGLWIDGET)
@@ -89,6 +90,10 @@ void QGLView::init()
 void QGLView::resetView()
 {
 	cam.resetView();
+}
+
+void QGLView::set_viewer_id(int id) {
+  viewer_id = id;
 }
 
 void QGLView::viewAll()
@@ -197,6 +202,11 @@ void QGLView::mousePressEvent(QMouseEvent *event)
 {
   mouse_drag_active = true;
   last_mouse = event->globalPos();
+  if(event->button() == Qt::RightButton) {
+    QString mes = QString("right mouse button is pressed at viewer %1").arg(viewer_id);
+    std::cout << mes.toStdString() << std::endl;
+    emit exampleSelected(viewer_id);
+  }
 }
 
 void QGLView::mouseDoubleClickEvent (QMouseEvent *event) {
