@@ -1159,7 +1159,18 @@ void MainWindow::instantiateRoot()
 			// FIXME: We shouldn't really need to do this explicitly..
 			this->tree.getString(*this->root_node);
 			// // ichao : set graph here and draw it.
-			qtreeViewer->setTree(&this->tree);	
+			streeConverter *sconv = new streeConverter();
+			tree_hnode* htree = sconv->convert_tree(&tree);
+			std::vector<std::string> tmps;
+			std::string _filename = this->fileName.toStdString();
+			boost::split(tmps, _filename, boost::is_any_of("/"));
+			std::vector<std::string> strs;
+			boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
+			std::cout << strs[0] << std::endl;
+			std::cout << "finish convert" << std::endl;
+			tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()));
+			qtreeViewer->setSTree(layout_tree);
+			// qtreeViewer->setTree(&this->tree);	
 			// ichao : initialize the transferer
 			transferer = new geomTransferer(&this->tree);
 		}
@@ -3186,6 +3197,7 @@ void MainWindow::tmp_loadSimilarExample(int example_id, QString exp_filename) {
 	exp_trees[example_id] = example_tree;
 }
 
+// TODO : apply the same camera angle as the main viewer...
 void MainWindow::retrieveExamples() {
 	// std::cout << "retrieve" << std::endl;
 	PRINT("[ichao] retrieve test function here...");
@@ -3199,10 +3211,12 @@ void MainWindow::retrieveExamples() {
 	// this->tree.clear_cache();
 	// this->tree.getString(*this->root_node);
 	// csgReloadRender();
-	QString exp_filename1("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
+	QString exp_filename1("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/examples/uploads_7b_a5_5d_8a_5a_round_box_with_lid.scad");
+	// QString exp_filename1("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
 	tmp_loadSimilarExample(1, exp_filename1);
 	example_csgReloadRender(1);
-	QString exp_filename2("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
+	QString exp_filename2("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/examples/hinge_box.scad");
+	// QString exp_filename2("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
 	tmp_loadSimilarExample(2, exp_filename2);
 	example_csgReloadRender(2);
 }
