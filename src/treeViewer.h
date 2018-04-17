@@ -49,8 +49,11 @@ class treeViewer : public QGraphicsView, public NodeVisitor {
         QMap<int, qtreeNode*> node_map; 
         int scene_width;
         int scene_height;
+        float cur_zoom;
 
         void draw_and_traverse(const AbstractNode &node, qtreeNode *parent_node);
+
+        void wheelEvent(QWheelEvent *event) override;
     protected:
     // public slots:
 

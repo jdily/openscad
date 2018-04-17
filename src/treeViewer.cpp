@@ -3,6 +3,7 @@
 // #include <QStyle>
 #include <QPainter>
 #include <QStyleOption>
+#include <QWheelEvent>
 #include "qtreeNode.h"
 #include "qtreeEdge.h"
 #include "NodeVisitor.h"
@@ -17,6 +18,8 @@ treeViewer::treeViewer(QWidget *parent) : QGraphicsView(parent) {
     // set background color.
     // setBackgroundBrush(QBrush(Qt::red, Qt::SolidPattern));
     // m_pScene->setSceneRect(-200, -200, 400, 400);
+    // 400, 400
+    // TODO: how to zoom in or change this size accorindg to different trees.
     m_pScene->setSceneRect(0, 0, 400, 400);
     scene_width = m_pScene->width();
     scene_height = m_pScene->height();
@@ -28,6 +31,7 @@ treeViewer::treeViewer(QWidget *parent) : QGraphicsView(parent) {
     // scale(qreal(0.8), qreal(0.8));   
     setMinimumSize(200, 200);
     m_pTree = NULL;
+    cur_zoom = 1.0;
     // std::cout << "tree viewer " << std::endl;
 }
 
@@ -373,4 +377,16 @@ Response treeViewer::visit(State &state, const GroupNode &node)
 	// 	addToParent(state, node);
 	// }
 	return Response::ContinueTraversal;
+}
+
+void treeViewer::wheelEvent(QWheelEvent *event)
+{
+    if(event->delta() > 0)
+    {
+        this->scale(2,2);
+    }
+    else
+    {
+        this->scale(0.5,0.5);
+    }
 }
