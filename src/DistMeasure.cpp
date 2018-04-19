@@ -1,6 +1,7 @@
 #include "DistMeasure.h"
 
 
+// commonSubtree(tree_hnode* tree1, tree_hnode* tree2) 
 commonSubtree::commonSubtree(iTree *tree1, iTree *tree2) {
     this->tree1 = tree1;
     this->tree2 = tree2;
@@ -31,62 +32,56 @@ commonSubtree commonSubtree::findAnchoredMaxMatch(node n1, node n2) {
 	// DistParameter distPara = (*node1)->scene->distPara;
 	// DistMeasure dist(distPara);
 	double weight = (pow(0.5, tree1->data->depth(n1)) + pow(0.5, tree2->data->depth(n2))) / 2.0;
+	subtree.pairSimilarity.push_back(1 - DistMeasure::between_nodes(n1, n2));
 	// subtree.pairSimilarity.push_back(1 - dist.betweenInteractions(*node1, *node2));
-	// subtree.similarity = subtree.pairSimilarity.last()*weight;
-	// subtree.mapping.push_back(QPair<node, node>(node1, node2));
+	subtree.similarity = subtree.pairSimilarity.last()*weight;
+	subtree.mapping.push_back(QPair<node, node>(n1, n2));
 
 	int m = n1.number_of_children();
 	int n = n2.number_of_children();
-	// if ( m != 0  && n != 0)
-	// {
-	// 	// find best matching for the children
-	// 	Eigen::MatrixXd S = Eigen::MatrixXd::Zero(m, n);
-	// 	QVector< QVector< QVector<QPair<node, node>> > >  M; // store all the mapping
-	// 	QVector< QVector< QVector<double> > > PS;			 // store all the pair similarity
+	if ( m != 0  && n != 0) {
+		// find best matching for the children
+		Eigen::MatrixXd S = Eigen::MatrixXd::Zero(m, n);
+		QVector< QVector< QVector<QPair<node, node>> > >  M; // store all the mapping
+		QVector< QVector< QVector<double> > > PS;			 // store all the pair similarity
  
-	// 	tree_inter::sibling_iterator child1 = node1.begin();
-	// 	while ( child1 != node1.end() )
-	// 	{
-	// 		int i = tree1->index(child1);
-	// 		QVector< QVector<QPair<node, node>> > M1;
-	// 		QVector< QVector<double> > PS1;
+		tree_hnode::sibling_iterator child1 = n1.begin();
+		while (child1 != n1.end()) {
+			int i = tree1->data->index(child1);
+			QVector< QVector<QPair<node, node>> > M1;
+			QVector< QVector<double> > PS1;
+			tree_hnode::sibling_iterator child2 = n2.begin();
+			while ( child2 != n2.end() ) {
+				int j = tree2->data->index(child2);
+				commonSubtree temp = findAnchoredMaxMatch(child1, child2);		// recursively
+				S(i,j) = temp.similarity;
+				M1.push_back(temp.mapping);
+				PS1.push_back(temp.pairSimilarity);
+				child2++;
+			}
 
-	// 		tree_inter::sibling_iterator child2 = node2.begin();
-	// 		while ( child2 != node2.end() )
-	// 		{
-	// 			int j = tree2->index(child2);
-	// 			CommonSubtree temp = findAnchoredMaxMatch(child1, child2);		// recursively
-
-	// 			S(i,j) = temp.similarity;
-	// 			M1.push_back(temp.mapping);
-	// 			PS1.push_back(temp.pairSimilarity);
-	// 			child2++;
-	// 		}
-
-	// 		M.push_back(M1);
-	// 		PS.push_back(PS1);
-	// 		child1++;
-	// 	}
-
-	// 	QVector<int> assignment = findBestAssignment(S);
+			M.push_back(M1);
+			PS.push_back(PS1);
+			child1++;
+		}
+		QVector<int> assignment = findBestAssignment(S);
 
 	// 	// add the matching
-	// 	for (int i=0; i<assignment.size(); i++)
-	// 	{
-	// 		if (assignment[i] != -1)
-	// 		{
-	// 			subtree.mapping << M[i][assignment[i]];
-	// 			subtree.pairSimilarity << PS[i][assignment[i]];
-	// 			subtree.similarity += S(i,assignment[i]);
-	// 		}
-	// 	}
-	// }
-
+		for (int i=0; i<assignment.size(); i++)
+		{
+			if (assignment[i] != -1)
+			{
+				subtree.mapping << M[i][assignment[i]];
+				subtree.pairSimilarity << PS[i][assignment[i]];
+				subtree.similarity += S(i,assignment[i]);
+			}
+		}
+	}
 	return subtree;
 }
 
-std::vector<int> commonSubtree::findBestAssignment(Eigen::MatrixXd s) {
-
+QVector<int> commonSubtree::findBestAssignment(Eigen::MatrixXd s) {
+	
 }
 
 void commonSubtree::findMaxMatch() {
@@ -117,13 +112,22 @@ void commonSubtree::findMaxMatch() {
 		++n2;
 	}
 }
-double commonSubtree::distance() {}
+double commonSubtree::distance() {
+	double d = 1.0 - similarity / (totalWeight - similarity);
+	return d;
+}
 
 
 commonSubtree DistMeasure::between_trees(iTree *tree1, iTree *tree2) {
 	int idx1 = -1;
 	int idx2 = -1;
 	double dist = 1;
-    commonSubtree bestMatch(tree1, tree2);
+    commonSubtree match(tree1, tree2);
+	match.findMaxMatch();
+	double d = match.distance();
+	return match;
+}
 
+double DistMeasure::between_nodes(node n1, node n2) {
+	return 0.0;
 }

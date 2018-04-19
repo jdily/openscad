@@ -5,11 +5,11 @@
 #include <Eigen/Dense>
 
 #include "stree.h"
-
-
-class commonSubtree {
+#include <QVector>
 typedef stree<hnode> tree_hnode;
 typedef tree_hnode::iterator node;
+class commonSubtree {
+
 public:
     commonSubtree(iTree *tree1, iTree *tree2);
     ~commonSubtree();
@@ -18,11 +18,11 @@ public:
 
 private:
 	commonSubtree findAnchoredMaxMatch(node n1, node n2);
-	std::vector<int> findBestAssignment(Eigen::MatrixXd S);
+	QVector<int> findBestAssignment(Eigen::MatrixXd S);
     iTree *tree1;
     iTree *tree2;
-    std::vector< QPair<node, node> > mapping;
-	std::vector< double > pairSimilarity;
+    QVector< QPair<node, node> > mapping;
+	QVector< double > pairSimilarity;
     double similarity;
 	double totalWeight;
 };
@@ -32,5 +32,6 @@ public:
     DistMeasure();
     ~DistMeasure();
     static commonSubtree between_trees(iTree *tree1, iTree *tree2);
+    static double between_nodes(node n1, node n2);
 private:
 };
