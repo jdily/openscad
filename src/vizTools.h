@@ -15,7 +15,7 @@ class vizTools {
     public:
         static void vizTree_graphviz(tree_hnode *tree, QString path);
         static tree_hnode* read_graphviz(QString path);
-        static tree_hnode* make_layout_graphviz(tree_hnode *tree, QString path);
+        static tree_hnode* make_layout_graphviz(tree_hnode *tree, QString path, QString basepath);
         static void parse_node_content(QString content);
     private:
 };

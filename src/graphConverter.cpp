@@ -95,7 +95,8 @@ void graphConverter::set_relation(const AbstractNode& node, vertex_d vert) {
 bTree graphConverter::convert_tree(Tree* tree, QString tree_filename) {
     traverse(*tree->root());
     // export to dot file for GraphViz...
-    QString dot_filename = QString("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/graph_viz/%1.dot").arg(tree_filename);
+    QString dot_filename = QString("../../data/graph_viz/%1.dot").arg(tree_filename);
+    // QString dot_filename = QString("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/graph_viz/%1.dot").arg(tree_filename);
     std::cout << "dot_filename : " << dot_filename.toStdString() << std::endl;  
     // std::string dot_filename("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/graph_viz/two_cylinder.dot");
     std::ofstream dotfile(dot_filename.toUtf8());
@@ -107,7 +108,8 @@ bTree graphConverter::convert_tree(Tree* tree, QString tree_filename) {
     // // dp.property("aux_name", get(&Node::aux_name, m_BTree));
     boost::write_graphviz_dp(dotfile, m_BTree, dp);
 
-    QString layout_dot_filename = QString("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/graph_viz/%1_layout.dot").arg(tree_filename);
+    QString layout_dot_filename = QString("../../data/graph_viz/%1_layout.dot").arg(tree_filename);
+    // QString layout_dot_filename = QString("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/graph_viz/%1_layout.dot").arg(tree_filename);
     QString cmd = QString("dot -Tdot %1 -o %2").arg(dot_filename).arg(layout_dot_filename);
     std::system(cmd.toUtf8());
     // boost::write_graphviz(dotfile, m_BTree, 

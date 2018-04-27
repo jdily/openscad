@@ -8,9 +8,11 @@ void vizTools::vizTree_graphviz(tree_hnode *tree, QString filename) {
 
 }
 
-tree_hnode* vizTools::make_layout_graphviz(tree_hnode *tree, QString filename) {
+tree_hnode* vizTools::make_layout_graphviz(tree_hnode *tree, QString filename, QString basepath) {
     // TODO : deal with the path..
-    QString dot_filename = QString("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/graph_viz/%1.dot").arg(filename);
+    
+    QString dot_filename = QString("%1/graph_viz/%2.dot").arg(basepath).arg(filename);
+    // QString dot_filename = QString("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/graph_viz/%1.dot").arg(filename);
     QFile file(dot_filename);
     file.open(QIODevice::WriteOnly | QIODevice::Text);
 	QTextStream out(&file);
@@ -49,7 +51,8 @@ tree_hnode* vizTools::make_layout_graphviz(tree_hnode *tree, QString filename) {
     out << "}" << endl;
     file.close();
     ///////////////////////////////////////////////
-    QString layout_dot_filename = QString("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/graph_viz/%1_layout.dot").arg(filename);
+    QString layout_dot_filename = QString("%1/graph_viz/%2_layout.dot").arg(basepath).arg(filename);
+    // QString layout_dot_filename = QString("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/graph_viz/%1_layout.dot").arg(filename);
     std::cout << "layout dot name : " << layout_dot_filename.toStdString() << std::endl;
 	QString commandq = QString("dot -Tdot %1 -o %2").arg(dot_filename).arg(layout_dot_filename);
 	QByteArray ba = commandq.toLocal8Bit();

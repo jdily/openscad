@@ -30,6 +30,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow
 
 public:
 	QString fileName;
+	QString data_basepath;
 
 	class Preferences *prefs;
 

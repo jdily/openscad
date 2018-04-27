@@ -664,6 +664,7 @@ void MainWindow::loadViewSettings() {
 		viewActionShowCrosshairs->setChecked(true);
 		viewModeShowCrosshairs();
 	}
+
 	if (settings.value("view/showScaleProportional", true).toBool()) {
         viewActionShowScaleProportional->setChecked(true);
         viewModeShowScaleProportional();
@@ -812,11 +813,16 @@ void MainWindow::setFileName(const QString &filename)
 	if (filename.isEmpty()) {
 		this->fileName.clear();
 		setWindowFilePath(_("Untitled.scad"));
-		
 		this->top_ctx.setDocumentPath(currentdir);
 	} else {
 		QFileInfo fileinfo(filename);
 		this->fileName = fileinfo.absoluteFilePath();
+		std::string _filename = this->fileName.toStdString();
+		std::vector<std::string> tmps;
+		boost::split(tmps, _filename, boost::is_any_of("/"));
+		tmps.pop_back();
+		std::string basepath = boost::algorithm::join(tmps, "/");
+		this->data_basepath = QString(basepath.c_str());
 		setWindowFilePath(this->fileName);
 		if (Feature::ExperimentalCustomizer.is_enabled()) {
 			this->parameterWidget->readFile(this->fileName);
@@ -1167,8 +1173,15 @@ void MainWindow::instantiateRoot()
 			std::vector<std::string> strs;
 			boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
 			std::cout << strs[0] << std::endl;
+			// tmps.pop_back();
+			// std::string basepath = boost::algorithm::join(tmps, "/");
+			// std::cout << basepath << std::endl;
 			std::cout << "finish convert" << std::endl;
-			tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()));
+
+			// auto fileInfo = QFileInfo(this->fileName);
+			// std::cout << fileInfo.absoluteFilePath().toStdString() << std::endl;
+
+			tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()), this->data_basepath);
 			qtreeViewer->setSTree(layout_tree);
 			// qtreeViewer->setTree(&this->tree);	
 			// ichao : initialize the transferer
@@ -1396,7 +1409,7 @@ void MainWindow::compileCSG(bool procevents)
 		PRINTB("WARNING: Normalized tree has %d elements!", this->root_products->size());
 		PRINT("WARNING: OpenCSG rendering has been disabled.");
 	}
-#ifdef ENABLE_OPENCSG
+#ifdef ENABLE_OPENCSGauto fileInfo = QFileInfo(this->fileName);
 	else {
 		PRINTB("Normalized CSG tree has %d elements",
 					 (this->root_products ? this->root_products->size() : 0));
@@ -1420,7 +1433,7 @@ void MainWindow::actionNew()
 	if (MainWindow::mdiMode) {
 		new MainWindow(QString());
 	} else {
-		if (!maybeSave())
+		if (!maybeSave())auto fileInfo = QFileInfo(this->fileName);
 			return;
 
 		setFileName("");
@@ -1465,7 +1478,7 @@ void MainWindow::updateRecentFileActions()
 {
 	auto files = UIUtils::recentFiles();
 	
-	for (int i = 0; i < files.size(); ++i) {
+	for (int i = 0; i < files.size(); ++i) {auto fileInfo = QFileInfo(this->fileName);
 		this->actionRecentFile[i]->setText(QFileInfo(files[i]).fileName());
 		this->actionRecentFile[i]->setData(files[i]);
 		this->actionRecentFile[i]->setVisible(true);
@@ -3203,7 +3216,8 @@ void MainWindow::retrieveExamples() {
 	PRINT("[ichao] retrieve test function here...");
 	this->processEvents();
 	setCurrentOutput();
-	QString exp_filename0("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
+	QString exp_filename0 = QString("%1/manual_transfer/two_rect_cover.scad").arg(this->data_basepath);
+	// QString exp_filename0("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
 	tmp_loadSimilarExample(0, exp_filename0);
 	example_csgReloadRender(0);
 	// this->root_node = const_cast<AbstractNode*>(result_tree->root());
@@ -3211,11 +3225,13 @@ void MainWindow::retrieveExamples() {
 	// this->tree.clear_cache();
 	// this->tree.getString(*this->root_node);
 	// csgReloadRender();
-	QString exp_filename1("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/examples/uploads_7b_a5_5d_8a_5a_round_box_with_lid.scad");
+	QString exp_filename1 = QString("%1/examples/uploads_7b_a5_5d_8a_5a_round_box_with_lid.scad").arg(this->data_basepath);
+	// QString exp_filename1("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/examples/uploads_7b_a5_5d_8a_5a_round_box_with_lid.scad");
 	// QString exp_filename1("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
 	tmp_loadSimilarExample(1, exp_filename1);
 	example_csgReloadRender(1);
-	QString exp_filename2("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/examples/hinge_box.scad");
+	QString exp_filename2 = QString("%1/examples/hinge_box.scad").arg(this->data_basepath);
+	// QString exp_filename2("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/examples/hinge_box.scad");
 	// QString exp_filename2("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
 	tmp_loadSimilarExample(2, exp_filename2);
 	example_csgReloadRender(2);
@@ -3241,8 +3257,10 @@ void MainWindow::example_selectedSlot(int example_id) {
     boost::split(tmps, _filename, boost::is_any_of("/"));
 	std::vector<std::string> strs;
 	boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
+	// tmps.pop_back();
+	// std::string basepath = boost::algorithm::join(tmps, "/");
 	std::cout << strs[0] << std::endl;
 	std::cout << "finish convert" << std::endl;
-	tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()));
+	tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()), this->data_basepath);
 	qtreeViewer->setSTree(layout_tree);
 }
