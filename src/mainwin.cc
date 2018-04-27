@@ -820,9 +820,17 @@ void MainWindow::setFileName(const QString &filename)
 		std::string _filename = this->fileName.toStdString();
 		std::vector<std::string> tmps;
 		boost::split(tmps, _filename, boost::is_any_of("/"));
-		tmps.pop_back();
-		std::string basepath = boost::algorithm::join(tmps, "/");
-		this->data_basepath = QString(basepath.c_str());
+		std::vector<std::string> base_tmps;
+		for (int i = 0; i < (int)tmps.size(); i++) {
+			if (tmps[i] != "data") {
+				base_tmps.push_back(tmps[i]);
+			} else if (tmps[i] == "data") {
+				base_tmps.push_back(tmps[i]);
+				break;
+			}
+		}
+		std::string basepath = boost::algorithm::join(base_tmps, "/");
+		this->data_basepath = QString(basepath.c_str());	
 		setWindowFilePath(this->fileName);
 		if (Feature::ExperimentalCustomizer.is_enabled()) {
 			this->parameterWidget->readFile(this->fileName);
@@ -974,7 +982,7 @@ void MainWindow::compile(bool reload, bool forcedone, bool rebuildParameterWidge
 	else {
 		shouldcompiletoplevel = true;
 	}
-	std::cout << "it should compile  " << shouldcompiletoplevel << std::endl;
+	// std::cout << "it should compile  " << shouldcompiletoplevel << std::endl;
 	// shouldcompiletoplevel = true;
 	if (!shouldcompiletoplevel && this->parsed_module) {
 		auto mtime = this->parsed_module->includesChanged();
@@ -1988,7 +1996,7 @@ bool MainWindow::checkEditorModified()
 void MainWindow::actionReloadRenderPreview()
 {
 	if (GuiLocker::isLocked()) return;
-	GuiLocker::lock();
+	// GuiLocker::lock();
 	autoReloadTimer->stop();
 	setCurrentOutput();
 
@@ -2049,7 +2057,7 @@ void MainWindow::actionRenderPreview(bool rebuildParameterWidget)
 
 	preview_requested=true;
 	if (GuiLocker::isLocked()) return;
-	GuiLocker::lock();
+	// GuiLocker::lock();
 	autoReloadTimer->stop();
 	preview_requested=false;
 	setCurrentOutput();
@@ -2142,10 +2150,16 @@ void MainWindow::csgRender()
 
 void MainWindow::actionRender()
 {
-	if (GuiLocker::isLocked()) return;
-	GuiLocker::lock();
+	// TODO : check this...
+	if (GuiLocker::isLocked()) {
+		std::cout << "gui lock?????" << std::endl;
+		return;
+	}
+	// GuiLocker::lock();
 	autoReloadTimer->stop();
 	setCurrentOutput();
+
+	std::cout << "action render ~~~~" << std::endl;
 
 	PRINT("Parsing design (AST generation)...");
 	this->processEvents();
@@ -3069,7 +3083,8 @@ void MainWindow::transModeTransferOne() {
 	this->processEvents();
 	// set output to console 
 	setCurrentOutput();
-	QString exp_filename("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
+	QString exp_filename = QString("%1/manual_transfer/two_rect_cover.scad").arg(this->data_basepath);
+	// QString exp_filename("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
 	// QString exp_filename("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_cylinder_cover.scad");
 	// QString example_file("C:\Users\jdily\Desktop\project\ddCAD\data\manual_transfer/\two_rect_cover");
     QFile file(exp_filename);
@@ -3208,7 +3223,7 @@ void MainWindow::tmp_loadSimilarExample(int example_id, QString exp_filename) {
 
 // TODO : apply the same camera angle as the main viewer...
 void MainWindow::retrieveExamples() {
-	// std::cout << "retrieve" << std::endl;
+	// std::cout << "retrieve" <<example_csgReloadRender std::endl;
 	PRINT("[ichao] retrieve test function here...");
 	this->processEvents();
 	setCurrentOutput();
@@ -3244,6 +3259,8 @@ void MainWindow::example_selectedSlot(int example_id) {
 	// // // clean the cache first and re-dump again..
 	this->tree.clear_cache();
 	this->tree.getString(*this->root_node);
+	std::cout << "rerender after example transferred.." << std::endl;
+	GuiLocker::unlock();
 	csgReloadRender();
 
 	// transfer the selected tree
@@ -3260,4 +3277,5 @@ void MainWindow::example_selectedSlot(int example_id) {
 	std::cout << "finish convert" << std::endl;
 	tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()), this->data_basepath);
 	qtreeViewer->setSTree(layout_tree);
+
 }
