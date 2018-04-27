@@ -974,7 +974,7 @@ void MainWindow::compile(bool reload, bool forcedone, bool rebuildParameterWidge
 	else {
 		shouldcompiletoplevel = true;
 	}
-	std::cout << "if should compile  " << shouldcompiletoplevel << std::endl;
+	std::cout << "it should compile  " << shouldcompiletoplevel << std::endl;
 	// shouldcompiletoplevel = true;
 	if (!shouldcompiletoplevel && this->parsed_module) {
 		auto mtime = this->parsed_module->includesChanged();
@@ -1173,11 +1173,7 @@ void MainWindow::instantiateRoot()
 			std::vector<std::string> strs;
 			boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
 			std::cout << strs[0] << std::endl;
-			// tmps.pop_back();
-			// std::string basepath = boost::algorithm::join(tmps, "/");
-			// std::cout << basepath << std::endl;
 			std::cout << "finish convert" << std::endl;
-
 			// auto fileInfo = QFileInfo(this->fileName);
 			// std::cout << fileInfo.absoluteFilePath().toStdString() << std::endl;
 
@@ -3237,6 +3233,7 @@ void MainWindow::retrieveExamples() {
 	example_csgReloadRender(2);
 }
 
+// TODO : why the geometry is not compiled..?
 void MainWindow::example_selectedSlot(int example_id) {
 	std::cout << example_id << "th example is selected " << std::endl;
 	int fixed_example_id = 0;
