@@ -829,6 +829,7 @@ void MainWindow::setFileName(const QString &filename)
 				break;
 			}
 		}
+		// seems working
 		std::string basepath = boost::algorithm::join(base_tmps, "/");
 		this->data_basepath = QString(basepath.c_str());	
 		setWindowFilePath(this->fileName);
