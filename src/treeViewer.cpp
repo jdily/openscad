@@ -120,7 +120,7 @@ void treeViewer::setSTree(tree_hnode* htree) {
         ++iterator;
     }
     std::cout << "there are " << m_pScene->items().size() << " items in the scene" << std::endl;
-
+    
 }
 
 void treeViewer::setBTree(bTree *btree) {

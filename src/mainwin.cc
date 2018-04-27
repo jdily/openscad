@@ -982,7 +982,7 @@ void MainWindow::compile(bool reload, bool forcedone, bool rebuildParameterWidge
 	else {
 		shouldcompiletoplevel = true;
 	}
-	// std::cout << "it should compile  " << shouldcompiletoplevel << std::endl;
+	std::cout << "it should compile  " << shouldcompiletoplevel << std::endl;
 	// shouldcompiletoplevel = true;
 	if (!shouldcompiletoplevel && this->parsed_module) {
 		auto mtime = this->parsed_module->includesChanged();
@@ -1162,6 +1162,13 @@ void MainWindow::instantiateRoot()
 		this->absolute_root_node = this->root_module->instantiateWithFileContext(&filectx, &this->root_inst, nullptr);
 		this->updateCamera(filectx);
 		
+		if (GuiLocker::isLocked()) {
+			std::cout << "init gui lock..." << std::endl;
+			return;
+		} else {
+			std::cout << "init gui not lock" << std::endl;
+
+		}
 		if (this->absolute_root_node) {
 			// Do we have an explicit root node (! modifier)?
 			if (!(this->root_node = find_root_tag(this->absolute_root_node))) {
@@ -1182,13 +1189,18 @@ void MainWindow::instantiateRoot()
 			boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
 			std::cout << strs[0] << std::endl;
 			std::cout << "finish convert" << std::endl;
-			// auto fileInfo = QFileInfo(this->fileName);
-			// std::cout << fileInfo.absoluteFilePath().toStdString() << std::endl;
 
 			tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()), this->data_basepath);
 			qtreeViewer->setSTree(layout_tree);
 			// qtreeViewer->setTree(&this->tree);	
 			// ichao : initialize the transferer
+			if (GuiLocker::isLocked()) {
+				std::cout << "after build tree gui lock..." << std::endl;
+				return;
+			} else {
+				std::cout << "after build tree gui not lock" << std::endl;
+
+			}
 			transferer = new geomTransferer(&this->tree);
 		}
 	}
@@ -1996,7 +2008,7 @@ bool MainWindow::checkEditorModified()
 void MainWindow::actionReloadRenderPreview()
 {
 	if (GuiLocker::isLocked()) return;
-	// GuiLocker::lock();
+	GuiLocker::lock();
 	autoReloadTimer->stop();
 	setCurrentOutput();
 
@@ -2036,7 +2048,6 @@ void MainWindow::example_csgReloadRender(int example_id) {
 void MainWindow::csgReloadRender()
 {
 	if (this->root_node) compileCSG(true);
-
 	// Go to non-CGAL view mode
 	if (viewActionThrownTogether->isChecked()) {
 		viewModeThrownTogether();
@@ -2057,7 +2068,7 @@ void MainWindow::actionRenderPreview(bool rebuildParameterWidget)
 
 	preview_requested=true;
 	if (GuiLocker::isLocked()) return;
-	// GuiLocker::lock();
+	GuiLocker::lock();
 	autoReloadTimer->stop();
 	preview_requested=false;
 	setCurrentOutput();
@@ -2155,7 +2166,7 @@ void MainWindow::actionRender()
 		std::cout << "gui lock?????" << std::endl;
 		return;
 	}
-	// GuiLocker::lock();
+	// // GuiLocker::lock();
 	autoReloadTimer->stop();
 	setCurrentOutput();
 
@@ -3115,7 +3126,7 @@ void MainWindow::transModeTransferOne() {
 	AbstractNode* exp_abs_node;
 	AbstractNode* exp_root_node;
 	if (exp_module) {
-		std::cout << "load examples..." << std::endl;
+		std::cout << "load examples..." << std::endl;	
 		AbstractNode::resetIndexCounter();
 		auto mi = ModuleInstantiation( "group" );
 		ModuleInstantiation exp_inst = mi;
@@ -3260,7 +3271,7 @@ void MainWindow::example_selectedSlot(int example_id) {
 	this->tree.clear_cache();
 	this->tree.getString(*this->root_node);
 	std::cout << "rerender after example transferred.." << std::endl;
-	GuiLocker::unlock();
+	// GuiLocker::unlock();
 	csgReloadRender();
 
 	// transfer the selected tree
