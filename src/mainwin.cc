@@ -1163,13 +1163,13 @@ void MainWindow::instantiateRoot()
 		this->absolute_root_node = this->root_module->instantiateWithFileContext(&filectx, &this->root_inst, nullptr);
 		this->updateCamera(filectx);
 		
-		if (GuiLocker::isLocked()) {
-			std::cout << "init gui lock..." << std::endl;
-			return;
-		} else {
-			std::cout << "init gui not lock" << std::endl;
+		// if (GuiLocker::isLocked()) {
+		// 	std::cout << "init gui lock..." << std::endl;
+		// 	return;
+		// } else {
+		// 	std::cout << "init gui not lock" << std::endl;
 
-		}
+		// }
 		if (this->absolute_root_node) {
 			// Do we have an explicit root node (! modifier)?
 			if (!(this->root_node = find_root_tag(this->absolute_root_node))) {
@@ -1195,6 +1195,7 @@ void MainWindow::instantiateRoot()
 			qtreeViewer->setSTree(layout_tree);
 			// qtreeViewer->setTree(&this->tree);	
 			// ichao : initialize the transferer
+			this->transferer = new geomTransferer(&this->tree);
 			if (GuiLocker::isLocked()) {
 				std::cout << "after build tree gui lock..." << std::endl;
 				return;
@@ -1202,7 +1203,7 @@ void MainWindow::instantiateRoot()
 				std::cout << "after build tree gui not lock" << std::endl;
 
 			}
-			transferer = new geomTransferer(&this->tree);
+			
 		}
 	}
 
@@ -3087,7 +3088,6 @@ void MainWindow::processEvents()
 	if (this->procevents) QApplication::processEvents();
 }
 
-
 // ichao : transfer test function..
 void MainWindow::transModeTransferOne() {
 	// std::cout << "transfer one test function here" << std::endl;
@@ -3264,6 +3264,13 @@ void MainWindow::retrieveExamples() {
 void MainWindow::example_selectedSlot(int example_id) {
 	std::cout << example_id << "th example is selected " << std::endl;
 	int fixed_example_id = 0;
+	if (exp_trees[fixed_example_id] == nullptr) {
+		std::cout << "null.." << std::endl;
+	}
+	if (this->transferer == nullptr) {
+		std::cout << "null transferer.." << std::endl;
+	}
+
 	transferer->add_example_tree(exp_trees[fixed_example_id]);
 
 	Tree* result_tree = transferer->transfer(3, 2);
@@ -3272,7 +3279,7 @@ void MainWindow::example_selectedSlot(int example_id) {
 	this->tree.clear_cache();
 	this->tree.getString(*this->root_node);
 	std::cout << "rerender after example transferred.." << std::endl;
-	// GuiLocker::unlock();
+	
 	csgReloadRender();
 
 	// transfer the selected tree
@@ -3289,5 +3296,6 @@ void MainWindow::example_selectedSlot(int example_id) {
 	std::cout << "finish convert" << std::endl;
 	tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()), this->data_basepath);
 	qtreeViewer->setSTree(layout_tree);
+	GuiLocker::unlock();
 
 }
