@@ -28,6 +28,7 @@
 #include "Geometry.h"
 #include "linalg.h"
 #include <sstream>
+#include <iostream>
 #include <boost/range/iterator_range.hpp>
 
 /*!
@@ -199,9 +200,11 @@ std::string CSGProduct::dump() const
 	for(const auto &csgobj :
 								boost::make_iterator_range(this->intersections.begin() + 1,
 																					 this->intersections.end())) {
+		std::cout << "intersections " << std::endl;
 		dump << " *" << csgobj.leaf->label;
 	}
 	for(const auto &csgobj : this->subtractions) {
+		std::cout << "subtractions	 " << std::endl;
 		dump << " -" << csgobj.leaf->label;
 	}
 	return dump.str();

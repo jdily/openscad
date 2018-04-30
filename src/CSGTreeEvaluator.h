@@ -50,6 +50,10 @@ private:
   typedef std::list<const AbstractNode *> ChildList;
 	std::map<int, ChildList> visitedchildren;
 
+
+	// ichao added : check the stored term after buildCSGTree.
+	void check_stored_term();
+
 protected:
 	const Tree &tree;
 	class GeometryEvaluator *geomevaluator;

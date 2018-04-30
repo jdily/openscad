@@ -1377,7 +1377,6 @@ void MainWindow::compileCSG(bool procevents)
 
 	size_t normalizelimit = 2 * Preferences::inst()->getValue("advanced/openCSGLimit").toUInt();
 	CSGTreeNormalizer normalizer(normalizelimit);
-	
 	if (this->csgRoot) {
 		this->normalizedRoot = normalizer.normalize(this->csgRoot);
 		if (this->normalizedRoot) {
@@ -1390,8 +1389,21 @@ void MainWindow::compileCSG(bool procevents)
 			this->processEvents();
 		}
 	}
+	PRINTB("root products size : %d...", this->root_products->size());
+	PRINTB("root produces : %s", this->root_products->dump());
+	for (int i = 0; i < this->root_products->size(); i++) {
+		CSGProduct product = this->root_products->products[i];
+		// std::cout << i << ": intersetion size : " << intersections.size() 
+		// std::cout << product.intersections[0].leaf->dump() << " " << product.subtractions[0].leaf->dump() << std::endl;
+		// std::cout << i << " " << product.dump() << std::endl;
+
+	}
+
+
+
 
 	const std::vector<shared_ptr<CSGNode> > &highlight_terms = csgrenderer.getHighlightNodes();
+	PRINTB("Highlight term size : %d...", highlight_terms.size());
 	if (highlight_terms.size() > 0) {
 		PRINTB("Compiling highlights (%d CSG Trees)...", highlight_terms.size());
 		this->processEvents();
@@ -1407,6 +1419,7 @@ void MainWindow::compileCSG(bool procevents)
 	}
 	
 	const auto &background_terms = csgrenderer.getBackgroundNodes();
+	PRINTB("Background term size : %d...", background_terms.size());
 	if (background_terms.size() > 0) {
 		PRINTB("Compiling background (%d CSG Trees)...", background_terms.size());
 		this->processEvents();

@@ -32,6 +32,8 @@ shared_ptr<CSGNode> CSGTreeEvaluator::buildCSGTree(const AbstractNode &node)
 {
 	// std::cout << "CSGTreeEvaluator buildCSGTree" << std::endl;
 	this->traverse(node);
+	check_stored_term();	
+	// std::cout << "node index : " << node.index() << std::endl;
 	shared_ptr<CSGNode> t(this->stored_term[node.index()]);
 	if (t) {
 		if (t->isHighlight()) this->highlightNodes.push_back(t);
@@ -42,6 +44,18 @@ shared_ptr<CSGNode> CSGTreeEvaluator::buildCSGTree(const AbstractNode &node)
 	}
 	return this->rootNode = t;
 }
+
+void CSGTreeEvaluator::check_stored_term() {
+	// go through all keys
+	std::cout << "check stored term" << std::endl;
+	std::cout << "stored size : " << stored_term.size() << std::endl;
+	std::vector<int> v;
+	for(std::map<int,shared_ptr<CSGNode>>::iterator it = stored_term.begin(); it != stored_term.end(); ++it) {
+  		v.push_back(it->first);
+  		std::cout << it->first << "\n";
+	}
+}
+
 
 void CSGTreeEvaluator::applyBackgroundAndHighlight(State & /*state*/, const AbstractNode &node)
 {
@@ -55,6 +69,7 @@ void CSGTreeEvaluator::applyBackgroundAndHighlight(State & /*state*/, const Abst
 	}
 }
 
+// ichao : trace here...
 void CSGTreeEvaluator::applyToChildren(State & /*state*/, const AbstractNode &node, OpenSCADOperator op)
 {
 	shared_ptr<CSGNode> t1;
@@ -199,10 +214,12 @@ shared_ptr<CSGNode> CSGTreeEvaluator::evaluateCSGNodeFromGeometry(
 Response CSGTreeEvaluator::visit(State &state, const AbstractPolyNode &node)
 {
 	// ichao : check the abstract poly status
-	// std::cout << "visit abstract poly node" << std::endl;
+	// std::cout << "visit abstract poly node" << std::endl;	
 	if (state.isPostfix()) {
 		shared_ptr<CSGNode> t1;
+		std::cout << "visit abstract poly node postfix for poly node " << node.index() << std::endl;	
 		if (this->geomevaluator) {
+			std::cout << "geom evaluation..." << std::endl;
 			auto geom = this->geomevaluator->evaluateGeometry(node, false);
 			if (geom) {
 				t1 = evaluateCSGNodeFromGeometry(state, geom, node.modinst, node);
@@ -210,6 +227,7 @@ Response CSGTreeEvaluator::visit(State &state, const AbstractPolyNode &node)
 			node.progress_report();
 		}
 		this->stored_term[node.index()] = t1;
+		std::cout << "stored term size : " << this->stored_term.size() << std::endl;
 		addToParent(state, node);
 	}
 	return Response::ContinueTraversal;
