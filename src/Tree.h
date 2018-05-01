@@ -1,7 +1,8 @@
 #pragma once
 
 #include "nodecache.h"
-
+#include <map>
+#include "csgnode.h"
 /*!  
 	For now, just an abstraction of the node tree which keeps a dump
 	cache based on node indices around.
@@ -37,6 +38,9 @@ public:
 
 	NodeCache& get_cache() { return this->nodecache; } 	
 	void clear_cache();
+
+	// ichao additional data
+	std::map<int, shared_ptr<CSGNode> > csg_stored_term;
 private:
   const AbstractNode *root_node;
   mutable NodeCache nodecache;

@@ -43,4 +43,8 @@ private:
     QMap<int, hnode*> hnodes;
     QMap<int, tree_hnode::iterator> hnode_iters;
     // std::vector<tree_hnode::iterator> node_iters;
+    
+    // class GeometryEvaluator *geomevaluator;
+    std::map<int, shared_ptr<CSGNode> > tree_stored_term;
+
 }; 

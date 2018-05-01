@@ -1359,6 +1359,9 @@ void MainWindow::compileCSG(bool procevents)
 		// ichao : set graph here and draw it.
 		// qtreeViewer->setTree(&this->tree);	
 		this->csgRoot = csgrenderer.buildCSGTree(*root_node);
+		this->tree.csg_stored_term = csgrenderer.get_stored_term();
+		// this->
+		std::cout << "csg root dump : " << this->csgRoot->dump() << std::endl;
 #endif
 		GeometryCache::instance()->print();
 #ifdef ENABLE_CGAL
@@ -1392,15 +1395,12 @@ void MainWindow::compileCSG(bool procevents)
 	PRINTB("root products size : %d...", this->root_products->size());
 	PRINTB("root produces : %s", this->root_products->dump());
 	for (int i = 0; i < this->root_products->size(); i++) {
-		CSGProduct product = this->root_products->products[i];
+		// CSGProduct product = this->root_products->products[i];
 		// std::cout << i << ": intersetion size : " << intersections.size() 
 		// std::cout << product.intersections[0].leaf->dump() << " " << product.subtractions[0].leaf->dump() << std::endl;
 		// std::cout << i << " " << product.dump() << std::endl;
 
 	}
-
-
-
 
 	const std::vector<shared_ptr<CSGNode> > &highlight_terms = csgrenderer.getHighlightNodes();
 	PRINTB("Highlight term size : %d...", highlight_terms.size());

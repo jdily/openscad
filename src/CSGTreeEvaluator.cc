@@ -32,7 +32,7 @@ shared_ptr<CSGNode> CSGTreeEvaluator::buildCSGTree(const AbstractNode &node)
 {
 	// std::cout << "CSGTreeEvaluator buildCSGTree" << std::endl;
 	this->traverse(node);
-	check_stored_term();	
+	check_stored_term();
 	// std::cout << "node index : " << node.index() << std::endl;
 	shared_ptr<CSGNode> t(this->stored_term[node.index()]);
 	if (t) {
@@ -52,7 +52,7 @@ void CSGTreeEvaluator::check_stored_term() {
 	std::vector<int> v;
 	for(std::map<int,shared_ptr<CSGNode>>::iterator it = stored_term.begin(); it != stored_term.end(); ++it) {
   		v.push_back(it->first);
-  		std::cout << it->first << "\n";
+  		std::cout << it->first << "  " << it->second->dump() << std::endl;
 	}
 }
 
@@ -75,7 +75,8 @@ void CSGTreeEvaluator::applyToChildren(State & /*state*/, const AbstractNode &no
 	shared_ptr<CSGNode> t1;
 	for(const auto &chnode : this->visitedchildren[node.index()]) {
 		shared_ptr<CSGNode> t2(this->stored_term[chnode->index()]);
-		this->stored_term.erase(chnode->index());
+		// ichao : check if we can retain all these stored_term
+		// this->stored_term.erase(chnode->index());
 		if (t2 && !t1) {
 			t1 = t2;
 		} else if (t2 && t1) {

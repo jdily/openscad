@@ -204,7 +204,7 @@ std::string CSGProduct::dump() const
 		dump << " *" << csgobj.leaf->label;
 	}
 	for(const auto &csgobj : this->subtractions) {
-		std::cout << "subtractions	 " << std::endl;
+		// std::cout << "subtractions	 " << std::endl;
 		dump << " -" << csgobj.leaf->label;
 	}
 	return dump.str();

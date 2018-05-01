@@ -37,6 +37,10 @@ public:
 		return this->backgroundNodes;
 	}
 
+	std::map<int, shared_ptr<CSGNode>> get_stored_term() {
+		return this->stored_term;
+	}
+
 private:
   void addToParent(const State &state, const AbstractNode &node);
 	void applyToChildren(State &state, const AbstractNode &node, OpenSCADOperator op);

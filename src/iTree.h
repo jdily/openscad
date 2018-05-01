@@ -14,6 +14,7 @@
 #include <boost/graph/detail/read_graphviz_new.hpp>
 #include <boost/property_map/dynamic_property_map.hpp>
 
+#include "csgnode.h"
 #include "stree.h"
 typedef boost::square_topology<boost::mt19937>::point_type topo_point;
 
@@ -74,6 +75,7 @@ struct hnode {
     float pos_x;
     float pos_y;
     const AbstractNode *node;
+    shared_ptr<CSGNode> csgnode;
 };
 
 class iTree {
