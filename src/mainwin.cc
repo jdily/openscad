@@ -1183,6 +1183,21 @@ void MainWindow::instantiateRoot()
 			// // ichao : set graph here and draw it.
 			streeConverter *sconv = new streeConverter();
 			tree_hnode* htree = sconv->convert_tree(&tree);
+			// check the csgnode embed in this hree...
+			// tree_hnode::pre_order_iterator pre_iter(htree->begin());
+			// int index = 0;
+			// while (pre_iter != htree->end()) {
+			// 	if ((*pre_iter)->csgnode != nullptr) {
+			// 		std::cout << index << " " << (*pre_iter)->type << " " << (*pre_iter)->csgnode->dump() << std::endl;
+			// 	} else {
+			// 		std::cout << index << " " << (*pre_iter)->type << std::endl;
+			// 	}
+			// 	pre_iter ++;
+			// 	index ++;
+			// }
+
+
+
 			std::vector<std::string> tmps;
 			std::string _filename = this->fileName.toStdString();
 			boost::split(tmps, _filename, boost::is_any_of("/"));

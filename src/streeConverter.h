@@ -46,5 +46,5 @@ private:
     
     // class GeometryEvaluator *geomevaluator;
     std::map<int, shared_ptr<CSGNode> > tree_stored_term;
-
-}; 
+    bool has_csginfo;
+};  
