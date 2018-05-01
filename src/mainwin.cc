@@ -1189,7 +1189,11 @@ void MainWindow::instantiateRoot()
 			while (pre_iter != htree->end()) {
 				if ((*pre_iter)->csgnode != nullptr) {
 					std::cout << index << " " << (*pre_iter)->type << " " << (*pre_iter)->csgnode->dump() << std::endl;
-					std::cout << (*pre_iter)->csgnode->geom->dump() << std::endl;
+					// std::cout << (*pre_iter)->csgnode->geom->dump() << std::endl;
+					CGAL_Nef_polyhedron *poly = CGALUtils::createNefPolyhedronFromGeometry(*((*pre_iter)->csgnode->geom));	
+					if (poly == nullptr) {
+						std::cout << "poly null " << std::endl;
+					}				
 				} else {
 					std::cout << index << " " << (*pre_iter)->type << std::endl;
 				}
