@@ -40,7 +40,7 @@ public:
 	void clear_cache();
 
 	// ichao additional data
-	std::map<int, shared_ptr<CSGNode> > csg_stored_term;
+	std::map<int, shared_ptr<CSGLeaf> > csg_stored_leaf_term;
 private:
   const AbstractNode *root_node;
   mutable NodeCache nodecache;

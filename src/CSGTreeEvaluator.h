@@ -36,11 +36,9 @@ public:
 	const std::vector<shared_ptr<CSGNode>> &getBackgroundNodes() const {
 		return this->backgroundNodes;
 	}
-
-	std::map<int, shared_ptr<CSGNode>> get_stored_term() {
-		return this->stored_term;
+	std::map<int, shared_ptr<CSGLeaf>> get_stored_leaf_term() {
+		return this->stored_leaf_term;
 	}
-
 private:
   void addToParent(const State &state, const AbstractNode &node);
 	void applyToChildren(State &state, const AbstractNode &node, OpenSCADOperator op);
@@ -55,7 +53,7 @@ private:
 	std::map<int, ChildList> visitedchildren;
 
 
-	// ichao added : check the stored term after buildCSGTree.
+	// ichao added : check the stored term after
 	void check_stored_term();
 
 protected:
@@ -65,4 +63,7 @@ protected:
 	std::vector<shared_ptr<CSGNode>> highlightNodes;
 	std::vector<shared_ptr<CSGNode>> backgroundNodes;
 	std::map<int, shared_ptr<CSGNode>> stored_term; // The term evaluated from each node index
+	// ichao added
+	// GOAL : provide all evaluated geometry at any level....
+	std::map<int, shared_ptr<CSGLeaf>> stored_leaf_term;
 };

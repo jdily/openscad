@@ -25,7 +25,7 @@ Response streeConverter::visit(State &state, const RootNode &node) {
         _node->idx = node.index();
         _node->node = &node;
         if (this->has_csginfo) {
-            _node->csgnode = this->tree_stored_term[node.index()];
+            _node->csgnode = this->tree_stored_leaf_term[node.index()];
         }
         // _node.parent_idx = -1;
         // // hnodes[node.index()] = _node;
@@ -44,7 +44,7 @@ Response streeConverter::visit(State &state, const AbstractPolyNode &node) {
         _node->idx = node.index();
         _node->node = &node;
         if (this->has_csginfo) {
-            _node->csgnode = this->tree_stored_term[node.index()];
+            _node->csgnode = this->tree_stored_leaf_term[node.index()];
         }
         hnodes.insert(node.index(), _node);
         for (auto child : visitedchildren[node.index()]) {
@@ -61,7 +61,7 @@ Response streeConverter::visit(State &state, const TransformNode &node) {
         _node->idx = node.index();
         _node->node = &node;
         if (this->has_csginfo) {
-            _node->csgnode = this->tree_stored_term[node.index()];
+            _node->csgnode = this->tree_stored_leaf_term[node.index()];
         }
         hnodes.insert(node.index(), _node);
         for (auto child : visitedchildren[node.index()]) {
@@ -78,7 +78,7 @@ Response streeConverter::visit(State &state, const CsgOpNode &node) {
         _node->idx = node.index();
         _node->node = &node;
         if (this->has_csginfo) {
-            _node->csgnode = this->tree_stored_term[node.index()];
+            _node->csgnode = this->tree_stored_leaf_term[node.index()];
         }
         hnodes.insert(node.index(), _node);
         for (auto child : visitedchildren[node.index()]) {
@@ -94,8 +94,9 @@ Response streeConverter::visit(State &state, const GroupNode &node) {
         _node->type = "group";
         _node->idx = node.index();
         _node->node = &node;
+        // can we convert them all to Leaf node..
         if (this->has_csginfo) {
-            _node->csgnode = this->tree_stored_term[node.index()];
+            _node->csgnode = this->tree_stored_leaf_term[node.index()];
         }
         hnodes.insert(node.index(), _node);
         for (auto child : visitedchildren[node.index()]) {
@@ -127,9 +128,9 @@ void streeConverter::add_children(tree_hnode::iterator parent_node, childNodeLis
 
 tree_hnode* streeConverter::convert_tree(Tree *tree) {
     // TODO : test if we can obtain the right stored information here...
-    this->tree_stored_term = tree->csg_stored_term;
+    this->tree_stored_leaf_term = tree->csg_stored_leaf_term;
     // std::cout << "tree stored term size : " << this->tree_stored_term.size() << std::endl;
-    if (this->tree_stored_term.size() != 0) {
+    if (this->tree_stored_leaf_term.size() != 0) {
         this->has_csginfo = true;
     }
     traverse(*tree->root());
@@ -162,4 +163,8 @@ tree_hnode* streeConverter::convert_tree(Tree *tree) {
     //     // hnode_iters.insert(i, newNodeIter);
     // }
     return m_Tree;
+}
+
+shared_ptr<CSGLeaf> streeConverter::convert_to_leaf(shared_ptr<CSGNode> input) {
+    
 }

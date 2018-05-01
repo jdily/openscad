@@ -70,7 +70,7 @@ void CSGTreeEvaluator::applyBackgroundAndHighlight(State & /*state*/, const Abst
 }
 
 // ichao : trace here...
-void CSGTreeEvaluator::applyToChildren(State & /*state*/, const AbstractNode &node, OpenSCADOperator op)
+void CSGTreeEvaluator::applyToChildren(State & state, const AbstractNode &node, OpenSCADOperator op)
 {
 	shared_ptr<CSGNode> t1;
 	for(const auto &chnode : this->visitedchildren[node.index()]) {
@@ -152,6 +152,18 @@ void CSGTreeEvaluator::applyToChildren(State & /*state*/, const AbstractNode &no
 		if (node.modinst->isHighlight()) t1->setHighlight(true);
 	}
 	this->stored_term[node.index()] = t1;
+	// ichao added.
+	// make new geometry evaluation for all leaf...
+	shared_ptr<CSGNode> gt;
+	if (this->geomevaluator) {
+		std::cout << "geom evaluation..." << std::endl;
+		auto geom = this->geomevaluator->evaluateGeometry(node, false);
+		if (geom) {
+			gt = evaluateCSGNodeFromGeometry(state, geom, node.modinst, node);
+		}
+		node.progress_report();
+	}
+	this->stored_leaf_term[node.index()] = dynamic_pointer_cast<CSGLeaf>(gt);
 }
 
 Response CSGTreeEvaluator::visit(State &state, const AbstractNode &node)
@@ -228,6 +240,8 @@ Response CSGTreeEvaluator::visit(State &state, const AbstractPolyNode &node)
 			node.progress_report();
 		}
 		this->stored_term[node.index()] = t1;
+		// ichao added
+		this->stored_leaf_term[node.index()] = dynamic_pointer_cast<CSGLeaf>(t1);	
 		std::cout << "stored term size : " << this->stored_term.size() << std::endl;
 		addToParent(state, node);
 	}
@@ -271,7 +285,7 @@ Response CSGTreeEvaluator::visit(State &state, const ColorNode &node)
 	if (state.isPostfix()) {
 		applyToChildren(state, node, OpenSCADOperator::UNION);
 		addToParent(state, node);
-	}
+	}	
 	return Response::ContinueTraversal;
 }
 

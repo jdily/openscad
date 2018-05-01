@@ -75,7 +75,7 @@ struct hnode {
     float pos_x;
     float pos_y;
     const AbstractNode *node;
-    shared_ptr<CSGNode> csgnode;
+    shared_ptr<CSGLeaf> csgnode;
 };
 
 class iTree {

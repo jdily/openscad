@@ -33,6 +33,8 @@ private:
     typedef std::vector<hnode*> childNodeList;
     std::map<int, childNodeList> visitedchildren;
     void handleVisitedChildren(const State &state, const AbstractNode &node, hnode* hier_node);
+    shared_ptr<CSGLeaf> convert_to_leaf(shared_ptr<CSGNode> input);
+
 
     tree_hnode *m_Tree;
 
@@ -45,6 +47,6 @@ private:
     // std::vector<tree_hnode::iterator> node_iters;
     
     // class GeometryEvaluator *geomevaluator;
-    std::map<int, shared_ptr<CSGNode> > tree_stored_term;
+    std::map<int, shared_ptr<CSGLeaf> > tree_stored_leaf_term;
     bool has_csginfo;
 };  

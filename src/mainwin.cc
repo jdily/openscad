@@ -1184,17 +1184,18 @@ void MainWindow::instantiateRoot()
 			streeConverter *sconv = new streeConverter();
 			tree_hnode* htree = sconv->convert_tree(&tree);
 			// check the csgnode embed in this hree...
-			// tree_hnode::pre_order_iterator pre_iter(htree->begin());
-			// int index = 0;
-			// while (pre_iter != htree->end()) {
-			// 	if ((*pre_iter)->csgnode != nullptr) {
-			// 		std::cout << index << " " << (*pre_iter)->type << " " << (*pre_iter)->csgnode->dump() << std::endl;
-			// 	} else {
-			// 		std::cout << index << " " << (*pre_iter)->type << std::endl;
-			// 	}
-			// 	pre_iter ++;
-			// 	index ++;
-			// }
+			tree_hnode::pre_order_iterator pre_iter(htree->begin());
+			int index = 0;
+			while (pre_iter != htree->end()) {
+				if ((*pre_iter)->csgnode != nullptr) {
+					std::cout << index << " " << (*pre_iter)->type << " " << (*pre_iter)->csgnode->dump() << std::endl;
+					std::cout << (*pre_iter)->csgnode->geom->dump() << std::endl;
+				} else {
+					std::cout << index << " " << (*pre_iter)->type << std::endl;
+				}
+				pre_iter ++;
+				index ++;
+			}
 
 
 
@@ -1204,7 +1205,7 @@ void MainWindow::instantiateRoot()
 			std::vector<std::string> strs;
 			boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
 			std::cout << strs[0] << std::endl;
-			std::cout << "finish convert" << std::endl;
+			std::cout << "finish contree_sttree_stored_leaf_termored_termvert" << std::endl;
 
 			tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()), this->data_basepath);
 			qtreeViewer->setSTree(layout_tree);
@@ -1374,7 +1375,7 @@ void MainWindow::compileCSG(bool procevents)
 		// ichao : set graph here and draw it.
 		// qtreeViewer->setTree(&this->tree);	
 		this->csgRoot = csgrenderer.buildCSGTree(*root_node);
-		this->tree.csg_stored_term = csgrenderer.get_stored_term();
+		this->tree.csg_stored_leaf_term = csgrenderer.get_stored_leaf_term();
 		// this->
 		std::cout << "csg root dump : " << this->csgRoot->dump() << std::endl;
 #endif
