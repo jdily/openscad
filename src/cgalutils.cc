@@ -34,6 +34,7 @@
 #include <map>
 #include <queue>
 
+// TODO : check if we can use this function to get Poly...
 static CGAL_Nef_polyhedron *createNefPolyhedronFromPolySet(const PolySet &ps)
 {
 	if (ps.isEmpty()) return new CGAL_Nef_polyhedron();

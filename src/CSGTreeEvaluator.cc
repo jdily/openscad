@@ -227,7 +227,7 @@ shared_ptr<CSGNode> CSGTreeEvaluator::evaluateCSGNodeFromGeometry(
 Response CSGTreeEvaluator::visit(State &state, const AbstractPolyNode &node)
 {
 	// ichao : check the abstract poly status
-	// std::cout << "visit abstract poly node" << std::endl;	
+	// std::cout << "visit abstract poly node" << std::endl;
 	if (state.isPostfix()) {
 		shared_ptr<CSGNode> t1;
 		std::cout << "visit abstract poly node postfix for poly node " << node.index() << std::endl;	
