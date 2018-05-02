@@ -5,6 +5,11 @@
 #include "CGAL_Nef_polyhedron.h"
 #include "enums.h"
 
+#include <CGAL/Surface_mesh.h>
+#include <CGAL/boost/graph/convert_nef_polyhedron_to_polygon_mesh.h>
+typedef CGAL::Surface_mesh<Exact_kernel::Point_3> Surface_mesh;
+
+
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 typedef CGAL::Epick K;
 typedef CGAL::Point_3<K> Vertex3K;
@@ -46,4 +51,7 @@ namespace CGALUtils {
 	bool tessellate3DFaceWithHoles(std::vector<CGAL_Polygon_3> &polygons, 
 																 std::vector<CGAL_Polygon_3> &triangles,
 																 CGAL::Plane_3<CGAL_Kernel3> &plane);
+
+	// ichao added : from Nef_Polyhedra to Surface Mesh
+	bool nef_to_surface(CGAL_Nef_polyhedron *nef_poly);
 };

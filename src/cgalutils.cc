@@ -691,6 +691,10 @@ namespace CGALUtils {
 		}
 	}
 #endif // createPolySetFromNefPolyhedron3
+	bool nef_to_surface(CGAL_Nef_polyhedron *nef_poly) {
+		
+	}
+
 
 
 }; // namespace CGALUtils
