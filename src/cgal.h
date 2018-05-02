@@ -28,6 +28,8 @@
 #include <CGAL/minkowski_sum_3.h>
 #include <CGAL/bounding_box.h>
 #include <CGAL/utils.h>
+// #include <CGAL/boost/graph/convert_nef_polyhedron_to_polygon_mesh.h>
+#include <CGAL/Surface_mesh.h>
 
 #include <CGAL/assertions_behaviour.h>
 #include <CGAL/exceptions.h>
@@ -43,11 +45,14 @@ typedef CGAL::Polygon_with_holes_2<CGAL_ExactKernel2> CGAL_Poly2h;
 
 typedef CGAL::Gmpq NT3;
 typedef CGAL::Cartesian<NT3> CGAL_Kernel3;
+typedef CGAL::Exact_predicates_exact_constructions_kernel CGAL_EXACT_Kernel3;
 //typedef CGAL::Exact_predicates_exact_constructions_kernel::FT NT3;
 //typedef CGAL::Exact_predicates_exact_constructions_kernel CGAL_Kernel3;
 typedef CGAL::Nef_polyhedron_3<CGAL_Kernel3> CGAL_Nef_polyhedron3;
-typedef CGAL_Nef_polyhedron3::Aff_transformation_3 CGAL_Aff_transformation;
+typedef typename CGAL_Nef_polyhedron3::Point_3 Point_3;
 
+typedef CGAL_Nef_polyhedron3::Aff_transformation_3 CGAL_Aff_transformation;
+typedef CGAL::Surface_mesh<CGAL_Kernel3::Point_3> Surface_mesh;
 typedef CGAL::Polyhedron_3<CGAL_Kernel3> CGAL_Polyhedron;
 
 typedef CGAL::Point_3<CGAL_Kernel3> CGAL_Point_3;

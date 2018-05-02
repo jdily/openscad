@@ -691,10 +691,19 @@ namespace CGALUtils {
 		}
 	}
 #endif // createPolySetFromNefPolyhedron3
-	bool nef_to_surface(CGAL_Nef_polyhedron *nef_poly) {
-		
+	Surface_mesh nef_to_surface(CGAL_Nef_polyhedron *nef_poly) {
+		Surface_mesh output;
+		// CGAL::test_conversion(*nef_poly->p3, output);
+		// std::cout << "aa" << std::endl;
+		CGAL::convert_nef_polyhedron_to_polygon_mesh(*nef_poly->p3, output);
+		std::cout << output.num_vertices() << std::endl;
+		return output;
 	}
-
+	CGAL_Polyhedron nef_to_poly_surf(CGAL_Nef_polyhedron *nef_poly) {
+		CGAL_Polyhedron poly;
+		(*nef_poly).p3->convert_to_polyhedron(poly);
+		return poly;
+	}
 
 
 }; // namespace CGALUtils

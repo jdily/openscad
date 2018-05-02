@@ -5,16 +5,14 @@
 #include "CGAL_Nef_polyhedron.h"
 #include "enums.h"
 
-#include <CGAL/Surface_mesh.h>
-#include <CGAL/boost/graph/convert_nef_polyhedron_to_polygon_mesh.h>
-typedef CGAL::Surface_mesh<Exact_kernel::Point_3> Surface_mesh;
-
-
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 typedef CGAL::Epick K;
 typedef CGAL::Point_3<K> Vertex3K;
 typedef std::vector<Vertex3K> PolygonK;
 typedef std::vector<PolygonK> PolyholeK;
+
+#include <CGAL/mesh_segmentation.h>
+#include "nef_poly_to_polygon_mesh.h"
 
 namespace /* anonymous */ {
         template<typename Result, typename V>
@@ -53,5 +51,6 @@ namespace CGALUtils {
 																 CGAL::Plane_3<CGAL_Kernel3> &plane);
 
 	// ichao added : from Nef_Polyhedra to Surface Mesh
-	bool nef_to_surface(CGAL_Nef_polyhedron *nef_poly);
+	Surface_mesh nef_to_surface(CGAL_Nef_polyhedron *nef_poly);
+	CGAL_Polyhedron nef_to_poly_surf(CGAL_Nef_polyhedron *nef_poly);
 };

@@ -1193,7 +1193,17 @@ void MainWindow::instantiateRoot()
 					CGAL_Nef_polyhedron *poly = CGALUtils::createNefPolyhedronFromGeometry(*((*pre_iter)->csgnode->geom));	
 					if (poly == nullptr) {
 						std::cout << "poly null " << std::endl;
-					}				
+					} else {
+						// Surface_mesh sm = CGALUtils::nef_to_surface(poly);
+						// std::cout << sm.num_vertices() << std::endl;
+						CGAL_Polyhedron cgal_poly = CGALUtils::nef_to_poly_surf(poly);
+						std::cout << "vertex number : " << cgal_poly.size_of_vertices() << std::endl;
+						// if (sm != nullptr) {
+						// 	std::cout << "vertex number : " << sm->num_vertices() << std::endl;
+						// } else {
+						// 	std::cout << "null sm" << std::endl;
+						// }
+					}		
 				} else {
 					std::cout << index << " " << (*pre_iter)->type << std::endl;
 				}
