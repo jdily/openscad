@@ -1198,11 +1198,6 @@ void MainWindow::instantiateRoot()
 						// std::cout << sm.num_vertices() << std::endl;
 						CGAL_Polyhedron cgal_poly = CGALUtils::nef_to_poly_surf(poly);
 						std::cout << "vertex number : " << cgal_poly.size_of_vertices() << std::endl;
-						// if (sm != nullptr) {
-						// 	std::cout << "vertex number : " << sm->num_vertices() << std::endl;
-						// } else {
-						// 	std::cout << "null sm" << std::endl;
-						// }
 					}		
 				} else {
 					std::cout << index << " " << (*pre_iter)->type << std::endl;
