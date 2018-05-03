@@ -3,8 +3,8 @@
 #include <fstream>
 
 #include "cgalutils.h"
-
-
+#include <CGAL/IO/print_wavefront.h>
+#include <QDir>
 void vizTools::vizTree_graphviz(tree_hnode *tree, QString filename) {
 
 
@@ -22,8 +22,12 @@ void vizTools::write_tree_with_csginfo(tree_hnode *tree, QString filename, QStri
 	iterator = tree->begin();
     std::vector<QString> node_info;
     std::vector<QString> edge_info;
-    QString csg_obj_basepath = QString("%1/csginfo/").arg(basepath);
-
+    QString csg_obj_basepath = QString("%1/csginfo/%2").arg(basepath).arg(filename);
+    std::cout << csg_obj_basepath.toStdString() << std::endl;
+    QDir dir(csg_obj_basepath);
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
     // while (iterator != tree->end()) {
     //     std::string type = (*iterator)->type;
     //     int index = (*iterator)->idx;
@@ -57,6 +61,11 @@ void vizTools::write_tree_with_csginfo(tree_hnode *tree, QString filename, QStri
         std::cout << index << " " << (*iterator)->type << " " << (*iterator)->csgnode->dump() << std::endl;
         CGAL_Nef_polyhedron *poly = CGALUtils::createNefPolyhedronFromGeometry(*((*iterator)->csgnode->geom));	
 		CGAL_Polyhedron cgal_poly = CGALUtils::nef_to_poly_surf(poly);
+        std::ofstream objfile;
+        QString obj_path = QString("%1/%2").arg(csg_obj_basepath).arg((*iterator)->obj_filename.c_str());
+        objfile.open(obj_path.toStdString().c_str());
+        // objfile.open((*iterator)->  obj_filename.c_str());
+        CGAL::print_polyhedron_wavefront(objfile, cgal_poly);
 		std::cout << "vertex number : " << cgal_poly.size_of_vertices() << std::endl;
         ++iterator;
     }

@@ -1193,7 +1193,7 @@ void MainWindow::instantiateRoot()
 			std::vector<std::string> strs;
 			boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
 			std::cout << strs[0] << std::endl;
-			std::cout << "finish contree_sttree_stored_leaf_termored_termvert" << std::endl;
+			std::cout << "finish convert" << std::endl;
 
 			tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()), this->data_basepath);
 			qtreeViewer->setSTree(layout_tree);

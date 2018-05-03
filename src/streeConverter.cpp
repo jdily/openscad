@@ -26,6 +26,7 @@ Response streeConverter::visit(State &state, const RootNode &node) {
         _node->node = &node;
         if (this->has_csginfo) {
             _node->csgnode = this->tree_stored_leaf_term[node.index()];
+            _node->obj_filename = QString("%1.obj").arg(node.index()).toStdString();
         }
         // _node.parent_idx = -1;
         // // hnodes[node.index()] = _node;
@@ -45,6 +46,7 @@ Response streeConverter::visit(State &state, const AbstractPolyNode &node) {
         _node->node = &node;
         if (this->has_csginfo) {
             _node->csgnode = this->tree_stored_leaf_term[node.index()];
+            _node->obj_filename = QString("%1.obj").arg(node.index()).toStdString();
         }
         hnodes.insert(node.index(), _node);
         for (auto child : visitedchildren[node.index()]) {
@@ -62,6 +64,7 @@ Response streeConverter::visit(State &state, const TransformNode &node) {
         _node->node = &node;
         if (this->has_csginfo) {
             _node->csgnode = this->tree_stored_leaf_term[node.index()];
+            _node->obj_filename = QString("%1.obj").arg(node.index()).toStdString();
         }
         hnodes.insert(node.index(), _node);
         for (auto child : visitedchildren[node.index()]) {
@@ -79,6 +82,7 @@ Response streeConverter::visit(State &state, const CsgOpNode &node) {
         _node->node = &node;
         if (this->has_csginfo) {
             _node->csgnode = this->tree_stored_leaf_term[node.index()];
+            _node->obj_filename = QString("%1.obj").arg(node.index()).toStdString();
         }
         hnodes.insert(node.index(), _node);
         for (auto child : visitedchildren[node.index()]) {
@@ -97,7 +101,7 @@ Response streeConverter::visit(State &state, const GroupNode &node) {
         // can we convert them all to Leaf node..
         if (this->has_csginfo) {
             _node->csgnode = this->tree_stored_leaf_term[node.index()];
-            _node->obj_filename = QString("%d.obj").arg(node.index()).toStdString();
+            _node->obj_filename = QString("%1.obj").arg(node.index()).toStdString();
         }
         hnodes.insert(node.index(), _node);
         for (auto child : visitedchildren[node.index()]) {
