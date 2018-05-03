@@ -3323,8 +3323,11 @@ void MainWindow::export_htree_with_csginfo(tree_hnode* tree) {
     boost::split(tmps, _filename, boost::is_any_of("/"));
 	std::vector<std::string> strs;
 	boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
-	
 	vizTools::write_tree_with_csginfo(tree, QString(strs[0].c_str()), this->data_basepath);
+
+	// compute LFD
+	
+
 	// check the csgnode embed in this hree...
 	// tree_hnode::pre_order_iterator pre_iter(tree->begin());
 	// int index = 0;

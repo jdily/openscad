@@ -376,7 +376,8 @@ HEADERS += src/version_check.h \
            src/stree.h \
            src/vizTools.h \ 
            src/streeConverter.h \ 
-           src/MyCSGTreeTest.h
+           src/MyCSGTreeTest.h \ 
+           src/LFD.h
            # src/NodeModifier.h
 
 SOURCES += \

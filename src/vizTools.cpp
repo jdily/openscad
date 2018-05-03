@@ -5,6 +5,7 @@
 #include "cgalutils.h"
 #include <CGAL/IO/print_wavefront.h>
 #include <QDir>
+#include "LFD.h"
 void vizTools::vizTree_graphviz(tree_hnode *tree, QString filename) {
 
 
