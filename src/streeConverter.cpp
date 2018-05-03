@@ -97,6 +97,7 @@ Response streeConverter::visit(State &state, const GroupNode &node) {
         // can we convert them all to Leaf node..
         if (this->has_csginfo) {
             _node->csgnode = this->tree_stored_leaf_term[node.index()];
+            _node->obj_filename = QString("%d.obj").arg(node.index()).toStdString();
         }
         hnodes.insert(node.index(), _node);
         for (auto child : visitedchildren[node.index()]) {

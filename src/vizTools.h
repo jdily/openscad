@@ -11,12 +11,12 @@
 #include "iTree.h"
 typedef stree<hnode*> tree_hnode;
 class vizTools {
-
     public:
         static void vizTree_graphviz(tree_hnode *tree, QString path);
         static tree_hnode* read_graphviz(QString path);
         static tree_hnode* make_layout_graphviz(tree_hnode *tree, QString path, QString basepath);
         static void parse_node_content(QString content);
+        static void write_tree_with_csginfo(tree_hnode *tree, QString path, QString basepath);
     private:
 };
 // struct vizTools

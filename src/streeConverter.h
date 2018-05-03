@@ -29,6 +29,10 @@ public:
 
     tree_hnode* convert_tree(Tree *tree);
     // int count_node();
+    bool with_csginfo() {
+        return has_csginfo;
+    }    
+
 private:
     typedef std::vector<hnode*> childNodeList;
     std::map<int, childNodeList> visitedchildren;

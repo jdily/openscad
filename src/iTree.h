@@ -76,6 +76,8 @@ struct hnode {
     float pos_y;
     const AbstractNode *node;
     shared_ptr<CSGLeaf> csgnode;
+    std::string obj_filename;
+    // check for LFD feature
 };
 
 class iTree {

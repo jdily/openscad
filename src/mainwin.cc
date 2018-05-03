@@ -1183,30 +1183,9 @@ void MainWindow::instantiateRoot()
 			// // ichao : set graph here and draw it.
 			streeConverter *sconv = new streeConverter();
 			tree_hnode* htree = sconv->convert_tree(&tree);
-			// check the csgnode embed in this hree...
-			tree_hnode::pre_order_iterator pre_iter(htree->begin());
-			int index = 0;
-			while (pre_iter != htree->end()) {
-				if ((*pre_iter)->csgnode != nullptr) {
-					std::cout << index << " " << (*pre_iter)->type << " " << (*pre_iter)->csgnode->dump() << std::endl;
-					// std::cout << (*pre_iter)->csgnode->geom->dump() << std::endl;
-					CGAL_Nef_polyhedron *poly = CGALUtils::createNefPolyhedronFromGeometry(*((*pre_iter)->csgnode->geom));	
-					if (poly == nullptr) {
-						std::cout << "poly null " << std::endl;
-					} else {
-						// Surface_mesh sm = CGALUtils::nef_to_surface(poly);
-						// std::cout << sm.num_vertices() << std::endl;
-						CGAL_Polyhedron cgal_poly = CGALUtils::nef_to_poly_surf(poly);
-						std::cout << "vertex number : " << cgal_poly.size_of_vertices() << std::endl;
-					}		
-				} else {
-					std::cout << index << " " << (*pre_iter)->type << std::endl;
-				}
-				pre_iter ++;
-				index ++;
+			if (sconv->with_csginfo()) {
+				export_htree_with_csginfo(htree);
 			}
-
-
 
 			std::vector<std::string> tmps;
 			std::string _filename = this->fileName.toStdString();
@@ -3336,4 +3315,36 @@ void MainWindow::example_selectedSlot(int example_id) {
 	qtreeViewer->setSTree(layout_tree);
 	GuiLocker::unlock();
 
+}
+
+void MainWindow::export_htree_with_csginfo(tree_hnode* tree) {
+	std::string _filename = this->fileName.toStdString();
+	std::vector<std::string> tmps;
+    boost::split(tmps, _filename, boost::is_any_of("/"));
+	std::vector<std::string> strs;
+	boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
+	
+	vizTools::write_tree_with_csginfo(tree, QString(strs[0].c_str()), this->data_basepath);
+	// check the csgnode embed in this hree...
+	// tree_hnode::pre_order_iterator pre_iter(tree->begin());
+	// int index = 0;
+	// while (pre_iter != htree->end()) {
+	// 	if ((*pre_iter)->csgnode != nullptr) {
+	// 		std::cout << index << " " << (*pre_iter)->type << " " << (*pre_iter)->csgnode->dump() << std::endl;
+	// 		// std::cout << (*pre_iter)->csgnode->geom->dump() << std::endl;
+	// 		CGAL_Nef_polyhedron *poly = CGALUtils::createNefPolyhedronFromGeometry(*((*pre_iter)->csgnode->geom));	
+	// 		if (poly == nullptr) {
+	// 			std::cout << "poly null " << std::endl;
+	// 		} else {
+	// 			// Surface_mesh sm = CGALUtils::nef_to_surface(poly);
+	// 			// std::cout << sm.num_vertices() << std::endl;
+	// 			CGAL_Polyhedron cgal_poly = CGALUtils::nef_to_poly_surf(poly);
+	// 			std::cout << "vertex number : " << cgal_poly.size_of_vertices() << std::endl;
+	// 		}		
+	// 	} else {
+	// 		std::cout << index << " " << (*pre_iter)->type << std::endl;
+	// 	}
+	// 	pre_iter ++;
+	// 	index ++;
+	// }
 }

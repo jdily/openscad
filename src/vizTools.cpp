@@ -2,10 +2,64 @@
 #include <typeinfo>
 #include <fstream>
 
+#include "cgalutils.h"
+
 
 void vizTools::vizTree_graphviz(tree_hnode *tree, QString filename) {
 
 
+}
+
+void vizTools::write_tree_with_csginfo(tree_hnode *tree, QString filename, QString basepath) {
+    // 1. write the graph out
+    QString dot_filename = QString("%1/graph_viz/%2.dot").arg(basepath).arg(filename);
+    QFile file(dot_filename);
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+	QTextStream out(&file);
+	out<<"digraph G{"<<endl;
+    tree_hnode::sibling_iterator children;
+	tree_hnode::iterator iterator;
+	iterator = tree->begin();
+    std::vector<QString> node_info;
+    std::vector<QString> edge_info;
+    QString csg_obj_basepath = QString("%1/csginfo/").arg(basepath);
+
+    // while (iterator != tree->end()) {
+    //     std::string type = (*iterator)->type;
+    //     int index = (*iterator)->idx;
+    //     std::string obj = (*iterator)->obj_filename;
+    //     QString indexstr = QString::number(index);
+    //     QString label = QString("[label=%1]").arg(type.c_str());
+    //     QString parent_id = QString("[parent_id=%1]").arg((*iterator)->parent_idx);
+    //     QString obj_filename = QString("[obj=%1%2]").arg(csg_obj_basepath).arg(obj.c_str());
+    //     QString f = QString("%1%2%3%4;").arg(indexstr).arg(label).arg(parent_id).arg(obj_filename);
+    //     node_info.push_back(f);
+    //     children = tree->begin(iterator);
+    //     while (children != tree->end(iterator)) {
+    //         QString e = QString("%1 -> %2;").arg((*iterator)->idx).arg((*children)->idx);
+    //         edge_info.push_back(e);
+    //         ++children;
+    //     }
+    //     ++iterator;
+    // }
+    // for (auto node : node_info) {
+    //     out << node << endl;
+    // }
+    // for (auto edge : edge_info) {
+    //     out << edge << endl;
+    // }
+    // out << "}" << endl;
+    // file.close();
+    // 2. export obj files out...
+    iterator = tree->begin();
+    while (iterator != tree->end()) {
+        int index = (*iterator)->idx;
+        std::cout << index << " " << (*iterator)->type << " " << (*iterator)->csgnode->dump() << std::endl;
+        CGAL_Nef_polyhedron *poly = CGALUtils::createNefPolyhedronFromGeometry(*((*iterator)->csgnode->geom));	
+		CGAL_Polyhedron cgal_poly = CGALUtils::nef_to_poly_surf(poly);
+		std::cout << "vertex number : " << cgal_poly.size_of_vertices() << std::endl;
+        ++iterator;
+    }
 }
 
 tree_hnode* vizTools::make_layout_graphviz(tree_hnode *tree, QString filename, QString basepath) {
