@@ -238,6 +238,11 @@ void keyboard (unsigned char key, int x, int y)
 	double			CenX[CAMNUM], CenY[CAMNUM];
 	int				total;
 
+	// ichao added
+	unsigned char src_q8MergeCoeff[ANGLE][CAMNUM][ART_COEF+FD_COEFF_NO];
+	unsigned char dest_q8MergeCoeff[ANGLE][CAMNUM][ART_COEF+FD_COEFF_NO];
+
+
 	switch (key) 
 	{
 	case 27:
@@ -286,7 +291,7 @@ void keyboard (unsigned char key, int x, int y)
 			start = clock();
 
 			// Translate and scale model 1 and 2
-			TranslateScale(vertex2, NumVer2, triangle2, NumTri2, destfn, &Translate2, &Scale2);
+			TranslateScale(vertex2, NQUANT8umVer2, triangle2, NumTri2, destfn, &Translate2, &Scale2);
 			TranslateScale(vertex1, NumVer1, triangle1, NumTri1, srcfn, &Translate1, &Scale1);
 
 			// read RED only, so size is winw*winh
@@ -362,7 +367,7 @@ void keyboard (unsigned char key, int x, int y)
 			Translate1.coor[1] = -Translate1.coor[1];
 			Translate1.coor[2] = -Translate1.coor[2];
 			Translate(vertex2, NumVer2, Translate1);
-
+src_q8MergeCoeff
 			sprintf(filename, "%s_to_%s.obj", destfn, srcfn);
 			SaveObj(filename, vertex2, triangle2, NumVer2, NumTri2);
 
@@ -631,7 +636,6 @@ sprintf(filename, "%s_q8_v1.8.fd", fname);
 			if( (fpt = fopen(filename, "wb")) == NULL )	{	printf("Write %s error!!\n", filename);	return;	}
 			fwrite(q8_ArtCoeff, sizeof(unsigned char), ANGLE * CAMNUM * ART_COEF, fpt);
 			fclose(fpt);
-
 			// // non-linear Quantization to 4 bits for each coefficient using MPEG-7 quantization table
 			// for(i=0; i<ANGLE; i++)
 			// 	for(j=0; j<CAMNUM; j++)
@@ -762,6 +766,23 @@ sprintf(filename, "%s_q8_v1.8.fd", fname);
 			fwrite(q8_FdCoeff, ANGLE * CAMNUM * FD_COEFF_NO, sizeof(unsigned char), fpt);
 			fclose(fpt);
 
+			// TODO : merge art and fd 
+			// fwrite(src_ArtCoeff, ANGLE * CAMNUM * ART_ANGULAR * ART_RADIAL, sizeof(double), fpt);
+			// int k;
+			for (i=0; i<ANGLE; i++) {
+				for (j=0;j<CAMNUM; j++) {
+					for (k=0; k < (ART_COEF);k++) {
+						src_q8MergeCoeff[i][j][k] = q8_ArtCoeff[i][j][k];
+					}
+					for (k=ART_COEF; k < (ART_COEF+FD_COEFF_NO); k++) {
+						src_q8MergeCoeff[i][j][k] = src_FdCoeff[i][j][k-ART_COEF];
+					}
+				}
+			}
+			sprintf(filename, "%s_q8_v1.8.merge", fname);
+			fpt = fopen(filename, "wb");
+			fwrite(src_q8MergeCoeff, ANGLE * CAMNUM * (ART_COEF+FD_COEFF_NO), sizeof(unsigned char), fpt);
+			fclose(fpt);
 //			printf("%d.%s OK.\n", Count++, fname);
 			printf("%d.\n", Count++);
 		}
@@ -1051,7 +1072,9 @@ sprintf(filename, "%s_q8_v1.8.fd", fname);
 		for(destCam=0; destCam<ANGLE; destCam++)
 		{
 			free(CamVertex[destCam]);
-			free(CamTriangle[destCam]);
+			free(CamTriangle[destCam]);							// for (k=0;k<ART_COEF;k++) {
+							// 	err += (src_q8MergeCoeff[srcCam][CamMap[j]][k]-dest_q8MergeCoeff[destCam][CamMap[i]][k]);
+							// }
 		}
 		NumTri = 0;
 		break;
@@ -1067,7 +1090,9 @@ sprintf(filename, "%s_q8_v1.8.fd", fname);
 			for(j=0; j<CAMNUM_2; j++)
 				fscanf(fpt, "%d", &align[i][j]);
 		fclose(fpt);
-
+							// for (k=0;k<ART_COEF;k++) {
+							// 	err += (src_q8MergeCoeff[srcCam][CamMap[j]][k]-dest_q8MergeCoeff[destCam][CamMap[i]][k]);
+							// }
 		// read filename of two models
 		fpt1 = fopen("compare.txt", "r");
 		if( fscanf(fpt1, "%s", srcfn) == EOF )
@@ -1162,7 +1187,9 @@ sprintf(filename, "%s_q8_v1.8.fd", fname);
 					{
 						strcpy(pTop[j+1].name, pTop[j].name);
 						pTop[j+1].sim = pTop[j].sim;
-					}
+					}							// for (k=0;k<ART_COEF;k++) {
+							// 	err += (src_q8MergeCoeff[srcCam][CamMap[j]][k]-dest_q8MergeCoeff[destCam][CamMap[i]][k]);
+							// }
 					strcpy(pTop[i].name, pmr->name);
 					pTop[i].sim = pmr->sim;
 					break;
@@ -1264,7 +1291,7 @@ sprintf(filename, "%s_q8_v1.8.fd", fname);
 		pTop = (pMatRes) malloc ( TopNum * sizeof(MatRes) );
 		for(i=0; i<TopNum; i++)
 		{
-			pTop[i].sim = DBL_MAX;
+			pTop[i].sim = DBL_MAX;src_q8MergeCoeff
 			strcpy(pTop[i].name, "");
 		}
 
@@ -1303,7 +1330,7 @@ sprintf(filename, "%s_q8_v1.8.fd", fname);
 	case 'z':
 		// initialize: read camera pair
 		fpt = fopen("align20.txt", "r");
-		for(i=0; i<60; i++)
+		for(i=0; i<60; i++)src_q8MergeCoeff
 			for(j=0; j<CAMNUM_2; j++)
 				fscanf(fpt, "%d", &align[i][j]);
 		fclose(fpt);
@@ -1411,6 +1438,88 @@ sprintf(filename, "%s_q8_v1.8.fd", fname);
 		free(pTop);
 		break;
 
+
+	case 'q':
+		printf("qqqqq\n");
+		fpt = fopen("align10.txt", "r");
+		// fpt = fopen("align20.txt", "r");
+		for(i=0; i<60; i++)
+			for(j=0; j<CAMNUM_2; j++)
+				fscanf(fpt, "%d", &align[i][j]);
+		fclose(fpt);
+		// read filename of two models
+		fpt1 = fopen("compare.txt", "r");
+		if( fscanf(fpt1, "%s", srcfn) == EOF )
+			break;
+		fclose(fpt1);
+		// read the merge feature..
+		sprintf(filename, "%s_q8_v1.8.merge", srcfn);
+		printf("filename : %s \n", filename);
+		if( (fpt = fopen(filename, "rb")) == NULL )
+		{
+			printf("%s does not exist.\n", filename);
+			break;
+		}
+		fread(src_q8MergeCoeff, ANGLE * CAMNUM * (ART_COEF+FD_COEFF_NO), sizeof(unsigned char), fpt);
+		fclose(fpt);
+
+		// read feature of all models
+		fpt1 = fopen("list.txt", "r");
+		Count = 0;
+		pSearch = NULL;
+		while( fscanf(fpt1, "%s", destfn) != EOF )
+		{
+			// read coefficient from model 2
+			sprintf(filename, "%s_q8_v1.8.merge", destfn);
+			if( (fpt = fopen(filename, "rb")) == NULL )
+			{	printf("%s does not exist.\n", filename);	break;	}
+			fread(dest_FdCoeff, ANGLE * CAMNUM * FD_COEFF_NO, sizeof(double), fpt);
+			fclose(fpt);
+
+			// compare each coefficients pair from the two models first
+			for(destCam=0; destCam<ANGLE; destCam++)
+				for(i=0; i<CAMNUM_2; i++)
+					for(srcCam=0; srcCam<ANGLE; srcCam++)
+						for(j=0; j<CAMNUM_2; j++)
+						{
+							err = 0;
+							for (k=0;k<ART_COEF;k++) {
+								// err += GetDistance(dest_ArtCoeff[destCam][CamMap[i]], src_ArtCoeff[srcCam][CamMap[j]]);
+								err += (src_q8MergeCoeff[srcCam][CamMap[j]][k]-dest_q8MergeCoeff[destCam][CamMap[i]][k]);
+							}
+							// for (k=0;k<FD_COEFF_NO;k++) {
+							// 	err += (src_q8MergeCoeff[srcCam][CamMap[j]][k+ART_COEF]-dest_q8MergeCoeff[destCam][CamMap[i]][k+ART_COEF]);
+							// }
+							// for(k=ART_COEF; k<FD_COEFF_NO+ART_COEF; k++)						// each align
+								// err += abs(src_q8MergeCoeff[srcCam][CamMap[j]][k]-dest_q8MergeCoeff[destCam][CamMap[i]][k]);// * (src_FdCoeff[srcCam][j][k]-dest_FdCoeff[destCam][i][k]);
+							cost[srcCam][destCam][j][i] = err;
+						}
+
+			// find minimum error of the two models from all camera pairs
+			MinErr = DBL_MAX;
+			for(srcCam=0; srcCam<ANGLE; srcCam++)		// each src angle
+				for(destCam=0; destCam<ANGLE; destCam++)	// each dest angle
+					for(i=0; i<60; i++)						// each align
+					{
+						err = 0;
+						for(j=0; j<CAMNUM_2; j++)				// each vertex
+							err += cost[srcCam][destCam][CamMap[j]][CamMap[align[i][j]]];
+
+						if( err < MinErr )
+							MinErr = err;
+					}
+
+			printf("Difference of %s and %s: %f\n", srcfn, destfn, MinErr);
+			// add to a list
+			pmr = (pMatRes) malloc (sizeof(MatRes));
+			strcpy(pmr->name, destfn);
+			pmr->sim = MinErr;
+			pmr->pointer = pSearch;
+			pSearch = pmr;
+			Count ++;
+		}
+		printf("finish distance computation..\n"); 
+		break;
 // *************************************************************************************************
 	// compare two models using fourier descriptor
 	case 'g':
