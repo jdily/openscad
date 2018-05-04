@@ -1291,7 +1291,7 @@ sprintf(filename, "%s_q8_v1.8.fd", fname);
 		pTop = (pMatRes) malloc ( TopNum * sizeof(MatRes) );
 		for(i=0; i<TopNum; i++)
 		{
-			pTop[i].sim = DBL_MAX;src_q8MergeCoeff
+			pTop[i].sim = DBL_MAX;
 			strcpy(pTop[i].name, "");
 		}
 
@@ -1330,7 +1330,7 @@ sprintf(filename, "%s_q8_v1.8.fd", fname);
 	case 'z':
 		// initialize: read camera pair
 		fpt = fopen("align20.txt", "r");
-		for(i=0; i<60; i++)src_q8MergeCoeff
+		for(i=0; i<60; i++)
 			for(j=0; j<CAMNUM_2; j++)
 				fscanf(fpt, "%d", &align[i][j]);
 		fclose(fpt);
