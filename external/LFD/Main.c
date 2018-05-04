@@ -241,6 +241,7 @@ void keyboard (unsigned char key, int x, int y)
 	switch (key) 
 	{
 	case 27:
+		fprintf(stderr, "%s", "esc\n"); // Error message on stderr (usign fprintf)
 		exit(0);
 		break;
 
@@ -451,6 +452,19 @@ void keyboard (unsigned char key, int x, int y)
 		NumTri = 0;
 		break;
 */
+	case 'k':
+		// initialize ART
+		// GenerateBasisLUT();
+		// check the dim of FD feature
+		fpt1 = fopen("list.txt", "r");
+		while (fgets(fname, 400, fpt1)) {
+			sprintf(filename, "%s_q8_v1.8.fd", fname);
+			fpt = fopen(filename, "rb");
+			fread(src_ArtCoeff, ANGLE * CAMNUM * ART_ANGULAR * ART_RADIAL, sizeof(double), fpt);
+		}
+		
+		
+		break;
 // *************************************************************************************************
 	// calculate feature and save to file
 	case 'n':
@@ -524,7 +538,7 @@ void keyboard (unsigned char key, int x, int y)
 //					WriteBitmap8(srcBuff[i], winw, winh, fn);
 //				}
 
-				// get color descriptor
+				sprintf(filename, "%s_q8_v1.8.fd", fname);// get color descriptor
 //				for(i=0; i<CAMNUM; i++)
 //				{
 //					RGB_To_YUV(YuvBuff, ColorBuff[i], winw, winh);
@@ -548,7 +562,7 @@ void keyboard (unsigned char key, int x, int y)
 //					WriteBitmap8(EdgeBuff, winw, winh, "test2.bmp");
 					ExtractCoefficients(srcBuff[i], src_ArtCoeff[srcCam][i], EdgeBuff, CenX[i], CenY[i]);
 				}
-
+sprintf(filename, "%s_q8_v1.8.fd", fname);
 				// get Fourier descriptor
 				for(i=0; i<CAMNUM; i++)
 					FourierDescriptor(src_FdCoeff[srcCam][i], srcBuff[i], winw, winh, Contour, ContourMask, CenX[i], CenY[i]);
@@ -579,20 +593,21 @@ void keyboard (unsigned char key, int x, int y)
 			// **********************************************************************
 			// save ART feature to file
 //			sprintf(filename, "%s_v1.7.art", fname);
-//			fpt = fopen(filename, "wb");
-//			fwrite(src_ArtCoeff, ANGLE * CAMNUM * ART_ANGULAR * ART_RADIAL, sizeof(double), fpt);
-//			fclose(fpt);
+			sprintf(filename, "%s_otho.art", fname);
+			fpt = fopen(filename, "wb");
+			fwrite(src_ArtCoeff, ANGLE * CAMNUM * ART_ANGULAR * ART_RADIAL, sizeof(double), fpt);
+			fclose(fpt);
 
 			// linear Quantization to 8 bits for each coefficient
 			for(i=0; i<ANGLE; i++)
 				for(j=0; j<CAMNUM; j++)
-				{
+				{fpt = fopen(filename, "wb");
 					// the order is the same with that defined in MPEG-7, total 35 coefficients
 					k = 0;
 					p = 0;
 					for(r=1 ; r<ART_RADIAL ; r++, k++)
 					{
-						itmp = (int)(QUANT8 *  src_ArtCoeff[i][j][p][r]);
+			sprintf(filename, "%s_q8_v1.8.fd", fname);			itmp = (int)(QUANT8 *  src_ArtCoeff[i][j][p][r]);
 						if(itmp>255)
 							q8_ArtCoeff[i][j][k] = 255;
 						else
@@ -610,67 +625,68 @@ void keyboard (unsigned char key, int x, int y)
 						}
 				}
 			// save to disk
+			// fread(src_ArtCoeff, ANGLE * CAMNUM * ART_ANGULAR * ART_RADIAL, sizeof(double), fpt);
 			fwrite(q8_ArtCoeff, sizeof(unsigned char), ANGLE * CAMNUM * ART_COEF, fpt_art_q8);
 			sprintf(filename, "%s_q8_v1.8.art", fname);
 			if( (fpt = fopen(filename, "wb")) == NULL )	{	printf("Write %s error!!\n", filename);	return;	}
 			fwrite(q8_ArtCoeff, sizeof(unsigned char), ANGLE * CAMNUM * ART_COEF, fpt);
 			fclose(fpt);
 
-			// non-linear Quantization to 4 bits for each coefficient using MPEG-7 quantization table
-			for(i=0; i<ANGLE; i++)
-				for(j=0; j<CAMNUM; j++)
-				{
-					// the order is the same with that defined in MPEG-7, total 35 coefficients
-					k = 0;
-					p = 0;
-					for(r=1 ; r<ART_RADIAL ; r++, k++)
-					{
-						high = 17;
-						low = 0;
-						while(high-low > 1)
-						{
-							middle = (high+low) / 2;
+			// // non-linear Quantization to 4 bits for each coefficient using MPEG-7 quantization table
+			// for(i=0; i<ANGLE; i++)
+			// 	for(j=0; j<CAMNUM; j++)
+			// 	{
+			// 		// the order is the same with that defined in MPEG-7, total 35 coefficients
+			// 		k = 0;
+			// 		p = 0;
+			// 		for(r=1 ; r<ART_RADIAL ; r++, k++)
+			// 		{
+			// 			high = 17;
+			// 			low = 0;
+			// 			while(high-low > 1)
+			// 			{
+			// 				middle = (high+low) / 2;
 
-							if(QuantTable[middle] < src_ArtCoeff[i][j][p][r])
-								low = middle;
-							else
-								high = middle;
-						}
-						q8_ArtCoeff[i][j][k] = low;
-					}
-					for(p=1; p<ART_ANGULAR ; p++)
-						for(r=0 ; r<ART_RADIAL ; r++, k++)
-						{
-							high = 17;
-							low = 0;
-							while(high-low > 1)
-							{
-								middle = (high+low) / 2;
+			// 				if(QuantTable[middle] < src_ArtCoeff[i][j][p][r])
+			// 					low = middle;
+			// 				else
+			// 					high = middle;
+			// 			}
+			// 			q8_ArtCoeff[i][j][k] = low;
+			// 		}
+			// 		for(p=1; p<ART_ANGULAR ; p++)
+			// 			for(r=0 ; r<ART_RADIAL ; r++, k++)
+			// 			{
+			// 				high = 17;
+			// 				low = 0;
+			// 				while(high-low > 1)
+			// 				{
+			// 					middle = (high+low) / 2;
 
-								if(QuantTable[middle] < src_ArtCoeff[i][j][p][r])
-									low = middle;
-								else
-									high = middle;
-							}
-							q8_ArtCoeff[i][j][k] = low;
-						}
-				}
+			// 					if(QuantTable[middle] < src_ArtCoeff[i][j][p][r])
+			// 						low = middle;
+			// 					else
+			// 						high = middle;
+			// 				}fpt = fopen(filename, "wb");
+			// 				q8_ArtCoeff[i][j][k] = low;
+			// 			}
+			// 	}
 
-			for(i=0; i<ANGLE; i++)
-				for(j=0; j<CAMNUM; j++)
-					for(k=0, a=0; k<ART_COEF; k+=2, a++)
-						if( k+1 < ART_COEF )
-							q4_ArtCoeff[i][j][a] = ( (q8_ArtCoeff[i][j][k] << 4) & 0xf0 ) | 
-												( q8_ArtCoeff[i][j][k+1] & 0x0f );
-						else
-							q4_ArtCoeff[i][j][a] = ( (q8_ArtCoeff[i][j][k] << 4) & 0xf0 );
+			// for(i=0; i<ANGLE; i++)
+			// 	for(j=0; j<CAMNUM; j++)
+			// 		for(k=0, a=0; k<ART_COEF; k+=2, a++)
+			// 			if( k+1 < ART_COEF )
+			// 				q4_ArtCoeff[i][j][a] = ( (q8_ArtCoeff[i][j][k] << 4) & 0xf0 ) | 
+			// 									( q8_ArtCoeff[i][j][k+1] & 0x0f );
+			// 			else
+			// 				q4_ArtCoeff[i][j][a] = ( (q8_ArtCoeff[i][j][k] << 4) & 0xf0 );
 
 			// save to disk
-			fwrite(q4_ArtCoeff, sizeof(unsigned char), ANGLE * CAMNUM * ART_COEF_2, fpt_art_q4);
-			sprintf(filename, "%s_q4_v1.8.art", fname);
-			if( (fpt = fopen(filename, "wb")) == NULL )	{	printf("Write %s error!!\n", filename);	return;	}
-			fwrite(q4_ArtCoeff, sizeof(unsigned char), ANGLE * CAMNUM * ART_COEF_2, fpt);
-			fclose(fpt);
+			// fwrite(q4_ArtCoeff, sizeof(unsigned char), ANGLE * CAMNUM * ART_COEF_2, fpt_art_q4);
+			// sprintf(filename, "%s_q4_v1.8.art", fname);
+			// if( (fpt = fopen(filename, "wb")) == NULL )	{	printf("Write %s error!!\n", filename);	return;	}
+			// fwrite(q4_ArtCoeff, sizeof(unsigned char), ANGLE * CAMNUM * ART_COEF_2, fpt);
+			// fclose(fpt);
 
 			// **********************************************************************
 			// save color descriptor to disk
@@ -722,10 +738,10 @@ void keyboard (unsigned char key, int x, int y)
 			// **********************************************************************
 			// save Fourier descriptor feature to file
 //			fwrite(src_FdCoeff, ANGLE * CAMNUM * FD_COEFF_NO, sizeof(double), fpt_fd);
-//			sprintf(filename, "%s.fd", fname);
-//			fpt = fopen(filename, "wb");
-//			fwrite(src_FdCoeff, ANGLE * CAMNUM * FD_COEFF_NO, sizeof(double), fpt);
-//			fclose(fpt);
+			sprintf(filename, "%s.fd", fname);
+			fpt = fopen(filename, "wb");
+			fwrite(src_FdCoeff, ANGLE * CAMNUM * FD_COEFF_NO, sizeof(double), fpt);
+			fclose(fpt);
 
 			for(i=0; i<ANGLE; i++)
 				for(j=0; j<CAMNUM; j++)
@@ -1004,7 +1020,7 @@ void keyboard (unsigned char key, int x, int y)
 			free(triangle1);
 
 			// record execute time --- end
-			finish = clock();Tzuting Lin 整個臺灣社會在這件事情上花費了多少社會成本？當別的大學都在前進，臺大卻得被迫卡住動彈不得。政府真的有在意臺大的發展嗎？
+			finish = clock();
 
 
 //fpt = fopen(filename, "wt");
@@ -1029,7 +1045,7 @@ void keyboard (unsigned char key, int x, int y)
 		}
 
 		for(i=0; i<CAMNUM; i++)
-			free(srcBuff[i]);
+			free(srcBuff[i]);fread(src_ArtCoeff, ANGLE * CAMNUM * ART_ANGULAR * ART_RADIAL, sizeof(double), fpt);
 		fclose(fpt1);
 		fclose(fpt3);
 		for(destCam=0; destCam<ANGLE; destCam++)
@@ -1044,7 +1060,9 @@ void keyboard (unsigned char key, int x, int y)
 	// compare one model to all other models (ART)
 	case 'd':
 		// initialize: read camera pair
-		fpt = fopen("align20.txt", "r");
+		printf("dddddd\n");
+		fpt = fopen("align10.txt", "r");
+		// fpt = fopen("align20.txt", "r");
 		for(i=0; i<60; i++)
 			for(j=0; j<CAMNUM_2; j++)
 				fscanf(fpt, "%d", &align[i][j]);
@@ -1397,33 +1415,55 @@ void keyboard (unsigned char key, int x, int y)
 	// compare two models using fourier descriptor
 	case 'g':
 		// initialize: read camera pair
-		fpt = fopen("align20.txt", "r");
+		printf("ggggggg\n");
+		fpt = fopen("align10.txt", "r");
+		// fpt = fopen("align20.txt", "r");
 		for(i=0; i<60; i++)
 			for(j=0; j<CAMNUM_2; j++)
 				fscanf(fpt, "%d", &align[i][j]);
 		fclose(fpt);
-
 		// read filename of two models
 		fpt1 = fopen("compare.txt", "r");
 		if( fscanf(fpt1, "%s", srcfn) == EOF )
 			break;
 		fclose(fpt1);
-
-		// read coefficient from model 1
-		sprintf(filename, "%s.fd", srcfn);
+			// // initialize: read camera pair
+			// fpt = fopen("align10.txt", "r");
+			// for(i=0; i<60; i++)
+			// 	for(j=0; j<CAMNUM_2; j++)
+			// 		fscanf(fpt, "%d", &align[i][j]);
+			// fclose(fpt);
+			// printf('finish loading align10');
+			// // read filename of two models
+			// fpt1 = fopen("compare.txt", "r");
+			// if( fscanf(fpt1, "%s", srcfn) == EOF )
+			// 	break;
+			// fclose(fpt1);
+				// read coefficient from model 1
+		sprintf(filename, "%s_q8_v1.8.fd", srcfn);
+		printf("filename : %s \n", filename);
 		if( (fpt = fopen(filename, "rb")) == NULL )
-		{	printf("%s does not exist.\n", filename);	break;	}
-		fread(src_FdCoeff, ANGLE * CAMNUM * FD_COEFF_NO, sizeof(double), fpt);
+		{
+			printf("%s does not exist.\n", filename);
+			break;
+		}
+		// read coefficient from model 1
+		// sprintf(filename, "%s.fd", srcfn);
+		// if( (fpt = fopen(filename, "rb")) == NULL )
+		// {	printf("%s does not exist.\n", filename);	break;	}
+		fread(src_FdCoeff, ANGLE * CAMNUM * FD_COEFF_NO, sizeof(unsigned char), fpt);
+		// fread(src_FdCoeff, ANGLE * CAMNUM * FD_COEFF_NO, sizeof(double), fpt);
 		fclose(fpt);
 
 		// read feature of all models
 		fpt1 = fopen("list.txt", "r");
 		Count = 0;
 		pSearch = NULL;
+		// printf('read for the rest\n');
 		while( fscanf(fpt1, "%s", destfn) != EOF )
 		{
 			// read coefficient from model 2
-			sprintf(filename, "%s.fd", destfn);
+			sprintf(filename, "%s_q8_v1.8.fd", destfn);
 			if( (fpt = fopen(filename, "rb")) == NULL )
 			{	printf("%s does not exist.\n", filename);	break;	}
 			fread(dest_FdCoeff, ANGLE * CAMNUM * FD_COEFF_NO, sizeof(double), fpt);
@@ -1456,7 +1496,7 @@ void keyboard (unsigned char key, int x, int y)
 							MinErr = err;
 					}
 
-//			printf("Difference of %s and %s: %f\n", srcfn, destfn, MinErr);
+			printf("Difference of %s and %s: %f\n", srcfn, destfn, MinErr);
 			// add to a list
 			pmr = (pMatRes) malloc (sizeof(MatRes));
 			strcpy(pmr->name, destfn);
@@ -1465,7 +1505,7 @@ void keyboard (unsigned char key, int x, int y)
 			pSearch = pmr;
 			Count ++;
 		}
-
+		printf("finish distance computation..\n"); 
 		TopNum = 10;		// show top 10
 
 		pTop = (pMatRes) malloc ( TopNum * sizeof(MatRes) );
