@@ -1,0 +1,11 @@
+/home/ichao/projects/ddCAD/lib/3DRetrieval_v1.8/3DAlignment_v1.8/cup1 ( V: 6324 T: 12692 )	: 2.673877 sec;
+/home/ichao/projects/ddCAD/lib/3DRetrieval_v1.8/3DAlignment_v1.8/cup1 ( V: 6324 T: 12692 )	: 2.688419 sec;
+/home/ichao/projects/ddCAD/lib/3DRetrieval_v1.8/3DAlignment_v1.8/cup1 ( V: 6324 T: 12692 )	: 2.686461 sec;
+/home/ichao/projects/ddCAD/lib/3DRetrieval_v1.8/3DAlignment_v1.8/cup1 ( V: 6324 T: 12692 )	: 2.683483 sec;
+/home/ichao/projects/ddCAD/lib/3DRetrieval_v1.8/3DAlignment_v1.8/cup1 ( V: 6324 T: 12692 )	: 2.682283 sec;
+/home/ichao/projects/ddCAD/lib/3DRetrieval_v1.8/3DAlignment_v1.8/cup1 ( V: 6324 T: 12692 )	: 2.709329 sec;
+/home/ichao/projects/ddCAD/lib/3DRetrieval_v1.8/3DAlignment_v1.8/1 ( V: 16 T: 24 )	: 5.496695 sec;
+/home/ichao/projects/ddCAD/lib/3DRetrieval_v1.8/3DAlignment_v1.8/2 ( V: 8 T: 12 )	: 2.826737 sec;
+/home/ichao/projects/ddCAD/lib/3DRetrieval_v1.8/3DAlignment_v1.8/1 ( V: 16 T: 24 )	: 5.499407 sec;
+/home/ichao/projects/ddCAD/lib/3DRetrieval_v1.8/3DAlignment_v1.8/2 ( V: 8 T: 12 )	: 2.830119 sec;
+/home/ichao/projects/ddCAD/lib/3DRetrieval_v1.8/3DAlignment_v1.8/3 ( V: 8 T: 12 )	: 2.835695 sec;
