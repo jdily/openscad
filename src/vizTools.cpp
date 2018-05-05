@@ -29,6 +29,8 @@ void vizTools::write_tree_with_csginfo(tree_hnode *tree, QString filename, QStri
     if (!dir.exists()) {
         dir.mkpath(".");
     }
+
+
     // while (iterator != tree->end()) {
     //     std::string type = (*iterator)->type;
     //     int index = (*iterator)->idx;

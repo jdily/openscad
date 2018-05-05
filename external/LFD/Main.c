@@ -188,7 +188,7 @@ void RenderToMem(unsigned char *bmBits, unsigned char *bmColor, pVer CamVertex, 
 void keyboard (unsigned char key, int x, int y)
 {
 	unsigned char	*srcBuff[CAMNUM], *destBuff[CAMNUM], *EdgeBuff, *ColorBuff[CAMNUM], *YuvBuff;
-	char			filename[400];
+	char			filename[500];
 	pVer			CamVertex[ANGLE];
 	pTri			CamTriangle[ANGLE];
 	int				CamNumVer[ANGLE], CamNumTri[ANGLE];		// total number of vertex and triangle.
@@ -231,7 +231,7 @@ void keyboard (unsigned char key, int x, int y)
 	int				Count, TopNum;
 	pMatRes			pSearch, pmr, pmrr, pTop;
 	// quantization version
-	char			fname[400];
+	char			fname[500];
 //	char			fn[200];
  	int				high, low, middle;
 	double			QuantTable[17] = {	0.000000000, 0.003585473, 0.007418411, 0.011535520, 
@@ -270,7 +270,7 @@ void keyboard (unsigned char key, int x, int y)
 			break;
 		}
 
-		while( fscanf(fpt1, "%s", srcfn) != EOF )
+		fpt_art_q8while( fscanf(fpt1, "%s", srcfn) != EOF )
 		{
 			if( fscanf(fpt1, "%s", destfn) == EOF )
 				break;
@@ -332,7 +332,7 @@ void keyboard (unsigned char key, int x, int y)
 					RenderToMem(destBuff[i], NULL, CamVertex[destCam]+i, vertex2, triangle2, NumVer2, NumTri2);
 
 				// 0.02 sec for an example
-				FindRadius(destBuff);
+		fpt_art_q8		FindRadius(destBuff);
 
 				// 0.16 sec for an example
 				for(i=0; i<CAMNUM; i++)
@@ -593,18 +593,18 @@ src_q8MergeCoeff
 			free(triangle1);
 
 			// record execute time --- end
-			finish = clock();
-			fpt = fopen("feature_time.txt", "a");
-			fprintf(fpt, "%s ( V: %d T: %d )\t: %f sec;\n", fname, NumVer1, NumTri1, (double)(finish - start) / CLOCKS_PER_SEC );
-			fclose(fpt);
+			// finish = clock();
+			// fpt = fopen("feature_time.txt", "a");
+			// fprintf(fpt, "%s ( V: %d T: %d )\t: %f sec;\n", fname, NumVer1, NumTri1, (double)(finish - start) / CLOCKS_PER_SEC );
+			// fclose(fpt);
 
 			// **********************************************************************
 			// save ART feature to file
 //			sprintf(filename, "%s_v1.7.art", fname);
-			sprintf(filename, "%s_otho.art", fname);
-			fpt = fopen(filename, "wb");
-			fwrite(src_ArtCoeff, ANGLE * CAMNUM * ART_ANGULAR * ART_RADIAL, sizeof(double), fpt);
-			fclose(fpt);
+			// sprintf(filename, "%s_otho.art", fname);
+			// fpt = fopen(filename, "wb");
+			// fwrite(src_ArtCoeff, ANGLE * CAMNUM * ART_ANGULAR * ART_RADIAL, sizeof(double), fpt);
+			// fclose(fpt);
 
 			// linear Quantization to 8 bits for each coefficient
 			for(i=0; i<ANGLE; i++)
@@ -634,11 +634,17 @@ src_q8MergeCoeff
 				}
 			// save to disk
 			// fread(src_ArtCoeff, ANGLE * CAMNUM * ART_ANGULAR * ART_RADIAL, sizeof(double), fpt);
-			fwrite(q8_ArtCoeff, sizeof(unsigned char), ANGLE * CAMNUM * ART_COEF, fpt_art_q8);
+			// fwrite(q8_ArtCoeff, sizeof(unsigned char), ANGLE * CAMNUM * ART_COEF, fpt_art_q8);
+			// TODO : test why this fails after 10
 			sprintf(filename, "%s_q8_v1.8.art", fname);
-			if( (fpt = fopen(filename, "wb")) == NULL )	{	printf("Write %s error!!\n", filename);	return;	}
-			fwrite(q8_ArtCoeff, sizeof(unsigned char), ANGLE * CAMNUM * ART_COEF, fpt);
-			fclose(fpt);
+			FILE *artfpt;
+			if( (artfpt = fopen(filename, "wb")) == NULL )	{	printf("Write %s error!!\n", filename);	return;	}
+			else {
+				printf("Let's write %s!!\n", filename);
+			}
+			fwrite(q8_ArtCoeff, sizeof(unsigned char), ANGLE * CAMNUM * ART_COEF, artfpt);
+			fclose(artfpt);
+			
 			// // non-linear Quantization to 4 bits for each coefficient using MPEG-7 quantization table
 			// for(i=0; i<ANGLE; i++)
 			// 	for(j=0; j<CAMNUM; j++)
@@ -719,11 +725,11 @@ src_q8MergeCoeff
 					else				q8_cirCoeff[i][j] = itmp;
 				}
 			// save to disk
-			fwrite(q8_cirCoeff, sizeof(unsigned char), ANGLE * CAMNUM, fpt_cir_q8);
-			sprintf(filename, "%s_q8_v1.8.cir", fname);
-			if( (fpt = fopen(filename, "wb")) == NULL )	{	printf("Write %s error!!\n", filename);	return;	}
-			fwrite(q8_cirCoeff, sizeof(unsigned char), ANGLE * CAMNUM, fpt);
-			fclose(fpt);
+			// fwrite(q8_cirCoeff, sizeof(unsigned char), ANGLE * CAMNUM, fpt_cir_q8);
+			// sprintf(filename, "%s_q8_v1.8.cir", fname);
+			// if( (fpt = fopen(filename, "wb")) == NULL )	{	printf("Write %s error!!\n", filename);	return;	}
+			// fwrite(q8_cirCoeff, sizeof(unsigned char), ANGLE * CAMNUM, fpt);
+			// fclose(fpt);
 
 			// **********************************************************************
 			// save eccentricity feature to file
@@ -736,19 +742,19 @@ src_q8MergeCoeff
 					else				q8_eccCoeff[i][j] = itmp;
 				}
 			// save to disk
-			fwrite(q8_eccCoeff, sizeof(unsigned char), ANGLE * CAMNUM, fpt_ecc_q8);
-			sprintf(filename, "%s_q8_v1.8.ecc", fname);
-			if( (fpt = fopen(filename, "wb")) == NULL )	{	printf("Write %s error!!\n", filename);	return;	}
-			fwrite(q8_eccCoeff, sizeof(unsigned char), ANGLE * CAMNUM, fpt);
-			fclose(fpt);
+			// fwrite(q8_eccCoeff, sizeof(unsigned char), ANGLE * CAMNUM, fpt_ecc_q8);
+			// sprintf(filename, "%s_q8_v1.8.ecc", fname);
+			// if( (fpt = fopen(filename, "wb")) == NULL )	{	printf("Write %s error!!\n", filename);	return;	}
+			// fwrite(q8_eccCoeff, sizeof(unsigned char), ANGLE * CAMNUM, fpt);
+			// fclose(fpt);
 
 			// **********************************************************************
 			// save Fourier descriptor feature to file
 //			fwrite(src_FdCoeff, ANGLE * CAMNUM * FD_COEFF_NO, sizeof(double), fpt_fd);
-			sprintf(filename, "%s.fd", fname);
-			fpt = fopen(filename, "wb");
-			fwrite(src_FdCoeff, ANGLE * CAMNUM * FD_COEFF_NO, sizeof(double), fpt);
-			fclose(fpt);
+			// sprintf(filename, "%s.fd", fname);
+			// fpt = fopen(filename, "wb");
+			// fwrite(src_FdCoeff, ANGLE * CAMNUM * FD_COEFF_NO, sizeof(double), fpt);
+			// fclose(fpt);
 
 			for(i=0; i<ANGLE; i++)
 				for(j=0; j<CAMNUM; j++)
@@ -772,20 +778,6 @@ src_q8MergeCoeff
 			// TODO : merge art and fd 
 			// fwrite(src_ArtCoeff, ANGLE * CAMNUM * ART_ANGULAR * ART_RADIAL, sizeof(double), fpt);
 			// int k;
-			for (i=0; i<ANGLE; i++) {
-				for (j=0;j<CAMNUM; j++) {
-					for (k=0; k < (ART_COEF);k++) {
-						src_q8MergeCoeff[i][j][k] = q8_ArtCoeff[i][j][k];
-					}
-					for (k=ART_COEF; k < (ART_COEF+FD_COEFF_NO); k++) {
-						src_q8MergeCoeff[i][j][k] = src_FdCoeff[i][j][k-ART_COEF];
-					}
-				}
-			}
-			sprintf(filename, "%s_q8_v1.8.merge", fname);
-			fpt = fopen(filename, "wb");
-			fwrite(src_q8MergeCoeff, ANGLE * CAMNUM * (ART_COEF+FD_COEFF_NO), sizeof(unsigned char), fpt);
-			fclose(fpt);
 //			printf("%d.%s OK.\n", Count++, fname);
 			printf("%d.\n", Count++);
 		}

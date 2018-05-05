@@ -100,7 +100,7 @@
 #include "CSGVisitor.h"
 #include <random>
 #include <boost/algorithm/string.hpp>
-
+#include "LFD.h"
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 #include <QTextDocument>
@@ -1183,6 +1183,8 @@ void MainWindow::instantiateRoot()
 			// // ichao : set graph here and draw it.
 			streeConverter *sconv = new streeConverter();
 			tree_hnode* htree = sconv->convert_tree(&tree);
+			std::cout << "htree size : " << htree->size() << std::endl;
+			// TODO : check here..
 			if (sconv->with_csginfo()) {
 				export_htree_with_csginfo(htree);
 			}
@@ -3323,10 +3325,13 @@ void MainWindow::export_htree_with_csginfo(tree_hnode* tree) {
     boost::split(tmps, _filename, boost::is_any_of("/"));
 	std::vector<std::string> strs;
 	boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
-	vizTools::write_tree_with_csginfo(tree, QString(strs[0].c_str()), this->data_basepath);
 
+	vizTools::write_tree_with_csginfo(tree, QString(strs[0].c_str()), this->data_basepath);
+	int node_count = tree->size();
+	std::cout << "node count : " << node_count << std::endl;
 	// compute LFD
-	
+	LFD::lfd_feat(node_count, QString(strs[0].c_str()), this->data_basepath);
+
 
 	// check the csgnode embed in this hree...
 	// tree_hnode::pre_order_iterator pre_iter(tree->begin());
