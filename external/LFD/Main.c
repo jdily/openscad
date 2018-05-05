@@ -205,6 +205,7 @@ void keyboard (unsigned char key, int x, int y)
 	double			MinErr, err;
 	int				align[60][CAMNUM_2];
 	unsigned char	q8_ArtCoeff[ANGLE][CAMNUM][ART_COEF];
+	unsigned char	src_q8ArtCoeff[ANGLE][CAMNUM][ART_COEF], dest_q8ArtCoeff[ANGLE][CAMNUM][ART_COEF];
 	unsigned char	q4_ArtCoeff[ANGLE][CAMNUM][ART_COEF_2];
 	// for color decsriptor
 	// unsigned __int64 CompactColor[ANGLE][CAMNUM];	// 63 bits for each image
@@ -219,6 +220,8 @@ void keyboard (unsigned char key, int x, int y)
 	// for fourier descriptor
 	double			src_FdCoeff[ANGLE][CAMNUM][FD_COEFF_NO], dest_FdCoeff[ANGLE][CAMNUM][FD_COEFF_NO];
 	unsigned char	q8_FdCoeff[ANGLE][CAMNUM][FD_COEFF_NO];
+	unsigned char 	src_q8FdCoeff[ANGLE][CAMNUM][FD_COEFF_NO], dest_q8FdCoeff[ANGLE][CAMNUM][FD_COEFF_NO];
+
 	sPOINT			*Contour;
 	unsigned char	*ContourMask;
 	// for eccentricity
@@ -567,7 +570,7 @@ src_q8MergeCoeff
 //					WriteBitmap8(EdgeBuff, winw, winh, "test2.bmp");
 					ExtractCoefficients(srcBuff[i], src_ArtCoeff[srcCam][i], EdgeBuff, CenX[i], CenY[i]);
 				}
-sprintf(filename, "%s_q8_v1.8.fd", fname);
+// sprintf(filename, "%s_q8_v1.8.fd", fname);
 				// get Fourier descriptor
 				for(i=0; i<CAMNUM; i++)
 					FourierDescriptor(src_FdCoeff[srcCam][i], srcBuff[i], winw, winh, Contour, ContourMask, CenX[i], CenY[i]);
@@ -612,7 +615,7 @@ sprintf(filename, "%s_q8_v1.8.fd", fname);
 					p = 0;
 					for(r=1 ; r<ART_RADIAL ; r++, k++)
 					{
-			sprintf(filename, "%s_q8_v1.8.fd", fname);			itmp = (int)(QUANT8 *  src_ArtCoeff[i][j][p][r]);
+						itmp = (int)(QUANT8 *  src_ArtCoeff[i][j][p][r]);
 						if(itmp>255)
 							q8_ArtCoeff[i][j][k] = 255;
 						else
@@ -1452,15 +1455,24 @@ sprintf(filename, "%s_q8_v1.8.fd", fname);
 		if( fscanf(fpt1, "%s", srcfn) == EOF )
 			break;
 		fclose(fpt1);
+
+		// read two features, art and fd
+		// fwrite(q8_ArtCoeff, sizeof(unsigned char), ANGLE * CAMNUM * ART_COEF, fpt_art_q8);
+		sprintf(filename, "%s_q8_v1.8.art", srcfn);
+		if( (fpt = fopen(filename, "rb")) == NULL ) {
+			printf("%s does not exist.\n", filename);
+			break;
+		}
+		fread(src_ArtCoeff, ANGLE * CAMNUM * (ART_COEF), sizeof(double), fpt);
+		
 		// read the merge feature..
-		sprintf(filename, "%s_q8_v1.8.merge", srcfn);
-		printf("filename : %s \n", filename);
+		sprintf(filename, "%s_q8_v1.8.fd", srcfn);
 		if( (fpt = fopen(filename, "rb")) == NULL )
 		{
 			printf("%s does not exist.\n", filename);
 			break;
 		}
-		fread(src_q8MergeCoeff, ANGLE * CAMNUM * (ART_COEF+FD_COEFF_NO), sizeof(unsigned char), fpt);
+		fread(src_FdCoeff, ANGLE * CAMNUM * (FD_COEFF_NO), sizeof(double), fpt);
 		fclose(fpt);
 
 		// read feature of all models
@@ -1469,11 +1481,21 @@ sprintf(filename, "%s_q8_v1.8.fd", fname);
 		pSearch = NULL;
 		while( fscanf(fpt1, "%s", destfn) != EOF )
 		{
-			// read coefficient from model 2
-			sprintf(filename, "%s_q8_v1.8.merge", destfn);
+			sprintf(filename, "%s_q8_v1.8.art", destfn);
+			if( (fpt = fopen(filename, "rb")) == NULL ) {
+				printf("%s does not exist.\n", filename);
+				break;
+			}
+			fread(dest_ArtCoeff, ANGLE * CAMNUM * (ART_COEF), sizeof(double), fpt);
+			
+			// read the merge feature..
+			sprintf(filename, "%s_q8_v1.8.fd", destfn);
 			if( (fpt = fopen(filename, "rb")) == NULL )
-			{	printf("%s does not exist.\n", filename);	break;	}
-			fread(dest_FdCoeff, ANGLE * CAMNUM * FD_COEFF_NO, sizeof(double), fpt);
+			{
+				printf("%s does not exist.\n", filename);
+				break;
+			}
+			fread(dest_FdCoeff, ANGLE * CAMNUM * (FD_COEFF_NO), sizeof(double), fpt);
 			fclose(fpt);
 
 			// compare each coefficients pair from the two models first
@@ -1485,7 +1507,11 @@ sprintf(filename, "%s_q8_v1.8.fd", fname);
 							err = 0;
 							for (k=0;k<ART_COEF;k++) {
 								// err += GetDistance(dest_ArtCoeff[destCam][CamMap[i]], src_ArtCoeff[srcCam][CamMap[j]]);
-								err += (src_q8MergeCoeff[srcCam][CamMap[j]][k]-dest_q8MergeCoeff[destCam][CamMap[i]][k]);
+								err += fabs(src_q8ArtCoeff[srcCam][CamMap[j]][k]-dest_q8ArtCoeff[destCam][CamMap[i]][k]);
+							}
+							for (k=0;k<FD_COEFF_NO;k++) {
+								// err += GetDistance(dest_ArtCoeff[destCam][CamMap[i]], src_ArtCoeff[srcCam][CamMap[j]]);
+								err += abs(src_FdCoeff[srcCam][CamMap[j]][k]-dest_FdCoeff[destCam][CamMap[i]][k]);
 							}
 							// for (k=0;k<FD_COEFF_NO;k++) {
 							// 	err += (src_q8MergeCoeff[srcCam][CamMap[j]][k+ART_COEF]-dest_q8MergeCoeff[destCam][CamMap[i]][k+ART_COEF]);
