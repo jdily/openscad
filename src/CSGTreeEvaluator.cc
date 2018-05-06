@@ -61,7 +61,8 @@ void CSGTreeEvaluator::applyBackgroundAndHighlight(State & /*state*/, const Abst
 {
 	for(const auto &chnode : this->visitedchildren[node.index()]) {
 		shared_ptr<CSGNode> t(this->stored_term[chnode->index()]);
-		this->stored_term.erase(chnode->index());
+		// ichao : check if we can retain all these stored_term
+		// this->stored_term.erase(chnode->index());
 		if (t) {
 			if (t->isBackground()) this->backgroundNodes.push_back(t);
 			if (t->isHighlight()) this->highlightNodes.push_back(t);
@@ -271,6 +272,7 @@ Response CSGTreeEvaluator::visit(State &state, const TransformNode &node)
 		state.setMatrix(state.matrix() * node.matrix);
 	}
 	if (state.isPostfix()) {
+		std::cout << "transform number : " << node.index() << std::endl;
 		applyToChildren(state, node, OpenSCADOperator::UNION);
 		addToParent(state, node);
 	}
@@ -323,6 +325,8 @@ Response CSGTreeEvaluator::visit(State &state, const CgaladvNode &node)
 		}
 		this->stored_term[node.index()] = t1;
 		applyBackgroundAndHighlight(state, node);
+		// this might be the reason why the number didnt match..
+		// applyToChildren(state, node, OpenSCADOperator::UNION);
 		addToParent(state, node);
 	}
 	return Response::ContinueTraversal;

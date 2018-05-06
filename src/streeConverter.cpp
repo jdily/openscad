@@ -92,6 +92,26 @@ Response streeConverter::visit(State &state, const CsgOpNode &node) {
     handleVisitedChildren(state, node, _node);
     return Response::ContinueTraversal;
 }
+
+Response streeConverter::visit(State &state, const CgaladvNode &node) {
+    hnode* _node = new hnode();
+    if (state.isPostfix()) {
+        _node->type = "cgal_adv";
+        _node->idx = node.index();
+        _node->node = &node;
+        if (this->has_csginfo) {
+            _node->csgnode = this->tree_stored_leaf_term[node.index()];
+            _node->obj_filename = QString("%1.obj").arg(node.index()).toStdString();
+        }
+        hnodes.insert(node.index(), _node);
+        for (auto child : visitedchildren[node.index()]) {
+            child->parent_idx = node.index();
+        }
+    }
+    handleVisitedChildren(state, node, _node);
+    return Response::ContinueTraversal;
+}
+
 Response streeConverter::visit(State &state, const GroupNode &node) {
     hnode* _node = new hnode();
     if (state.isPostfix()) {

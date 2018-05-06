@@ -349,6 +349,6 @@ public:
 		gui_locked--;
 	}
 
-private:
+// private:
  	static unsigned int gui_locked;
 };

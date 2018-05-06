@@ -13,6 +13,7 @@
 
 #include "transformnode.h"
 #include "csgops.h"
+#include "cgaladvnode.h"
 typedef stree<hnode*> tree_hnode;
 
 class streeConverter : public NodeVisitor {
@@ -26,6 +27,7 @@ public:
     Response visit(State &state, const TransformNode &node) override;
     Response visit(State &state, const CsgOpNode &node) override;
     Response visit(State &state, const GroupNode &node) override;
+    Response visit(State &state, const CgaladvNode &node) override;
 
     tree_hnode* convert_tree(Tree *tree);
     // int count_node();

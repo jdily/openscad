@@ -1188,7 +1188,7 @@ void MainWindow::instantiateRoot()
 			if (sconv->with_csginfo()) {
 				export_htree_with_csginfo(htree);
 			}
-
+			std::cout << "finish export_htree_with_csginfo" << std::endl;
 			std::vector<std::string> tmps;
 			std::string _filename = this->fileName.toStdString();
 			boost::split(tmps, _filename, boost::is_any_of("/"));
@@ -2412,7 +2412,16 @@ void MainWindow::actionExport(FileFormat format, const char *type_name, const ch
 	void MainWindow::actionExport(FileFormat, QString, QString, unsigned int)
 #endif
 {
-	if (GuiLocker::isLocked()) return;
+	// std::cout << GuiLocker::gui_locked << std::endl;
+	GuiLocker::gui_locked = 0;
+	// GuiLocker::unlock();
+
+	if (GuiLocker::isLocked()) 
+	{
+		std::cout << "export but locked" << std::endl;
+		return;
+	}
+	
 	GuiLocker lock;
 #ifdef ENABLE_CGAL
 	setCurrentOutput();
@@ -3330,7 +3339,7 @@ void MainWindow::export_htree_with_csginfo(tree_hnode* tree) {
 	int node_count = tree->size();
 	std::cout << "node count : " << node_count << std::endl;
 	// compute LFD
-	LFD::lfd_feat(node_count, QString(strs[0].c_str()), this->data_basepath);
+	// LFD::lfd_feat(node_count, QString(strs[0].c_str()), this->data_basepath);
 
 
 	// check the csgnode embed in this hree...

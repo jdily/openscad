@@ -31,6 +31,7 @@ qtreeNode::qtreeNode(treeViewer *viewer, string node_type) {
     color_map["trans"] = QColor(Qt::green);
     color_map["group"] = QColor(Qt::darkGray);
     color_map["csg_opt"] = QColor(Qt::yellow);
+    color_map["cgal_adv"] =QColor(Qt::magenta);
 }
 
 qtreeNode::~qtreeNode() {}

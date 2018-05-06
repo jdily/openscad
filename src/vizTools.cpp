@@ -13,6 +13,7 @@ void vizTools::vizTree_graphviz(tree_hnode *tree, QString filename) {
 
 void vizTools::write_tree_with_csginfo(tree_hnode *tree, QString filename, QString basepath) {
     // 1. write the graph out
+    std::cout << "in write_tree_with_csginfo" << std::endl;
     QString dot_filename = QString("%1/graph_viz/%2.dot").arg(basepath).arg(filename);
     QFile file(dot_filename);
     file.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -29,8 +30,7 @@ void vizTools::write_tree_with_csginfo(tree_hnode *tree, QString filename, QStri
     if (!dir.exists()) {
         dir.mkpath(".");
     }
-
-
+    
     // while (iterator != tree->end()) {
     //     std::string type = (*iterator)->type;
     //     int index = (*iterator)->idx;
@@ -58,20 +58,34 @@ void vizTools::write_tree_with_csginfo(tree_hnode *tree, QString filename, QStri
     // out << "}" << endl;
     // file.close();
     // 2. export obj files out...
-    iterator = tree->begin();
-    while (iterator != tree->end()) {
-        int index = (*iterator)->idx;
-        std::cout << index << " " << (*iterator)->type << " " << (*iterator)->csgnode->dump() << std::endl;
-        CGAL_Nef_polyhedron *poly = CGALUtils::createNefPolyhedronFromGeometry(*((*iterator)->csgnode->geom));	
-		CGAL_Polyhedron cgal_poly = CGALUtils::nef_to_poly_surf(poly);
-        std::ofstream objfile;
-        QString obj_path = QString("%1/%2").arg(csg_obj_basepath).arg((*iterator)->obj_filename.c_str());
-        objfile.open(obj_path.toStdString().c_str());
-        // objfile.open((*iterator)->  obj_filename.c_str());
-        CGAL::print_polyhedron_wavefront(objfile, cgal_poly);
-		std::cout << "vertex number : " << cgal_poly.size_of_vertices() << std::endl;
-        ++iterator;
-    }
+
+    // iterator = tree->begin();
+    // while (iterator != tree->end()) {
+    //     int index = (*iterator)->idx;
+    //     std::cout << index << " " << (*iterator)->type << " " << (*iterator)->csgnode->dump() << std::endl;
+    //     // TODO : check what is the current geom type -> assume it's a polyset
+
+    //     CGAL_Nef_polyhedron *poly = CGALUtils::createNefPolyhedronFromGeometry(*((*iterator)->csgnode->geom));	
+    //     if (poly == nullptr) {
+    //         std::cout << "null poly" << std::endl;
+    //     }
+    //     std::cout << "conveted to CGAL_nef" << std::endl;
+	// 	// CGAL_Polyhedron cgal_poly = CGALUtils::nef_to_poly_surf(poly);
+    //     // std::cout << "conveted to CGAL_Polyhedron" << std::endl;
+    //     // std::cout << "vertex number : " << cgal_poly.size_of_vertices() << std::endl;
+    //     // std::ofstream objfile;
+    //     // QString obj_path = QString("%1/%2").arg(csg_obj_basepath).arg((*iterator)->obj_filename.c_str());
+    //     // objfile.open(obj_path.toStdString().c_str());
+    //     // CGAL::print_polyhedron_wavefront(objfile, cgal_poly);
+
+	// 	// Surface_mesh cgal_smesh = CGALUtils::nef_to_surface(poly);
+    //     // std::cout << "conveted to CGAL_Surface model" << std::endl;
+    //     // std::cout << "vertex number : " << cgal_smesh.number_of_vertices() << std::endl;
+    //     // std::ofstream objfile;
+    //     // QString obj_path = QString("%1/%2").arg(csg_obj_basepath).arg((*iterator)->obj_filename.c_str());
+    //     // objfile.open(obj_path.toStdString().c_str());
+    //     ++iterator;
+    // }
 }
 
 tree_hnode* vizTools::make_layout_graphviz(tree_hnode *tree, QString filename, QString basepath) {
