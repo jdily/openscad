@@ -49,9 +49,9 @@ public:
 	bool is_convex() const;
 	boost::tribool convexValue() const { return this->convex; }
 
+	unsigned int dim;
 private:
 	Polygon2d polygon;
-	unsigned int dim;
 	mutable boost::tribool convex;
 	mutable BoundingBox bbox;
 	mutable bool dirty;

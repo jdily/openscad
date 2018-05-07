@@ -1185,6 +1185,7 @@ void MainWindow::instantiateRoot()
 			streeConverter *sconv = new streeConverter();
 			tree_hnode* htree = sconv->convert_tree(&tree);
 			std::cout << "htree size : " << htree->size() << std::endl;
+			std::cout << sconv->with_csginfo() << std::endl;
 			// TODO : check here..
 			if (sconv->with_csginfo()) {
 				export_htree_with_csginfo(htree);

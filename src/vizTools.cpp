@@ -62,14 +62,28 @@ void vizTools::write_tree_with_csginfo(tree_hnode *tree, QString filename, QStri
     iterator = tree->begin();
     while (iterator != tree->end()) {
         int index = (*iterator)->idx;
-        std::cout << index << " " << (*iterator)->type << " " << (*iterator)->csgnode->dump() << std::endl;
+        // << " " << (*iterator)->csgnode->geom->getDimension()
+        // " " << (*iterator)->csgnode->dump()  <<
+        std::cout << index << " " << (*iterator)->type <<  std::endl;
+        if ((*iterator)->csgnode == nullptr) {
+            std::cout << index << " have null csgnode info" << std::endl;
+        }
+        // std::cout << ">???" <<
         // TODO : check what is the current geom type -> assume it's a polyset
-
+        // if (index == 38 || index == 39) {
+        //     std::cout << "skip" << std::endl;
+        //     ++iterator;
+        //     continue;
+        // }
+        // if (index == 38) {
+        //     std::cout << (*iterator)->csgnode->geom->dump() << std::endl;
+        // }
         CGAL_Nef_polyhedron *poly = CGALUtils::createNefPolyhedronFromGeometry(*((*iterator)->csgnode->geom));	
         if (poly == nullptr) {
             std::cout << "null poly" << std::endl;
         }
         std::cout << "conveted to CGAL_nef" << std::endl;
+        
 		// CGAL_Polyhedron cgal_poly = CGALUtils::nef_to_poly_surf(poly);
         // std::cout << "conveted to CGAL_Polyhedron" << std::endl;
         // std::cout << "vertex number : " << cgal_poly.size_of_vertices() << std::endl;

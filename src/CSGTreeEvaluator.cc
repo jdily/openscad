@@ -212,7 +212,12 @@ shared_ptr<CSGNode> CSGTreeEvaluator::evaluateCSGNodeFromGeometry(
 	if (!g->isEmpty()) {
 		auto p2d = dynamic_pointer_cast<const Polygon2d>(geom);
 		if (p2d) {
-			g.reset(p2d->tessellate());
+			std::cout << "p2d tessellate" << std::endl;
+			PolySet* p2d_poly = p2d->tessellate();
+			p2d_poly->dim = 3;
+			g.reset(p2d_poly);
+			// g.reset(p2d->tessellate());
+			std::cout << p2d_poly->getDimension() << std::endl;
 		}
 		else {
 			// We cannot render concave polygons, so tessellate any 3D PolySets
@@ -335,6 +340,7 @@ Response CSGTreeEvaluator::visit(State &state, const CgaladvNode &node)
 			node.progress_report();
 		}
 		this->stored_term[node.index()] = t1;
+		this->stored_leaf_term[node.index()] = dynamic_pointer_cast<CSGLeaf>(t1);
 		applyBackgroundAndHighlight(state, node);
 		// this might be the reason why the number didnt match..
 		// applyToChildren(state, node, OpenSCADOperator::UNION);
