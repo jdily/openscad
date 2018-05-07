@@ -17,6 +17,8 @@ public:
 	~GeometryEvaluator() {}
 
 	shared_ptr<const Geometry> evaluateGeometry(const AbstractNode &node, bool allownef);
+	shared_ptr<const Geometry> iso_evaluateGeometry(const AbstractNode &node, bool allpwnef);
+
 
 	Response visit(State &state, const AbstractNode &node) override;
 	Response visit(State &state, const AbstractIntersectionNode &node) override;

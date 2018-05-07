@@ -212,6 +212,7 @@ MainWindow::MainWindow(const QString &filename)
 	scadApp->windowManager.add(this);
 
 #ifdef ENABLE_CGAL
+	std::cout << "enable CGAL" << std::endl;
 	this->cgalworker = new CGALWorker();
 	connect(this->cgalworker, SIGNAL(done(shared_ptr<const Geometry>)), 
 					this, SLOT(actionRenderDone(shared_ptr<const Geometry>)));
@@ -2232,7 +2233,6 @@ void MainWindow::actionRenderDone(shared_ptr<const Geometry> root_geom)
 #ifdef ENABLE_CGAL
 		CGALCache::instance()->print();
 #endif
-
 		int s = this->renderingTime.elapsed() / 1000;
 		PRINTB("Total rendering time: %d hours, %d minutes, %d seconds", (s / (60*60)) % ((s / 60) % 60) % (s % 60));
 			
@@ -2254,6 +2254,7 @@ void MainWindow::actionRenderDone(shared_ptr<const Geometry> root_geom)
 				}
 			}
 			else if (const PolySet *ps = dynamic_cast<const PolySet *>(root_geom.get())) {
+				std::cout << "to Polyset" << std::endl;
 				assert(ps->getDimension() == 3);
 				PRINT("   Top level object is a 3D object:");
 				PRINTB("   Facets:     %6d", ps->numPolygons());

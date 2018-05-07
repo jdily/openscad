@@ -37,6 +37,36 @@ GeometryEvaluator::GeometryEvaluator(const class Tree &tree):
 {
 }
 
+shared_ptr<const Geometry> GeometryEvaluator::iso_evaluateGeometry(const AbstractNode &node, bool allownef) {
+	if (!GeometryCache::instance()->contains(this->tree.getIdString(node))) {
+		shared_ptr<const CGAL_Nef_polyhedron> N;
+		if (CGALCache::instance()->contains(this->tree.getIdString(node))) {
+			N = CGALCache::instance()->get(this->tree.getIdString(node));
+		}
+		// If not found in any caches, we need to evaluate the geometry
+		if (N) {
+			this->root = N;
+		} else {
+			this->traverse(node);
+		}
+		if (!allownef) {
+			if (shared_ptr<const CGAL_Nef_polyhedron> N = dynamic_pointer_cast<const CGAL_Nef_polyhedron>(this->root)) {
+				PolySet *ps = new PolySet(3);
+				ps->setConvexity(N->getConvexity());
+				this->root.reset(ps);
+				if (!N->isEmpty()) {
+					bool err = CGALUtils::createPolySetFromNefPolyhedron3(*N->p3, *ps);
+					if (err) {
+						PRINT("ERROR: Nef->PolySet failed");
+					}
+				}
+			}
+		}
+		return this->root;
+	}
+	return GeometryCache::instance()->get(this->tree.getIdString(node));
+}
+
 /*!
 	Set allownef to false to force the result to _not_ be a Nef polyhedron
 */
@@ -52,8 +82,7 @@ shared_ptr<const Geometry> GeometryEvaluator::evaluateGeometry(const AbstractNod
 		// If not found in any caches, we need to evaluate the geometry
 		if (N) {
 			this->root = N;
-		}	
-    else {
+		} else {
 			this->traverse(node);
 		}
 
@@ -274,6 +303,7 @@ shared_ptr<const Geometry> GeometryEvaluator::smartCacheGet(const AbstractNode &
 */
 Geometry::Geometries GeometryEvaluator::collectChildren3D(const AbstractNode &node)
 {
+	std::cout << "collect child 3D" << std::endl;
 	Geometry::Geometries children;
 	for(const auto &item : this->visitedchildren[node.index()]) {
 		const AbstractNode *chnode = item.first;

@@ -20,6 +20,7 @@
 #include <iostream>
 #include <assert.h>
 #include <cstddef>
+#include <Tree.h>
 
 /*!
 	\class CSGTreeEvaluator
@@ -153,18 +154,28 @@ void CSGTreeEvaluator::applyToChildren(State & state, const AbstractNode &node, 
 		if (node.modinst->isHighlight()) t1->setHighlight(true);
 	}
 	this->stored_term[node.index()] = t1;
-	// ichao added.
+	// ichao added -> added more geometries...
 	// make new geometry evaluation for all leaf...
 	shared_ptr<CSGNode> gt;
-	if (this->geomevaluator) {
-		std::cout << "geom evaluation..." << std::endl;
-		auto geom = this->geomevaluator->evaluateGeometry(node, false);
-		if (geom) {
-			gt = evaluateCSGNodeFromGeometry(state, geom, node.modinst, node);
-		}
-		node.progress_report();
+	Tree subtree;
+	subtree.setRoot(&node);
+	GeometryEvaluator geomevaluator(subtree);
+	std::cout << "preflag " << std::endl;
+	auto geom = this->geomevaluator->iso_evaluateGeometry(node, false);
+	if (geom) {
+		gt = evaluateCSGNodeFromGeometry(state, geom, node.modinst, node);
 	}
+	node.progress_report();
 	this->stored_leaf_term[node.index()] = dynamic_pointer_cast<CSGLeaf>(gt);
+	// if (this->geomevaluator) {
+	// 	std::cout << "geom evaluation..." << std::endl;
+	// 	auto geom = this->geomevaluator->evaluateGeometry(node, false);
+	// 	if (geom) {
+	// 		gt = evaluateCSGNodeFromGeometry(state, geom, node.modinst, node);
+	// 	}
+	// 	node.progress_report();
+	// }
+	// this->stored_leaf_term[node.index()] = dynamic_pointer_cast<CSGLeaf>(gt);
 }
 
 Response CSGTreeEvaluator::visit(State &state, const AbstractNode &node)

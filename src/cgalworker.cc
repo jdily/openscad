@@ -27,6 +27,7 @@ void CGALWorker::start(const Tree &tree)
 
 void CGALWorker::work()
 {
+	// evaluate different??
 	shared_ptr<const Geometry> root_geom;
 	try {
 		GeometryEvaluator evaluator(*this->tree);
