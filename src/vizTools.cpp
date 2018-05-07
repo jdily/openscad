@@ -78,14 +78,24 @@ void vizTools::write_tree_with_csginfo(tree_hnode *tree, QString filename, QStri
         // if (index == 38) {
         //     std::cout << (*iterator)->csgnode->geom->dump() << std::endl;
         // }
-        CGAL_Nef_polyhedron *poly = CGALUtils::createNefPolyhedronFromGeometry(*((*iterator)->csgnode->geom));	
-        if (poly == nullptr) {
-            std::cout << "null poly" << std::endl;
-        }
-        std::cout << "conveted to CGAL_nef" << std::endl;
-        
+
+
+
+        // CGAL_Nef_polyhedron *poly = CGALUtils::createNefPolyhedronFromGeometry(*((*iterator)->csgnode->geom));	
+        // if (poly == nullptr) {
+        //     std::cout << "null poly" << std::endl;
+        // }
+        // std::cout << poly->memsize() << std::endl;
+        // std::cout << "conveted to CGAL_nef" << std::endl;
+        // // std::cout << poly->dump() << std::endl;
+
+        // // TODO : check the type of the geometry...
 		// CGAL_Polyhedron cgal_poly = CGALUtils::nef_to_poly_surf(poly);
         // std::cout << "conveted to CGAL_Polyhedron" << std::endl;
+
+
+
+        
         // std::cout << "vertex number : " << cgal_poly.size_of_vertices() << std::endl;
         // std::ofstream objfile;
         // QString obj_path = QString("%1/%2").arg(csg_obj_basepath).arg((*iterator)->obj_filename.c_str());
