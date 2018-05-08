@@ -617,7 +617,7 @@
    <widget class="QWidget" name="treeDockContents">
     <layout class="QVBoxLayout" name="verticalLayout_10">
      <property name="leftMargin">
-      <number>0</number>
+      <number>10</number>
      </property>
      <property name="topMargin">
       <number>0</number>
@@ -628,9 +628,9 @@
      <property name="bottomMargin">
       <number>0</number>
      </property>
-      <item row="0" column="0">
+      <!-- <item row="0" column="0">
       <widget class="treeViewer" name="treeViewerWidget" native="true"/>
-     </item>
+     </item> -->
     </layout>
    </widget>
   </widget> -->

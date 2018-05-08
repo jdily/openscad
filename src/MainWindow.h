@@ -178,6 +178,7 @@ private slots:
 	void hideConsole();
 	void showConsole();
 	void hideParameters();
+	void hideTreeDock();
 
 private slots:
 	void selectFindType(int);

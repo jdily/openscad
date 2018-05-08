@@ -165,7 +165,7 @@ MainWindow::MainWindow(const QString &filename)
 	treeDockTitleWidget = new QWidget();
 	// qtreeViewer = new treeViewer(editorDockTitleWidget);
 	// qtreeViewer_ref = new treeViewer(editorDockTitleWidget);
-	pair_viewer = new pair_treeViewer(editorDockTitleWidget);
+	pair_viewer = new pair_treeViewer(treeDockTitleWidget);
 
 	this->editorDock->setConfigKey("view/hideEditor");
 	this->editorDock->setAction(this->viewActionHideEditor);
@@ -173,8 +173,8 @@ MainWindow::MainWindow(const QString &filename)
 	this->consoleDock->setAction(this->viewActionHideConsole);
 	this->parameterDock->setConfigKey("view/hideCustomizer");
 	this->parameterDock->setAction(this->viewActionHideParameters);
-	// this->treeDock->setConfigKey("view/hideTree");
-	// this->treeDock->setAction(this->viewActionHideTree);
+	this->treeDock->setConfigKey("view/hideTree");
+	this->treeDock->setAction(this->viewActionHideTree);
 
 	this->versionLabel = nullptr; // must be initialized before calling updateStatusBar()
 	updateStatusBar(nullptr);
@@ -202,6 +202,8 @@ MainWindow::MainWindow(const QString &filename)
 #endif
 
 	editorDockContents->layout()->addWidget(editor);
+	// treeDockContents->layout()->addWidget(qtreeViewer);
+	treeDockContents->layout()->addWidget(pair_viewer);
 	// editorDockContents->layout()->addWidget(qtreeViewer);
 	// editorDockContents->layout()->addWidget(qtreeViewer_ref);
 	// editorDockContents->layout()->addWidget(pair_viewer);
@@ -218,7 +220,7 @@ MainWindow::MainWindow(const QString &filename)
 	scadApp->windowManager.add(this);
 
 #ifdef ENABLE_CGAL
-	std::cout << "enable CGAL" << std::endl;
+	// std::cout << "enable CGAL" << std::endl;
 	this->cgalworker = new CGALWorker();
 	connect(this->cgalworker, SIGNAL(done(shared_ptr<const Geometry>)), 
 					this, SLOT(actionRenderDone(shared_ptr<const Geometry>)));
@@ -419,6 +421,7 @@ MainWindow::MainWindow(const QString &filename)
 	connect(this->viewActionHideEditor, SIGNAL(triggered()), this, SLOT(hideEditor()));
 	connect(this->viewActionHideConsole, SIGNAL(triggered()), this, SLOT(hideConsole()));
     connect(this->viewActionHideParameters, SIGNAL(triggered()), this, SLOT(hideParameters()));
+	connect(this->viewActionHideTree, SIGNAL(triggered()), this, SLOT(hideTreeDock()));
 	// Help menu
 	connect(this->helpActionAbout, SIGNAL(triggered()), this, SLOT(helpAbout()));
 	connect(this->helpActionHomepage, SIGNAL(triggered()), this, SLOT(helpHomepage()));
@@ -1209,6 +1212,7 @@ void MainWindow::instantiateRoot()
 			// qtreeViewer->setSTree(layout_tree);
 			// qtreeViewer_ref->setSTree(layout_tree);
 			pair_viewer->setSTree(layout_tree, 0);
+			pair_viewer->setSTree(layout_tree, 1);
 			// qtreeViewer->setTree(&this->tree);	
 			// ichao : initialize the transferer
 			this->transferer = new geomTransferer(&this->tree);
@@ -2908,6 +2912,14 @@ void MainWindow::hideParameters()
 		parameterDock->hide();
 	} else {
 		parameterDock->show();
+	}
+}
+
+void MainWindow::hideTreeDock() {
+	if (viewActionHideTree->isChecked()) {
+		treeDock->hide();
+	} else {
+		treeDock->show();
 	}
 }
 

@@ -13,7 +13,7 @@
 #include "iTree.h"
 
 #include "treeViewer.h"
-#include <QVBoxLayout>
+#include <QHBoxLayout>
 
 class qtreeNode;
 typedef stree<hnode*> tree_hnode;
@@ -30,5 +30,5 @@ class pair_treeViewer : public QWidget {
         shared_ptr<treeViewer> viewer0;
         shared_ptr<treeViewer> viewer1;
 
-        QVBoxLayout *layout;
+        QHBoxLayout *layout;
 };
