@@ -11,6 +11,7 @@
 qtreeNode::qtreeNode(treeViewer *viewer) {
     m_pViewer = viewer;   
     setFlag(ItemIsMovable);
+    setFlag(ItemIsSelectable);
     setFlag(ItemSendsGeometryChanges);
     setCacheMode(DeviceCoordinateCache);
     setAcceptHoverEvents(true);
