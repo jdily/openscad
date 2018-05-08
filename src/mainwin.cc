@@ -1185,12 +1185,12 @@ void MainWindow::instantiateRoot()
 			streeConverter *sconv = new streeConverter();
 			tree_hnode* htree = sconv->convert_tree(&tree);
 			std::cout << "htree size : " << htree->size() << std::endl;
-			std::cout << sconv->with_csginfo() << std::endl;
-			// TODO : check here..
-			if (sconv->with_csginfo()) {
-				export_htree_with_csginfo(htree);
-			}
-			std::cout << "finish export_htree_with_csginfo" << std::endl;
+			// std::cout << sconv->with_csginfo() << std::endl;
+			// TODO : [Retrieval] check here..
+			// if (sconv->with_csginfo()) {
+			// 	export_htree_with_csginfo(htree);
+			// }
+			// std::cout << "finish export_htree_with_csginfo" << std::endl;
 			std::vector<std::string> tmps;
 			std::string _filename = this->fileName.toStdString();
 			boost::split(tmps, _filename, boost::is_any_of("/"));

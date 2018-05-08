@@ -33,7 +33,7 @@ shared_ptr<CSGNode> CSGTreeEvaluator::buildCSGTree(const AbstractNode &node)
 {
 	// std::cout << "CSGTreeEvaluator buildCSGTree" << std::endl;
 	this->traverse(node);
-	check_stored_term();
+	// check_stored_term();
 	// std::cout << "node index : " << node.index() << std::endl;
 	shared_ptr<CSGNode> t(this->stored_term[node.index()]);
 	if (t) {
@@ -156,26 +156,26 @@ void CSGTreeEvaluator::applyToChildren(State & state, const AbstractNode &node, 
 	this->stored_term[node.index()] = t1;
 	// ichao added -> added more geometries...
 	// make new geometry evaluation for all leaf...
-	shared_ptr<CSGNode> gt;
-	Tree subtree;
-	subtree.setRoot(&node);
-	GeometryEvaluator geomevaluator(subtree);
-	std::cout << "preflag " << std::endl;
-	auto geom = this->geomevaluator->iso_evaluateGeometry(node, false);
-	if (geom) {
-		gt = evaluateCSGNodeFromGeometry(state, geom, node.modinst, node);
-	}
-	node.progress_report();
-	this->stored_leaf_term[node.index()] = dynamic_pointer_cast<CSGLeaf>(gt);
-	// if (this->geomevaluator) {
-	// 	std::cout << "geom evaluation..." << std::endl;
-	// 	auto geom = this->geomevaluator->evaluateGeometry(node, false);
-	// 	if (geom) {
-	// 		gt = evaluateCSGNodeFromGeometry(state, geom, node.modinst, node);
-	// 	}
-	// 	node.progress_report();
+	// shared_ptr<CSGNode> gt;
+	// Tree subtree;
+	// subtree.setRoot(&node);
+	// GeometryEvaluator geomevaluator(subtree);
+	// std::cout << "preflag " << std::endl;
+	// auto geom = this->geomevaluator->iso_evaluateGeometry(node, false);
+	// if (geom) {
+	// 	gt = evaluateCSGNodeFromGeometry(state, geom, node.modinst, node);
 	// }
+	// node.progress_report();
 	// this->stored_leaf_term[node.index()] = dynamic_pointer_cast<CSGLeaf>(gt);
+	// // if (this->geomevaluator) {
+	// // 	std::cout << "geom evaluation..." << std::endl;
+	// // 	auto geom = this->geomevaluator->evaluateGeometry(node, false);
+	// // 	if (geom) {
+	// // 		gt = evaluateCSGNodeFromGeometry(state, geom, node.modinst, node);
+	// // 	}
+	// // 	node.progress_report();
+	// // }
+	// // this->stored_leaf_term[node.index()] = dynamic_pointer_cast<CSGLeaf>(gt);
 }
 
 Response CSGTreeEvaluator::visit(State &state, const AbstractNode &node)
@@ -258,8 +258,8 @@ Response CSGTreeEvaluator::visit(State &state, const AbstractPolyNode &node)
 		}
 		this->stored_term[node.index()] = t1;
 		// ichao added
-		this->stored_leaf_term[node.index()] = dynamic_pointer_cast<CSGLeaf>(t1);	
-		std::cout << "stored term size : " << this->stored_term.size() << std::endl;
+		// this->stored_leaf_term[node.index()] = dynamic_pointer_cast<CSGLeaf>(t1);	
+		// std::cout << "stored term size : " << this->stored_term.size() << std::endl;
 		addToParent(state, node);
 	}
 	return Response::ContinueTraversal;
@@ -340,7 +340,7 @@ Response CSGTreeEvaluator::visit(State &state, const CgaladvNode &node)
 			node.progress_report();
 		}
 		this->stored_term[node.index()] = t1;
-		this->stored_leaf_term[node.index()] = dynamic_pointer_cast<CSGLeaf>(t1);
+		// this->stored_leaf_term[node.index()] = dynamic_pointer_cast<CSGLeaf>(t1);
 		applyBackgroundAndHighlight(state, node);
 		// this might be the reason why the number didnt match..
 		// applyToChildren(state, node, OpenSCADOperator::UNION);
