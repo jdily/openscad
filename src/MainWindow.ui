@@ -405,6 +405,7 @@
     <addaction name="viewActionHideEditor"/>
     <addaction name="viewActionHideConsole"/>
     <addaction name="viewActionHideParameters"/>
+    <addaction name="viewActionHideTree"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -606,10 +607,13 @@
     </layout>
    </widget>
   </widget>
-  <!-- <widget class="Dock" name="treeDock">
+  <widget class="Dock" name="treeDock">
    <attribute name="dockWidgetArea">
-    <number>3</number>
+    <number>7</number>
    </attribute>
+   <property name="windowTitle">
+    <string>Tree Widget</string>
+   </property>
    <widget class="QWidget" name="treeDockContents">
     <layout class="QVBoxLayout" name="verticalLayout_10">
      <property name="leftMargin">
@@ -860,6 +864,14 @@
    </property>
    <property name="text">
     <string>H&amp;ide editor</string>
+   </property>
+  </action>
+  <action name="viewActionHideTree">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>H&amp;ide tree viewer</string>
    </property>
   </action>
   <action name="designActionReloadAndPreview">

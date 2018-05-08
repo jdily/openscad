@@ -377,7 +377,8 @@ HEADERS += src/version_check.h \
            src/vizTools.h \ 
            src/streeConverter.h \ 
            src/MyCSGTreeTest.h \ 
-           src/LFD.h
+           src/LFD.h \ 
+           src/pair_treeViewer.h
            # src/NodeModifier.h
 
 SOURCES += \
@@ -535,7 +536,8 @@ SOURCES += \
            src/DistMeasure.cpp \
            src/vizTools.cpp \ 
            src/streeConverter.cpp \ 
-           src/MyCSGTreeTest.cpp
+           src/MyCSGTreeTest.cpp \ 
+           src/pair_treeViewer.cpp
            # src/NodeModifier.cpp
 
 # CGAL

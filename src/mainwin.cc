@@ -163,7 +163,9 @@ MainWindow::MainWindow(const QString &filename)
 	consoleDockTitleWidget = new QWidget();
 	parameterDockTitleWidget = new QWidget();
 	treeDockTitleWidget = new QWidget();
-	qtreeViewer = new treeViewer(editorDockTitleWidget);
+	// qtreeViewer = new treeViewer(editorDockTitleWidget);
+	// qtreeViewer_ref = new treeViewer(editorDockTitleWidget);
+	pair_viewer = new pair_treeViewer(editorDockTitleWidget);
 
 	this->editorDock->setConfigKey("view/hideEditor");
 	this->editorDock->setAction(this->viewActionHideEditor);
@@ -171,6 +173,8 @@ MainWindow::MainWindow(const QString &filename)
 	this->consoleDock->setAction(this->viewActionHideConsole);
 	this->parameterDock->setConfigKey("view/hideCustomizer");
 	this->parameterDock->setAction(this->viewActionHideParameters);
+	// this->treeDock->setConfigKey("view/hideTree");
+	// this->treeDock->setAction(this->viewActionHideTree);
 
 	this->versionLabel = nullptr; // must be initialized before calling updateStatusBar()
 	updateStatusBar(nullptr);
@@ -198,7 +202,9 @@ MainWindow::MainWindow(const QString &filename)
 #endif
 
 	editorDockContents->layout()->addWidget(editor);
-	editorDockContents->layout()->addWidget(qtreeViewer);
+	// editorDockContents->layout()->addWidget(qtreeViewer);
+	// editorDockContents->layout()->addWidget(qtreeViewer_ref);
+	// editorDockContents->layout()->addWidget(pair_viewer);
 	// QTextEdit *textedit = new QTextEdit(this);
 	// consoleDockTitleWidget->layout()->addWidget(qtreeViewer);
 
@@ -1200,7 +1206,9 @@ void MainWindow::instantiateRoot()
 			std::cout << "finish convert" << std::endl;
 
 			tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()), this->data_basepath);
-			qtreeViewer->setSTree(layout_tree);
+			// qtreeViewer->setSTree(layout_tree);
+			// qtreeViewer_ref->setSTree(layout_tree);
+			pair_viewer->setSTree(layout_tree, 0);
 			// qtreeViewer->setTree(&this->tree);	
 			// ichao : initialize the transferer
 			this->transferer = new geomTransferer(&this->tree);
@@ -3325,7 +3333,8 @@ void MainWindow::example_selectedSlot(int example_id) {
 	std::cout << strs[0] << std::endl;
 	std::cout << "finish convert" << std::endl;
 	tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()), this->data_basepath);
-	qtreeViewer->setSTree(layout_tree);
+	// qtreeViewer->setSTree(layout_tree);
+	pair_viewer->setSTree(layout_tree, 0);
 	GuiLocker::unlock();
 
 }
