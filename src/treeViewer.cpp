@@ -416,7 +416,7 @@ void treeViewer::mousePressEvent(QMouseEvent *e) {
             // }
         }
     } 
-    // QGraphicsView::mousePressEvent(e);
+    QGraphicsView::mousePressEvent(e);
 }
 
 void treeViewer::mouseMoveEvent(QMouseEvent *e) {
@@ -430,6 +430,7 @@ void treeViewer::mouseMoveEvent(QMouseEvent *e) {
     // if (event->button() == Qt::RightButton) {
     //     std::cout << this->name.toStdString() << std::endl;
     // }
+    QGraphicsView::mouseMoveEvent(e);
 }
 void treeViewer::mouseReleaseEvent(QMouseEvent *e) {
     rb_end = e->pos();
@@ -439,4 +440,5 @@ void treeViewer::mouseReleaseEvent(QMouseEvent *e) {
     // if (event->button() == Qt::RightButton) {
     //     std::cout << this->name.toStdString() << std::endl;
     // }
+    QGraphicsView::mouseReleaseEvent(e);
 }
