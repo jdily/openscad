@@ -32,6 +32,14 @@ treeViewer::treeViewer(QWidget *parent) : QGraphicsView(parent) {
     setMinimumSize(200, 200);
     m_pTree = NULL;
     cur_zoom = 1.0;
+
+    rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
+    rubberBand->setGeometry(0,0,1,1);
+    draw_rubberband = false;
+    // rubberBand->show();
+    // m_selectionRectangle = new QGraphicsRectItem(0,0,1,1);
+    // m_selectionRectangle->setBrush(Qt::magenta);
+    // m_selectionRectangle->setOpacity(0.2);
     // std::cout << "tree viewer " << std::endl;
 }
 
@@ -58,6 +66,10 @@ QPointF treeViewer::rand_pos() {
     float rand_h = rand()%scene_height;
     return QPointF(rand_w, rand_h);
     // return QPointF(top_left.x()+rand_w, top_left.y()+rand_h);
+}
+
+void treeViewer::setName(QString _name) {
+    this->name = _name;
 }
 
 // might be problematic..
@@ -379,8 +391,7 @@ Response treeViewer::visit(State &state, const GroupNode &node)
 	return Response::ContinueTraversal;
 }
 
-void treeViewer::wheelEvent(QWheelEvent *event)
-{
+void treeViewer::wheelEvent(QWheelEvent *event) {
     if(event->delta() > 0)
     {
         this->scale(2,2);
@@ -389,4 +400,43 @@ void treeViewer::wheelEvent(QWheelEvent *event)
     {
         this->scale(0.5,0.5);
     }
+}
+
+void treeViewer::mousePressEvent(QMouseEvent *e) {
+    if (e->button() == Qt::RightButton) {
+        if (e->modifiers() == Qt::ControlModifier) {
+            std::cout << "ctrl pressed " << std::endl;
+            rubberBand->show();
+            rb_start = e->pos();
+            draw_rubberband = true;
+            // if (rubberBand->geometry().contains(e->pos())) {
+            //     rubberband_offset = e->pos() - rubberBand->pos();
+            //     move_rubberband = true;
+                
+            // }
+        }
+    } 
+    // QGraphicsView::mousePressEvent(e);
+}
+
+void treeViewer::mouseMoveEvent(QMouseEvent *e) {
+    if (draw_rubberband) {
+        rubberBand->setGeometry(QRect(rb_start, e->pos()));
+    }
+    // if(move_rubberband)
+    // {   
+    //     rubberBand->move(e->pos() - rubberband_offset);
+    // }
+    // if (event->button() == Qt::RightButton) {
+    //     std::cout << this->name.toStdString() << std::endl;
+    // }
+}
+void treeViewer::mouseReleaseEvent(QMouseEvent *e) {
+    rb_end = e->pos();
+    rubberBand->setGeometry(QRect(rb_start, rb_end));
+    draw_rubberband = false;
+    rubberBand->hide();
+    // if (event->button() == Qt::RightButton) {
+    //     std::cout << this->name.toStdString() << std::endl;
+    // }
 }

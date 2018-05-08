@@ -18,6 +18,8 @@
 class qtreeNode;
 typedef stree<hnode*> tree_hnode;
 
+// TODO : desired function
+// 1. establish correspondences between tree nodes.
 
 class pair_treeViewer : public QWidget {
     Q_OBJECT
