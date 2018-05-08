@@ -303,7 +303,7 @@ shared_ptr<const Geometry> GeometryEvaluator::smartCacheGet(const AbstractNode &
 */
 Geometry::Geometries GeometryEvaluator::collectChildren3D(const AbstractNode &node)
 {
-	std::cout << "collect child 3D" << std::endl;
+	// std::cout << "collect child 3D" << std::endl;
 	Geometry::Geometries children;
 	for(const auto &item : this->visitedchildren[node.index()]) {
 		const AbstractNode *chnode = item.first;

@@ -23,6 +23,7 @@
 // #include "graphConverter.h"
 #include "streeConverter.h"
 #include "vizTools.h"
+#include "pair_treeViewer.h"
 
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
@@ -141,7 +142,10 @@ private:
 
 	EditorInterface *editor;
 	treeViewer *qtreeViewer;
+	treeViewer *qtreeViewer_ref;
 	geomTransferer* transferer;
+
+	pair_treeViewer *pair_viewer;
 
   class LibraryInfoDialog* library_info_dialog;
   class FontListDialog *font_list_dialog;
@@ -174,6 +178,7 @@ private slots:
 	void hideConsole();
 	void showConsole();
 	void hideParameters();
+	void hideTreeDock();
 
 private slots:
 	void selectFindType(int);

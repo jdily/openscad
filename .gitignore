@@ -60,3 +60,9 @@ CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
 OpenSCAD_autogen
+external/LFD/fftw/*
+*.art
+*.cir
+*.ecc
+*.fd
+*.OBJ

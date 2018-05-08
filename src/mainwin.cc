@@ -163,7 +163,9 @@ MainWindow::MainWindow(const QString &filename)
 	consoleDockTitleWidget = new QWidget();
 	parameterDockTitleWidget = new QWidget();
 	treeDockTitleWidget = new QWidget();
-	qtreeViewer = new treeViewer(editorDockTitleWidget);
+	// qtreeViewer = new treeViewer(editorDockTitleWidget);
+	// qtreeViewer_ref = new treeViewer(editorDockTitleWidget);
+	pair_viewer = new pair_treeViewer(treeDockTitleWidget);
 
 	this->editorDock->setConfigKey("view/hideEditor");
 	this->editorDock->setAction(this->viewActionHideEditor);
@@ -171,6 +173,8 @@ MainWindow::MainWindow(const QString &filename)
 	this->consoleDock->setAction(this->viewActionHideConsole);
 	this->parameterDock->setConfigKey("view/hideCustomizer");
 	this->parameterDock->setAction(this->viewActionHideParameters);
+	this->treeDock->setConfigKey("view/hideTree");
+	this->treeDock->setAction(this->viewActionHideTree);
 
 	this->versionLabel = nullptr; // must be initialized before calling updateStatusBar()
 	updateStatusBar(nullptr);
@@ -198,7 +202,11 @@ MainWindow::MainWindow(const QString &filename)
 #endif
 
 	editorDockContents->layout()->addWidget(editor);
-	editorDockContents->layout()->addWidget(qtreeViewer);
+	// treeDockContents->layout()->addWidget(qtreeViewer);
+	treeDockContents->layout()->addWidget(pair_viewer);
+	// editorDockContents->layout()->addWidget(qtreeViewer);
+	// editorDockContents->layout()->addWidget(qtreeViewer_ref);
+	// editorDockContents->layout()->addWidget(pair_viewer);
 	// QTextEdit *textedit = new QTextEdit(this);
 	// consoleDockTitleWidget->layout()->addWidget(qtreeViewer);
 
@@ -212,7 +220,7 @@ MainWindow::MainWindow(const QString &filename)
 	scadApp->windowManager.add(this);
 
 #ifdef ENABLE_CGAL
-	std::cout << "enable CGAL" << std::endl;
+	// std::cout << "enable CGAL" << std::endl;
 	this->cgalworker = new CGALWorker();
 	connect(this->cgalworker, SIGNAL(done(shared_ptr<const Geometry>)), 
 					this, SLOT(actionRenderDone(shared_ptr<const Geometry>)));
@@ -413,6 +421,7 @@ MainWindow::MainWindow(const QString &filename)
 	connect(this->viewActionHideEditor, SIGNAL(triggered()), this, SLOT(hideEditor()));
 	connect(this->viewActionHideConsole, SIGNAL(triggered()), this, SLOT(hideConsole()));
     connect(this->viewActionHideParameters, SIGNAL(triggered()), this, SLOT(hideParameters()));
+	connect(this->viewActionHideTree, SIGNAL(triggered()), this, SLOT(hideTreeDock()));
 	// Help menu
 	connect(this->helpActionAbout, SIGNAL(triggered()), this, SLOT(helpAbout()));
 	connect(this->helpActionHomepage, SIGNAL(triggered()), this, SLOT(helpHomepage()));
@@ -1185,11 +1194,12 @@ void MainWindow::instantiateRoot()
 			streeConverter *sconv = new streeConverter();
 			tree_hnode* htree = sconv->convert_tree(&tree);
 			std::cout << "htree size : " << htree->size() << std::endl;
-			// TODO : check here..
-			if (sconv->with_csginfo()) {
-				export_htree_with_csginfo(htree);
-			}
-			std::cout << "finish export_htree_with_csginfo" << std::endl;
+			// std::cout << sconv->with_csginfo() << std::endl;
+			// TODO : [Retrieval] check here..
+			// if (sconv->with_csginfo()) {
+			// 	export_htree_with_csginfo(htree);
+			// }
+			// std::cout << "finish export_htree_with_csginfo" << std::endl;
 			std::vector<std::string> tmps;
 			std::string _filename = this->fileName.toStdString();
 			boost::split(tmps, _filename, boost::is_any_of("/"));
@@ -1199,7 +1209,10 @@ void MainWindow::instantiateRoot()
 			std::cout << "finish convert" << std::endl;
 
 			tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()), this->data_basepath);
-			qtreeViewer->setSTree(layout_tree);
+			// qtreeViewer->setSTree(layout_tree);
+			// qtreeViewer_ref->setSTree(layout_tree);
+			pair_viewer->setSTree(layout_tree, 0);
+			pair_viewer->setSTree(layout_tree, 1);
 			// qtreeViewer->setTree(&this->tree);	
 			// ichao : initialize the transferer
 			this->transferer = new geomTransferer(&this->tree);
@@ -2902,6 +2915,14 @@ void MainWindow::hideParameters()
 	}
 }
 
+void MainWindow::hideTreeDock() {
+	if (viewActionHideTree->isChecked()) {
+		treeDock->hide();
+	} else {
+		treeDock->show();
+	}
+}
+
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
 	if (event->mimeData()->hasUrls()) {
@@ -3324,7 +3345,8 @@ void MainWindow::example_selectedSlot(int example_id) {
 	std::cout << strs[0] << std::endl;
 	std::cout << "finish convert" << std::endl;
 	tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()), this->data_basepath);
-	qtreeViewer->setSTree(layout_tree);
+	// qtreeViewer->setSTree(layout_tree);
+	pair_viewer->setSTree(layout_tree, 0);
 	GuiLocker::unlock();
 
 }

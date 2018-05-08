@@ -3,6 +3,7 @@
 // #include <boost/graph/graphviz.hpp>
 #include <QGraphicsView>
 #include <QGraphicsItem>
+#include <QRubberBand>
 #include "Tree.h"
 // #include </usr/include/graphviz/gvc.h>
 #include "CSGTreeEvaluator.h"
@@ -10,6 +11,7 @@
 #include "CSGVisitor.h"
 #include <random>
 
+#include "treeScene.h"
 // #include <boost/graph/adjacency_list.hpp>
 // TODO : test boost graph things
 
@@ -18,7 +20,6 @@
 
 class qtreeNode;
 typedef stree<hnode*> tree_hnode;
-
 
 class treeViewer : public QGraphicsView, public NodeVisitor {
     Q_OBJECT
@@ -30,6 +31,8 @@ class treeViewer : public QGraphicsView, public NodeVisitor {
         void setTree(Tree *tree);
         void setBTree(bTree *btree);
         void setSTree(tree_hnode* htree);
+
+        void setName(QString name);
 
         QPointF rand_pos();
         void  clear_scene();
@@ -50,11 +53,23 @@ class treeViewer : public QGraphicsView, public NodeVisitor {
         int scene_width;
         int scene_height;
         float cur_zoom;
+        QString name;
+
+        QRubberBand *rubberBand;
+        bool move_rubberband;
+        bool draw_rubberband;
+        QPoint rubberband_offset;
+        QPoint rb_start;
+        QPoint rb_end;
 
         void draw_and_traverse(const AbstractNode &node, qtreeNode *parent_node);
 
         void wheelEvent(QWheelEvent *event) override;
+        void mousePressEvent(QMouseEvent *event) override;
+        void mouseMoveEvent(QMouseEvent *event) override;
+        void mouseReleaseEvent(QMouseEvent *event) override;
     protected:
+        // QGraphicsRectItem* m_selectionRectangle;
     // public slots:
 
 

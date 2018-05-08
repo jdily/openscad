@@ -33,6 +33,8 @@
 
 #include <map>
 #include <queue>
+#include <typeinfo>
+
 
 // TODO : check if we can use this function to get Poly...
 static CGAL_Nef_polyhedron *createNefPolyhedronFromPolySet(const PolySet &ps)
@@ -245,13 +247,14 @@ namespace CGALUtils {
 	{
 		auto ps = dynamic_cast<const PolySet*>(&geom);
 		// ichao added
-		std::cout << "ps dim : " << ps->getDimension() << std::endl;
+		// std::cout << "ps dim : " << ps->getDimension() << std::endl;
 		// if (ps) {
 		if (ps->getDimension() == 3) {
 			return createNefPolyhedronFromPolySet(*ps);
 		}
 		else {
 			std::cout << "2d come in "<< std::endl;
+			// std::cout << geom.numPolygons() << " " << geom.getDimension() << std::endl;
 			auto poly2d = dynamic_cast<const Polygon2d*>(&geom);
 			if (poly2d) { 
 				return createNefPolyhedronFromPolygon2d(*poly2d);
