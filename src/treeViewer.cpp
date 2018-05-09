@@ -195,16 +195,20 @@ void treeViewer::mouseReleaseEvent(QMouseEvent *e) {
         // check if we can get the selected Item..
         QPainterPath selectionArea;
         selectionArea.addPolygon(mapToScene(rb_rect));
-        // QRectF bb_ssarea = selectionArea.boundingRect();
-        // std::cout << bb_ssarea.width() << " " << bb_ssarea.height() << std::endl;
         selectionArea.closeSubpath();
         m_pScene->setSelectionArea(selectionArea, viewportTransform());
         QPainterPath return_area = m_pScene->selectionArea();
         QRectF bb_area = return_area.boundingRect();
-        std::cout << bb_area.width() << " " << bb_area.height() << std::endl;
+        // std::cout << bb_area.width() << " " << bb_area.height() << std::endl;
 
         QList<QGraphicsItem*> selected_items = m_pScene->selectedItems();
-        if (selected_items.isEmpty()) { std::cout << "empty" << std::endl; }
+        // for(int i = 0; i < g_items.length(); i++) {
+        // }
+        foreach (QGraphicsItem *node, selected_items) {
+            dynamic_cast<qtreeNode*>(node)->my_selected = true;
+            // node->my_selected = true;
+        }
+        // if (selected_items.isEmpty()) { std::cout << "empty" << std::endl; }
         std::cout << selected_items.length() << " items are selected " << std::endl;
         rubberBand->setGeometry(0,0,1,1);
     }

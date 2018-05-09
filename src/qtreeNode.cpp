@@ -34,6 +34,8 @@ qtreeNode::qtreeNode(treeViewer *viewer, string node_type) {
     color_map["group"] = QColor(Qt::darkGray);
     color_map["csg_opt"] = QColor(Qt::yellow);
     color_map["cgal_adv"] =QColor(Qt::magenta);
+
+    my_selected = false;
 }
 
 qtreeNode::~qtreeNode() {}
@@ -82,7 +84,12 @@ void qtreeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     // painter->setBrush(gradient);
 
     // painter->setPen(QPen(Qt::black, 0));
-    painter->setPen(QPen(Qt::black, 1));
+    if (my_selected) {
+        painter->setPen(QPen(Qt::black, 3));
+    } else {
+        painter->setPen(QPen(Qt::black, 1));
+    }
+    // painter->setPen(QPen(Qt::black, 1));
     painter->setBrush(QBrush(color_map[type]));
     // painter->setPen(QPen(color_map[type], 1));
     painter->drawEllipse(-10, -10, 20, 20);
@@ -100,6 +107,7 @@ QVariant qtreeNode::itemChange(GraphicsItemChange change, const QVariant &value)
     } else if (change == QGraphicsItem::ItemSelectedChange ) {
         if (value == true) {
             std::cout << "node " << idx << " is selected " << std::endl;
+            
         }
     }
     return QGraphicsItem::itemChange(change, value);
@@ -111,7 +119,13 @@ QVariant qtreeNode::itemChange(GraphicsItemChange change, const QVariant &value)
 //     update();
 // }
 
-void qtreeNode::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+void qtreeNode::mousePressEvent(QGraphicsSceneMouseEvent *e) {
     std::cout << "press" << std::endl;
     std::cout << idx << " " << type << std::endl;
+    if (e->button() == Qt::LeftButton) {
+        if (e->modifiers() == Qt::ControlModifier) {
+            this->setSelected(true);
+            my_selected = true;
+        }
+    }
 }

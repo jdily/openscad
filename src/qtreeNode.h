@@ -21,6 +21,8 @@ class qtreeNode : public QGraphicsItem {
         // set the node idx in the corresponding Tree
         void set_id(int idx);
         int get_id();
+        
+        bool my_selected;
     private:
         QList<qtreeEdge*> edgeList;
         QPointF newPos;
@@ -29,8 +31,9 @@ class qtreeNode : public QGraphicsItem {
         QList<qtreeNode*> childList;
         qtreeNode *parent_node;
         QMap<string, QColor> color_map;
-
         int idx;
+
+        // bool my_selected;
     protected:  
         QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
         void mousePressEvent(QGraphicsSceneMouseEvent *event) override;

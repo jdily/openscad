@@ -64,6 +64,9 @@ class treeViewer : public QGraphicsView {
         QPoint rb_end;
         QRect rb_rect;
 
+        std::vector<QGraphicsItem*> selected_nodes;
+        std::vector<int> selected_nids;
+
         void draw_and_traverse(const AbstractNode &node, qtreeNode *parent_node);
 
         void wheelEvent(QWheelEvent *event) override;
