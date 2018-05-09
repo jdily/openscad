@@ -21,7 +21,7 @@
 class qtreeNode;
 typedef stree<hnode*> tree_hnode;
 
-class treeViewer : public QGraphicsView, public NodeVisitor {
+class treeViewer : public QGraphicsView {
     Q_OBJECT
     public:
         treeViewer(QWidget *parent=0);
@@ -36,12 +36,12 @@ class treeViewer : public QGraphicsView, public NodeVisitor {
 
         QPointF rand_pos();
         void  clear_scene();
-        Response visit(State &state, const AbstractNode &node) override;
-        Response visit(State &state, const RootNode &node) override;
-        Response visit(State &state, const AbstractPolyNode &node) override;
-        Response visit(State &state, const TransformNode &node) override;
-        Response visit(State &state, const CsgOpNode &node) override;
-        Response visit(State &state, const GroupNode &node) override;
+        // Response visit(State &state, const AbstractNode &node) override;
+        // Response visit(State &state, const RootNode &node) override;
+        // Response visit(State &state, const AbstractPolyNode &node) override;
+        // Response visit(State &state, const TransformNode &node) override;
+        // Response visit(State &state, const CsgOpNode &node) override;
+        // Response visit(State &state, const GroupNode &node) override;
     private:
         void buildVizTree(Tree* tree);
         void simpleVizTree(Tree* tree);
@@ -56,11 +56,13 @@ class treeViewer : public QGraphicsView, public NodeVisitor {
         QString name;
 
         QRubberBand *rubberBand;
+
         bool move_rubberband;
         bool draw_rubberband;
         QPoint rubberband_offset;
         QPoint rb_start;
         QPoint rb_end;
+        QRect rb_rect;
 
         void draw_and_traverse(const AbstractNode &node, qtreeNode *parent_node);
 

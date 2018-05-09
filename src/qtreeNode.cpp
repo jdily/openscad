@@ -22,6 +22,7 @@ qtreeNode::qtreeNode(treeViewer *viewer) {
 qtreeNode::qtreeNode(treeViewer *viewer, string node_type) {
     m_pViewer = viewer;   
     setFlag(ItemIsMovable);
+    setFlag(ItemIsSelectable);
     setFlag(ItemSendsGeometryChanges);
     setCacheMode(DeviceCoordinateCache);
     setZValue(-1);
@@ -96,9 +97,13 @@ QVariant qtreeNode::itemChange(GraphicsItemChange change, const QVariant &value)
         foreach (qtreeEdge *edge, edgeList) {
             edge->updatePosition();
         }
+    } else if (change == QGraphicsItem::ItemSelectedChange ) {
+        if (value == true) {
+            std::cout << "node " << idx << " is selected " << std::endl;
+        }
     }
-
-    return value;
+    return QGraphicsItem::itemChange(change, value);
+    // return value;
 }
 
 // void qtreeNode::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
