@@ -1422,6 +1422,8 @@ void MainWindow::compileCSG(bool procevents)
 
 	}
 
+	// TODO : first check the effect of highlight....
+	
 	const std::vector<shared_ptr<CSGNode> > &highlight_terms = csgrenderer.getHighlightNodes();
 	PRINTB("Highlight term size : %d...", highlight_terms.size());
 	if (highlight_terms.size() > 0) {
