@@ -11,9 +11,10 @@
 #include <random>
 #include "graphConverter.h"
 #include "iTree.h"
-
+#include "correspondence.h"
 #include "treeViewer.h"
 #include <QHBoxLayout>
+#include <QMouseEvent>
 
 class qtreeNode;
 typedef stree<hnode*> tree_hnode;
@@ -31,6 +32,15 @@ class pair_treeViewer : public QWidget {
     private:
         shared_ptr<treeViewer> viewer0;
         shared_ptr<treeViewer> viewer1;
-
         QHBoxLayout *layout;
+        QMenu *menu;
+        // action for establish correspondece.
+        QAction *act_est_cor;
+
+        std::vector<correspondence> corrs;
+
+    protected:
+        void mousePressEvent(QMouseEvent *event) override;
+    public slots:
+        void est_correspondences();
 };

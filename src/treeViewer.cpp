@@ -43,11 +43,7 @@ treeViewer::treeViewer(QWidget *parent) : QGraphicsView(parent) {
     // setDragMode(QGraphicsView::RubberBandDrag);
     setRubberBandSelectionMode(Qt::ContainsItemShape);
 
-    // rubberBand->show();
-    // m_selectionRectangle = new QGraphicsRectItem(0,0,1,1);
-    // m_selectionRectangle->setBrush(Qt::magenta);
-    // m_selectionRectangle->setOpacity(0.2);
-    // std::cout << "tree viewer " << std::endl;
+
 }
 
 treeViewer::treeViewer(Tree *tree, QWidget *parent) : QGraphicsView(parent) {
@@ -123,22 +119,22 @@ void treeViewer::setSTree(tree_hnode* htree) {
         pos.setY(scene_height-(*iterator)->pos_y);
         qnode->setPos(pos);
         // qnode->setPos(rand_pos());
-        qtreenodes.insert((*iterator)->idx, qnode);
+        qnode_map.insert((*iterator)->idx, qnode);
         m_pScene->addItem(qnode);
         ++iterator;
     }
 
     QMap<int, tree_qnode::iterator> qnode_iters;
     this->qtree = new tree_qnode();
-    QList<int> keys = qtreenodes.keys();
+    QList<int> keys = qnode_map.keys();
     for (int k : keys) {
         tree_qnode::iterator newNodeIter;
-        int parent_id = qtreenodes[k]->parent_idx;
+        int parent_id = qnode_map[k]->parent_idx;
         if (parent_id == -1) {
             newNodeIter = qtree->begin();
-            newNodeIter = qtree->insert(newNodeIter, qtreenodes[k]);
+            newNodeIter = qtree->insert(newNodeIter, qnode_map[k]);
         } else {
-            newNodeIter = qtree->append_child(qnode_iters[parent_id], qtreenodes[k]);
+            newNodeIter = qtree->append_child(qnode_iters[parent_id], qnode_map[k]);
         }
         qnode_iters.insert(k, newNodeIter);
     }
@@ -150,7 +146,7 @@ void treeViewer::setSTree(tree_hnode* htree) {
         int self_idx = (*iterator)->idx;
         while(children != htree->end(iterator)) {
             int child_idx = (*children)->idx;
-            qtreeEdge *edge = new qtreeEdge(qtreenodes[self_idx], qtreenodes[child_idx]);
+            qtreeEdge *edge = new qtreeEdge(qnode_map[self_idx], qnode_map[child_idx]);
             m_pScene->addItem(edge);
             ++children;
         }
@@ -158,11 +154,11 @@ void treeViewer::setSTree(tree_hnode* htree) {
     }
     std::cout << "there are " << m_pScene->items().size() << " items in the scene" << std::endl;
 
-    for(auto n : qtreenodes.keys()) {
-        const bool connected = connect(qtreenodes[n], SIGNAL(select_childrens(int)), this, SLOT(set_child_selection(int)));
+    for(auto n : qnode_map.keys()) {
+        const bool connected = connect(qnode_map[n], SIGNAL(select_childrens(int)), this, SLOT(set_child_selection(int)));
         // qDebug() << "Connection established?????" << connected;
     }
-    qnode_map = qtreenodes;
+    // qnode_map = qtreenodes;
 }
 
 
@@ -241,20 +237,38 @@ void treeViewer::mouseReleaseEvent(QMouseEvent *e) {
     QGraphicsView::mouseReleaseEvent(e);
 }
 
+void treeViewer::clear_selection() {
+    std::cout << "clear~~" << std::endl;
+    std::cout << "size of qnodemap : " << qnode_map.size() << std::endl;    
+    // first reset the selected status of the node
+    foreach(int i, selected_nids) {
+        // std::cout << "selected id : " << i << std::endl;
+        qnode_map[i]->setSelected(false);
+        qnode_map[i]->my_selected = false;
+        qnode_map[i]->update();
+    }
+    std::cout << m_pScene->selectedItems().size() << std::endl;
+    selected_nids.clear();
+    selected_nodes.clear();
+    // std::cout 
+}
+
 void treeViewer::set_child_selection(int selected_id) {
     std::cout << "capture and run for set_child_selection " << selected_id << std::endl;
-    // get the qnode using the selected_id;
-    qtreeNode* selected_node = qnode_map[selected_id];
-    tree_qnode::pre_order_iterator children, pre_iter;
-	tree_qnode::iterator iterator, loc;
-    loc = std::find(qtree->begin(), qtree->end(), selected_node);
+    selected_nids.push_back(selected_id);
 
-    pre_iter = qtree->begin(loc);
-    while (pre_iter != qtree->end()) {
-        (*pre_iter)->setSelected(true);
-        (*pre_iter)->my_selected = true;
-        ++pre_iter;
-    }
+    // get the qnode using the selected_id;
+    // qtreeNode* selected_node = qnode_map[selected_id];
+    // tree_qnode::pre_order_iterator children, pre_iter;
+	// tree_qnode::iterator iterator, loc;
+    // loc = std::find(qtree->begin(), qtree->end(), selected_node);
+
+    // pre_iter = qtree->begin(loc);
+    // while (pre_iter != qtree->end()) {
+    //     (*pre_iter)->setSelected(true);
+    //     (*pre_iter)->my_selected = true;
+    //     ++pre_iter;
+    // }
 
     // while(children != this->qtree->end(iterator)) {
     //     (*children)->setSelected(true);

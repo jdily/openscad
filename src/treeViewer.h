@@ -5,6 +5,7 @@
 #include <QGraphicsView>
 #include <QGraphicsItem>
 #include <QRubberBand>
+#include <QMenu>
 #include "Tree.h"
 // #include </usr/include/graphviz/gvc.h>
 #include "CSGTreeEvaluator.h"
@@ -36,14 +37,15 @@ class treeViewer : public QGraphicsView {
         void setName(QString name);
 
         QPointF rand_pos();
-        void  clear_scene();
+        void clear_scene();
+        void clear_selection();
         // Response visit(State &state, const AbstractNode &node) override;
         // Response visit(State &state, const RootNode &node) override;
         // Response visit(State &state, const AbstractPolyNode &node) override;
         // Response visit(State &state, const TransformNode &node) override;
         // Response visit(State &state, const CsgOpNode &node) override;
         // Response visit(State &state, const GroupNode &node) override;
-    private:
+    // private:
         void buildVizTree(Tree* tree);
         void simpleVizTree(Tree* tree);
         Tree *m_pTree;
@@ -69,6 +71,10 @@ class treeViewer : public QGraphicsView {
 
         std::vector<QGraphicsItem*> selected_nodes;
         std::vector<int> selected_nids;
+
+        QMenu *menu;
+        // action for establish correspondece.
+        QAction *act_est_cor;
 
         void draw_and_traverse(const AbstractNode &node, qtreeNode *parent_node);
 
