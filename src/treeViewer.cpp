@@ -117,6 +117,7 @@ void treeViewer::setSTree(tree_hnode* htree) {
         std::string type = (*iterator)->type;
         qtreeNode *qnode = new qtreeNode(this, type);
         qnode->set_id((*iterator)->idx);
+        qnode->parent_idx = (*iterator)->parent_idx;
         QPointF pos;
         pos.setX(scene_width-(*iterator)->pos_x);
         pos.setY(scene_height-(*iterator)->pos_y);
@@ -126,6 +127,23 @@ void treeViewer::setSTree(tree_hnode* htree) {
         m_pScene->addItem(qnode);
         ++iterator;
     }
+
+    QMap<int, tree_qnode::iterator> qnode_iters;
+    this->qtree = new tree_qnode();
+    QList<int> keys = qtreenodes.keys();
+    for (int k : keys) {
+        tree_qnode::iterator newNodeIter;
+        int parent_id = qtreenodes[k]->parent_idx;
+        if (parent_id == -1) {
+            newNodeIter = qtree->begin();
+            newNodeIter = qtree->insert(newNodeIter, qtreenodes[k]);
+        } else {
+            newNodeIter = qtree->append_child(qnode_iters[parent_id], qtreenodes[k]);
+        }
+        qnode_iters.insert(k, newNodeIter);
+    }
+
+
     iterator = htree->begin();
     while (iterator!=htree->end()) {
         children = htree->begin(iterator);
@@ -139,7 +157,12 @@ void treeViewer::setSTree(tree_hnode* htree) {
         ++iterator;
     }
     std::cout << "there are " << m_pScene->items().size() << " items in the scene" << std::endl;
-    
+
+    for(auto n : qtreenodes.keys()) {
+        const bool connected = connect(qtreenodes[n], SIGNAL(select_childrens(int)), this, SLOT(set_child_selection(int)));
+        // qDebug() << "Connection established?????" << connected;
+    }
+    qnode_map = qtreenodes;
 }
 
 
@@ -218,6 +241,40 @@ void treeViewer::mouseReleaseEvent(QMouseEvent *e) {
     QGraphicsView::mouseReleaseEvent(e);
 }
 
+void treeViewer::set_child_selection(int selected_id) {
+    std::cout << "capture and run for set_child_selection " << selected_id << std::endl;
+    // get the qnode using the selected_id;
+    qtreeNode* selected_node = qnode_map[selected_id];
+    tree_qnode::pre_order_iterator children, pre_iter;
+	tree_qnode::iterator iterator, loc;
+    loc = std::find(qtree->begin(), qtree->end(), selected_node);
+
+    pre_iter = qtree->begin(loc);
+    while (pre_iter != qtree->end()) {
+        (*pre_iter)->setSelected(true);
+        (*pre_iter)->my_selected = true;
+        ++pre_iter;
+    }
+
+    // while(children != this->qtree->end(iterator)) {
+    //     (*children)->setSelected(true);
+    //     (*children)->my_selected = true;
+    //     ++children; 
+    // }
+
+    //     while (iterator!=htree->end()) {
+    //     children = htree->begin(iterator);
+    //     int self_idx = (*iterator)->idx;
+    //     while(children != htree->end(iterator)) {
+    //         int child_idx = (*children)->idx;
+    //         qtreeEdge *edge = new qtreeEdge(qtreenodes[self_idx], qtreenodes[child_idx]);
+    //         m_pScene->addItem(edge);
+    //         ++children;
+    //     }
+    //     ++iterator;
+    // }
+
+}
 
 //////////////////////////////////
 void treeViewer::buildVizTree(Tree *tree) {

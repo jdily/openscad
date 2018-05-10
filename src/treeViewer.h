@@ -1,6 +1,7 @@
 #pragma once
 
 // #include <boost/graph/graphviz.hpp>
+#include <QtCore>
 #include <QGraphicsView>
 #include <QGraphicsItem>
 #include <QRubberBand>
@@ -11,15 +12,15 @@
 #include "CSGVisitor.h"
 #include <random>
 
-#include "treeScene.h"
+// #include "treeScene.h"
 // #include <boost/graph/adjacency_list.hpp>
 // TODO : test boost graph things
-
 #include "graphConverter.h"
 #include "iTree.h"
 
 class qtreeNode;
 typedef stree<hnode*> tree_hnode;
+typedef stree<qtreeNode*> tree_qnode;
 
 class treeViewer : public QGraphicsView {
     Q_OBJECT
@@ -49,11 +50,13 @@ class treeViewer : public QGraphicsView {
         shared_ptr<class CSGNode> csgRoot;		   // Result of the CSGTreeEvaluator
         QGraphicsScene *m_pScene;
         // potential issue : the idx of abstractnode is unique per tree only
-        QMap<int, qtreeNode*> node_map; 
+        QMap<int, qtreeNode*> qnode_map; 
         int scene_width;
         int scene_height;
         float cur_zoom;
         QString name;
+
+        tree_qnode* qtree;
 
         QRubberBand *rubberBand;
 
@@ -75,8 +78,8 @@ class treeViewer : public QGraphicsView {
         void mouseReleaseEvent(QMouseEvent *event) override;
     protected:
         // QGraphicsRectItem* m_selectionRectangle;
-    // public slots:
-
+    public slots:
+        void set_child_selection(int);
 
 };  
 

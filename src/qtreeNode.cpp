@@ -36,6 +36,7 @@ qtreeNode::qtreeNode(treeViewer *viewer, string node_type) {
     color_map["cgal_adv"] =QColor(Qt::magenta);
 
     my_selected = false;
+    // connect(this, SIGNAL(select_childrens(int)), m_pViewer, SLOT(set_child_selection(int)));
 }
 
 qtreeNode::~qtreeNode() {}
@@ -126,6 +127,7 @@ void qtreeNode::mousePressEvent(QGraphicsSceneMouseEvent *e) {
         if (e->modifiers() == Qt::ControlModifier) {
             this->setSelected(true);
             my_selected = true;
+            emit select_childrens(this->idx);
         }
     }
 }

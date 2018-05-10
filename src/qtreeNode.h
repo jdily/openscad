@@ -8,7 +8,8 @@ class qtreeEdge;
 class treeViewer;
 using namespace std;
 
-class qtreeNode : public QGraphicsItem {
+class qtreeNode : public QObject, public QGraphicsItem {
+    Q_OBJECT
     public:
         qtreeNode(treeViewer *viewer);
         qtreeNode(treeViewer *viewer, string node_type);
@@ -23,7 +24,7 @@ class qtreeNode : public QGraphicsItem {
         int get_id();
         
         bool my_selected;
-    private:
+    // private:
         QList<qtreeEdge*> edgeList;
         QPointF newPos;
         treeViewer *m_pViewer;
@@ -32,10 +33,13 @@ class qtreeNode : public QGraphicsItem {
         qtreeNode *parent_node;
         QMap<string, QColor> color_map;
         int idx;
+        int parent_idx;
 
         // bool my_selected;
     protected:  
         QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
         void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
         // void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
+    signals:
+        void select_childrens(int);
 };
