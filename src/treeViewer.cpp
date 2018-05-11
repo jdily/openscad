@@ -155,7 +155,7 @@ void treeViewer::setSTree(tree_hnode* htree) {
     std::cout << "there are " << m_pScene->items().size() << " items in the scene" << std::endl;
 
     for(auto n : qnode_map.keys()) {
-        const bool connected = connect(qnode_map[n], SIGNAL(select_childrens(int)), this, SLOT(set_child_selection(int)));
+        const bool connected = connect(qnode_map[n], SIGNAL(select_childrens(int, bool)), this, SLOT(set_child_selection(int, bool)));
         // qDebug() << "Connection established?????" << connected;
     }
     // qnode_map = qtreenodes;
@@ -174,19 +174,19 @@ void treeViewer::wheelEvent(QWheelEvent *event) {
 }
 
 void treeViewer::mousePressEvent(QMouseEvent *e) {
-    if (e->button() == Qt::RightButton) {
-        if (e->modifiers() == Qt::ControlModifier) {
-            std::cout << "ctrl pressed " << std::endl;
-            rubberBand->show();
-            rb_start = e->pos();
-            draw_rubberband = true;
-            // if (rubberBand->geometry().contains(e->pos())) {
-            //     rubberband_offset = e->pos() - rubberBand->pos();
-            //     move_rubberband = true;
+    // if (e->button() == Qt::RightButton) {
+    //     if (e->modifiers() == Qt::ControlModifier) {
+    //         std::cout << "ctrl pressed " << std::endl;
+    //         rubberBand->show();
+    //         rb_start = e->pos();
+    //         draw_rubberband = true;
+    //         // if (rubberBand->geometry().contains(e->pos())) {
+    //         //     rubberband_offset = e->pos() - rubberBand->pos();
+    //         //     move_rubberband = true;
                 
-            // }
-        }
-    } 
+    //         // }
+    //     }
+    // } 
     QGraphicsView::mousePressEvent(e);
 }
 
@@ -253,10 +253,19 @@ void treeViewer::clear_selection() {
     // std::cout 
 }
 
-void treeViewer::set_child_selection(int selected_id) {
+void treeViewer::set_child_selection(int selected_id, bool value) {
     std::cout << "capture and run for set_child_selection " << selected_id << std::endl;
-    selected_nids.push_back(selected_id);
-    emit rerender_select_highlight(selected_id);
+    std::cout << "value : " << value << std::endl;
+    if (value == true) {
+        selected_nids.push_back(selected_id);
+        std::cout << selected_nids.size() << " nodes are selected" << std::endl;
+    } else {
+        // remove the selected_id
+        // selected_nids.
+        selected_nids.erase(std::find(selected_nids.begin(), selected_nids.end(), selected_id));
+        std::cout << selected_nids.size() << " nodes are selected" << std::endl;
+    }
+    emit rerender_select_highlight(selected_id, value);
     
 
     // get the qnode using the selected_id;

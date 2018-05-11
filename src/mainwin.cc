@@ -607,7 +607,7 @@ MainWindow::MainWindow(const QString &filename)
 	transferer = nullptr;
 
 	// ichao connect 
-	connect(this->pair_viewer->viewer0.get(), SIGNAL(rerender_select_highlight(int)), this, SLOT(slot_rerender_highlight(int)));
+	connect(this->pair_viewer->viewer0.get(), SIGNAL(rerender_select_highlight(int, bool)), this, SLOT(slot_rerender_highlight(int, bool)));
 }
 
 void MainWindow::initActionIcon(QAction *action, const char *darkResource, const char *lightResource)
@@ -3399,8 +3399,14 @@ void MainWindow::export_htree_with_csginfo(tree_hnode* tree) {
 	// }
 }
 
-void MainWindow::slot_rerender_highlight(int idx) {
-	std::cout << "please rerender " << idx << " as highlight" << std::endl;
-	main_hids.push_back(idx);
+void MainWindow::slot_rerender_highlight(int idx, bool value) {
+	if (value == true) {
+		std::cout << "please rerender " << idx << " as highlight" << std::endl;
+		main_hids.push_back(idx);
+	} else {
+		std::cout << "please don't rerender " << idx << " as highlight" << std::endl;
+		// main_hids.push_back(idx);
+		main_hids.erase(std::find(main_hids.begin(), main_hids.end(), idx));
+	}
 	csgReloadRender();
 }

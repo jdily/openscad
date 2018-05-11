@@ -50,9 +50,17 @@ shared_ptr<CSGNode> CSGTreeEvaluator::buildCSGTree(const AbstractNode &node)
 // The purpose is to visualize the relationship between tree nodes and the geometries...
 shared_ptr<class CSGNode> CSGTreeEvaluator::buildCSGTree_w_hb(const AbstractNode &node, std::vector<int> hids) {
 	this->traverse(node);
+	// for (int i = 0; i < this->stored_term.size(); i++) {
+	// 	this->stored_term[i]->setBackground(true);
+	// }
 	for (int i = 0; i < (int)hids.size(); i++) {
 		this->stored_term[hids[i]]->setHighlight(true);
 	}
+	// for (int i = 0; i < this->stored_term.size(); i++) {
+	// 	if (std::find(hids.begin(), hids.end(), i) == hids.end()) {
+	// 		this->stored_term[i]->setBackground(true);
+	// 	}
+	// }
 	shared_ptr<CSGNode> t(this->stored_term[node.index()]);
 	if (t) {
 		if (t->isHighlight()) this->highlightNodes.push_back(t);

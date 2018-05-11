@@ -107,9 +107,13 @@ QVariant qtreeNode::itemChange(GraphicsItemChange change, const QVariant &value)
         }
     } else if (change == QGraphicsItem::ItemSelectedChange ) {
         if (value == true) {
-            std::cout << "node " << idx << " is selected " << std::endl;
-            
+            std::cout << "node " << idx << " is selected " << " " << isSelected() << std::endl;
+        } else {
+            std::cout << "node " << idx << " is deselected " << std::endl;
+            // my_selected = false;
+            // update();
         }
+        emit select_childrens(this->idx, value.toBool());
     }
     return QGraphicsItem::itemChange(change, value);
     // return value;
@@ -120,14 +124,27 @@ QVariant qtreeNode::itemChange(GraphicsItemChange change, const QVariant &value)
 //     update();
 // }
 
+// TODO : add function to de-select the node..
+
 void qtreeNode::mousePressEvent(QGraphicsSceneMouseEvent *e) {
     std::cout << "press" << std::endl;
-    std::cout << idx << " " << type << std::endl;
+    std::cout << idx << " " << type << " " << isSelected() << std::endl;
     if (e->button() == Qt::LeftButton) {
         if (e->modifiers() == Qt::ControlModifier) {
-            this->setSelected(true);
-            my_selected = true;
-            emit select_childrens(this->idx);
+            // this->setSelected(true);
+            if (!isSelected()) { 
+                std::cout << "not selected before" << std::endl;
+                // this->setSelected(true);
+                my_selected = true;
+                // emit select_childrens(this->idx, true);
+            } else {
+                std::cout << "selected before" << std::endl;
+                // this->setSelected(false);
+                my_selected = false;
+                // emit select_childrens(this->idx, false);
+            }
+            
         }
     }
+    QGraphicsItem::mousePressEvent(e);
 }

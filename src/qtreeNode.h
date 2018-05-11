@@ -41,5 +41,5 @@ class qtreeNode : public QObject, public QGraphicsItem {
         void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
         // void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
     signals:
-        void select_childrens(int);
+        void select_childrens(int, bool);
 };
