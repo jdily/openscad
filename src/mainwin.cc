@@ -1384,8 +1384,9 @@ void MainWindow::compileCSG(bool procevents)
 		// qtreeViewer->setTree(&this->tree);	
 		// this->csgRoot = csgrenderer.buildCSGTree(*root_node);
 		std::vector<int> hids;
-		hids.push_back(5);
-		this->csgRoot = csgrenderer.buildCSGTree_w_hb(*root_node, hids);
+		// hids.push_back(5);
+		// main_hids.push(3);
+		this->csgRoot = csgrenderer.buildCSGTree_w_hb(*root_node, main_hids);
 		// this->tree.csg_stored_leaf_term = csgrenderer.get_stored_leaf_term();
 		// this->
 		std::cout << "csg root dump : " << this->csgRoot->dump() << std::endl;
@@ -3378,7 +3379,7 @@ void MainWindow::export_htree_with_csginfo(tree_hnode* tree) {
 	// tree_hnode::pre_order_iterator pre_iter(tree->begin());
 	// int index = 0;
 	// while (pre_iter != htree->end()) {
-	// 	if ((*pre_iter)->csgnode != nullptr) {
+	// 	if ((*pre_iter)->csgnode != nulmain_hidslptr) {
 	// 		std::cout << index << " " << (*pre_iter)->type << " " << (*pre_iter)->csgnode->dump() << std::endl;
 	// 		// std::cout << (*pre_iter)->csgnode->geom->dump() << std::endl;
 	// 		CGAL_Nef_polyhedron *poly = CGALUtils::createNefPolyhedronFromGeometry(*((*pre_iter)->csgnode->geom));	
@@ -3400,5 +3401,6 @@ void MainWindow::export_htree_with_csginfo(tree_hnode* tree) {
 
 void MainWindow::slot_rerender_highlight(int idx) {
 	std::cout << "please rerender " << idx << " as highlight" << std::endl;
+	main_hids.push_back(idx);
 	csgReloadRender();
 }

@@ -316,6 +316,8 @@ private:
 	shared_ptr<CSGProducts> highlights_products;
 	shared_ptr<CSGProducts> background_products;
 
+	std::vector<int> main_hids;
+
 	// ichao: for examples
 	std::vector<shared_ptr<class CSGNode>> exp_csgRoots;
 	std::vector<shared_ptr<CSGNode>> exp_normalizedRoots;
