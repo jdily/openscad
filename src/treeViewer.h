@@ -86,6 +86,8 @@ class treeViewer : public QGraphicsView {
         // QGraphicsRectItem* m_selectionRectangle;
     public slots:
         void set_child_selection(int);
+    signals:
+        void rerender_select_highlight(int);
 
 };  
 

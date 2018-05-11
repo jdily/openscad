@@ -1,5 +1,6 @@
 #pragma once
 
+// #include <QVector>
 #include <map>
 #include <list>
 #include <vector>
@@ -26,7 +27,7 @@ public:
  	Response visit(State &state, const class CgaladvNode &node) override;
 
 	shared_ptr<class CSGNode> buildCSGTree(const AbstractNode &node);
-
+	shared_ptr<class CSGNode> buildCSGTree_w_hb(const AbstractNode &node, std::vector<int> hids);
 	const shared_ptr<CSGNode> &getRootNode() const {
 		return this->rootNode;
 	}

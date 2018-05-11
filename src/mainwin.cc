@@ -92,6 +92,7 @@
 #include <QDockWidget>
 #include <QClipboard>
 #include <QDesktopWidget>
+// #include <QVector>
 #include <string>
 #include "QWordSearchField.h"
 #include <QSettings> //Include QSettings for direct operations on settings arrays
@@ -604,6 +605,9 @@ MainWindow::MainWindow(const QString &filename)
 
 	srand((unsigned)time(0));
 	transferer = nullptr;
+
+	// ichao connect 
+	connect(this->pair_viewer->viewer0.get(), SIGNAL(rerender_select_highlight(int)), this, SLOT(slot_rerender_highlight(int)));
 }
 
 void MainWindow::initActionIcon(QAction *action, const char *darkResource, const char *lightResource)
@@ -1378,8 +1382,11 @@ void MainWindow::compileCSG(bool procevents)
 		this->processEvents();
 		// ichao : set graph here and draw it.
 		// qtreeViewer->setTree(&this->tree);	
-		this->csgRoot = csgrenderer.buildCSGTree(*root_node);
-		this->tree.csg_stored_leaf_term = csgrenderer.get_stored_leaf_term();
+		// this->csgRoot = csgrenderer.buildCSGTree(*root_node);
+		std::vector<int> hids;
+		hids.push_back(5);
+		this->csgRoot = csgrenderer.buildCSGTree_w_hb(*root_node, hids);
+		// this->tree.csg_stored_leaf_term = csgrenderer.get_stored_leaf_term();
 		// this->
 		std::cout << "csg root dump : " << this->csgRoot->dump() << std::endl;
 #endif
@@ -1423,7 +1430,6 @@ void MainWindow::compileCSG(bool procevents)
 	}
 
 	// TODO : first check the effect of highlight....
-	
 	const std::vector<shared_ptr<CSGNode> > &highlight_terms = csgrenderer.getHighlightNodes();
 	PRINTB("Highlight term size : %d...", highlight_terms.size());
 	if (highlight_terms.size() > 0) {
@@ -2084,6 +2090,7 @@ void MainWindow::example_csgReloadRender(int example_id) {
 
 void MainWindow::csgReloadRender()
 {
+	std::cout << "reload render" << std::endl;
 	if (this->root_node) compileCSG(true);
 	// Go to non-CGAL view mode
 	if (viewActionThrownTogether->isChecked()) {
@@ -3389,4 +3396,9 @@ void MainWindow::export_htree_with_csginfo(tree_hnode* tree) {
 	// 	pre_iter ++;
 	// 	index ++;
 	// }
+}
+
+void MainWindow::slot_rerender_highlight(int idx) {
+	std::cout << "please rerender " << idx << " as highlight" << std::endl;
+	csgReloadRender();
 }

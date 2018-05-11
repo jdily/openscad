@@ -256,6 +256,8 @@ void treeViewer::clear_selection() {
 void treeViewer::set_child_selection(int selected_id) {
     std::cout << "capture and run for set_child_selection " << selected_id << std::endl;
     selected_nids.push_back(selected_id);
+    emit rerender_select_highlight(selected_id);
+    
 
     // get the qnode using the selected_id;
     // qtreeNode* selected_node = qnode_map[selected_id];

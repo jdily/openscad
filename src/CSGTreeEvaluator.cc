@@ -33,8 +33,26 @@ shared_ptr<CSGNode> CSGTreeEvaluator::buildCSGTree(const AbstractNode &node)
 {
 	// std::cout << "CSGTreeEvaluator buildCSGTree" << std::endl;
 	this->traverse(node);
-	// check_stored_term();
+	check_stored_term();
 	// std::cout << "node index : " << node.index() << std::endl;
+	shared_ptr<CSGNode> t(this->stored_term[node.index()]);
+	if (t) {
+		if (t->isHighlight()) this->highlightNodes.push_back(t);
+		if (t->isBackground()) {
+			this->backgroundNodes.push_back(t);
+			t.reset();
+		}
+	}
+	return this->rootNode = t;
+}
+
+// build the CSG tree with manually assigned highlight geometries..
+// The purpose is to visualize the relationship between tree nodes and the geometries...
+shared_ptr<class CSGNode> CSGTreeEvaluator::buildCSGTree_w_hb(const AbstractNode &node, std::vector<int> hids) {
+	this->traverse(node);
+	for (int i = 0; i < (int)hids.size(); i++) {
+		this->stored_term[hids[i]]->setHighlight(true);
+	}
 	shared_ptr<CSGNode> t(this->stored_term[node.index()]);
 	if (t) {
 		if (t->isHighlight()) this->highlightNodes.push_back(t);
@@ -50,11 +68,15 @@ void CSGTreeEvaluator::check_stored_term() {
 	// go through all keys
 	std::cout << "check stored term" << std::endl;
 	std::cout << "stored size : " << stored_term.size() << std::endl;
-	std::vector<int> v;
-	for(std::map<int,shared_ptr<CSGNode>>::iterator it = stored_term.begin(); it != stored_term.end(); ++it) {
-  		v.push_back(it->first);
-  		std::cout << it->first << "  " << it->second->dump() << std::endl;
-	}
+
+	// manual change one of them as highlight
+	// this->stored_term[6]->setHighlight(true);
+
+	// std::vector<int> v;
+	// for(std::map<int,shared_ptr<CSGNode>>::iterator it = stored_term.begin(); it != stored_term.end(); ++it) {
+  	// 	v.push_back(it->first);
+  	// 	std::cout << it->first << "  " << it->second->dump() << std::endl;
+	// }
 }
 
 

@@ -29,7 +29,7 @@ class pair_treeViewer : public QWidget {
         ~pair_treeViewer();
 
         void setSTree(tree_hnode *hree, int index);
-    private:
+    // private:
         shared_ptr<treeViewer> viewer0;
         shared_ptr<treeViewer> viewer1;
         QHBoxLayout *layout;
