@@ -377,7 +377,7 @@ HEADERS += src/version_check.h \
            src/vizTools.h \ 
            src/streeConverter.h \ 
            src/MyCSGTreeTest.h \ 
-           src/LFD.h \ 
+           # src/LFD.h \ 
            src/pair_treeViewer.h \ 
            src/treeScene.h \ 
            src/correspondence.h
