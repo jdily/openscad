@@ -242,7 +242,7 @@ shared_ptr<CSGNode> CSGTreeEvaluator::evaluateCSGNodeFromGeometry(
 	if (!g->isEmpty()) {
 		auto p2d = dynamic_pointer_cast<const Polygon2d>(geom);
 		if (p2d) {
-			std::cout << "p2d tessellate" << std::endl;
+			// std::cout << "p2d tessellate" << std::endl;
 			PolySet* p2d_poly = p2d->tessellate();
 			p2d_poly->dim = 3;
 			g.reset(p2d_poly);
@@ -277,9 +277,9 @@ Response CSGTreeEvaluator::visit(State &state, const AbstractPolyNode &node)
 	// std::cout << "visit abstract poly node" << std::endl;
 	if (state.isPostfix()) {
 		shared_ptr<CSGNode> t1;
-		std::cout << "visit abstract poly node postfix for poly node " << node.index() << std::endl;	
+		// std::cout << "visit abstract poly node postfix for poly node " << node.index() << std::endl;	
 		if (this->geomevaluator) {
-			std::cout << "geom evaluation..." << std::endl;
+			// std::cout << "geom evaluation..." << std::endl;
 			auto geom = this->geomevaluator->evaluateGeometry(node, false);
 			if (geom) {
 				t1 = evaluateCSGNodeFromGeometry(state, geom, node.modinst, node);
@@ -318,7 +318,7 @@ Response CSGTreeEvaluator::visit(State &state, const TransformNode &node)
 		state.setMatrix(state.matrix() * node.matrix);
 	}
 	if (state.isPostfix()) {
-		std::cout << "transform number : " << node.index() << std::endl;
+		// std::cout << "transform number : " << node.index() << std::endl;
 		applyToChildren(state, node, OpenSCADOperator::UNION);
 		addToParent(state, node);
 	}
