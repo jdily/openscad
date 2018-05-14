@@ -1270,7 +1270,7 @@ void MainWindow::example_compileCSG(int example_id, bool procevents) {
 		this->processEvents();
 		// ichao : set graph here and draw it.
 		// qtreeViewer->setTree(&this->tree);	
-		this->exp_csgRoots[example_id] = csgrenderer.buildCSGTree(*this->exp_root_nodes[example_id]);
+		// this->exp_csgRoots[example_id] = csgrenderer.buildCSGTree(*this->exp_root_nodes[example_id]);
 		std::cout << "example hids size : " << exp_hids[example_id].size() << std::endl;
 		if (exp_hids[0].size() != 0) {
 			std::cout << "example hid : " << exp_hids[0][0] << std::endl;
