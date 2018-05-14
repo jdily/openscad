@@ -103,6 +103,10 @@ void treeViewer::draw_and_traverse(const AbstractNode &node, qtreeNode *parent_n
     // }
 }
 
+void treeViewer::setID(int id) {
+    viewer_id = id;
+}
+
 void treeViewer::setSTree(tree_hnode* htree) {
     clear_scene();
     QMap<int, qtreeNode*> qtreenodes;
@@ -265,7 +269,7 @@ void treeViewer::set_child_selection(int selected_id, bool value) {
         selected_nids.erase(std::find(selected_nids.begin(), selected_nids.end(), selected_id));
         std::cout << selected_nids.size() << " nodes are selected" << std::endl;
     }
-    emit rerender_select_highlight(selected_id, value);
+    emit rerender_select_highlight(selected_id, value, this->viewer_id);
     
 
     // get the qnode using the selected_id;

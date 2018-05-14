@@ -35,6 +35,7 @@ class treeViewer : public QGraphicsView {
         void setSTree(tree_hnode* htree);
 
         void setName(QString name);
+        void setID(int id);
 
         QPointF rand_pos();
         void clear_scene();
@@ -72,6 +73,8 @@ class treeViewer : public QGraphicsView {
         std::vector<QGraphicsItem*> selected_nodes;
         std::vector<int> selected_nids;
 
+        int viewer_id;
+
         QMenu *menu;
         // action for establish correspondece.
         QAction *act_est_cor;
@@ -88,7 +91,7 @@ class treeViewer : public QGraphicsView {
         void set_child_selection(int, bool);
 
     signals:
-        void rerender_select_highlight(int, bool);
+        void rerender_select_highlight(int, bool, int);
 
 };  
 

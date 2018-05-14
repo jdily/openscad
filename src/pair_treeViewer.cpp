@@ -6,6 +6,8 @@ pair_treeViewer::pair_treeViewer(QWidget *parent) : QWidget(parent) {
     viewer1.reset(new treeViewer(this));
     viewer0->setName(QString("viewer0"));
     viewer1->setName(QString("viewer1"));
+    viewer0->setID(0);
+    viewer1->setID(1);
     layout->addWidget(viewer0.get());
     layout->addWidget(viewer1.get());
     this->setLayout(layout);

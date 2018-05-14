@@ -301,7 +301,7 @@ public slots:
 	// tmp function for loading
 	void tmp_loadSimilarExample(int example_id, QString exp_filename);
 	void export_htree_with_csginfo(tree_hnode* tree);
-	void slot_rerender_highlight(int, bool);
+	void slot_rerender_highlight(int, bool, int);
 
 private:
 	static void report_func(const class AbstractNode*, void *vp, int mark);
@@ -317,6 +317,7 @@ private:
 	shared_ptr<CSGProducts> background_products;
 
 	std::vector<int> main_hids;
+	std::vector< std::vector<int> > exp_hids;
 
 	// ichao: for examples
 	std::vector<shared_ptr<class CSGNode>> exp_csgRoots;

@@ -607,7 +607,8 @@ MainWindow::MainWindow(const QString &filename)
 	transferer = nullptr;
 
 	// ichao connect 
-	connect(this->pair_viewer->viewer0.get(), SIGNAL(rerender_select_highlight(int, bool)), this, SLOT(slot_rerender_highlight(int, bool)));
+	connect(this->pair_viewer->viewer0.get(), SIGNAL(rerender_select_highlight(int, bool, int)), this, SLOT(slot_rerender_highlight(int, bool, int)));
+	connect(this->pair_viewer->viewer1.get(), SIGNAL(rerender_select_highlight(int, bool, int)), this, SLOT(slot_rerender_highlight(int, bool, int)));
 }
 
 void MainWindow::initActionIcon(QAction *action, const char *darkResource, const char *lightResource)
@@ -1158,6 +1159,10 @@ void MainWindow::instantiateRoot()
 	this->exp_background_products = std::vector<shared_ptr<CSGProducts>>(3, nullptr);
 	this->exp_opencsgRenderer = std::vector<class OpenCSGRenderer*>(3, nullptr);
 	this->exp_thrownTogetherRenderer = std::vector<class ThrownTogetherRenderer*>(3, nullptr);
+	this->exp_hids = std::vector< std::vector<int> >(3);
+	// this->exp_hids[0] = std::vector<int>(1);
+	// this->exp_hids[1] = std::vector<int>(1);
+	// this->exp_hids[2] = std::vector<int>(1);
 
 	this->root_node = nullptr;
 	this->tree.setRoot(nullptr);
@@ -1255,6 +1260,7 @@ void MainWindow::example_compileCSG(int example_id, bool procevents) {
 #else
 		// FIXME: Will we support this?
 #endif
+
 #ifdef ENABLE_OPENCSG
 		CSGTreeEvaluator csgrenderer(*this->exp_trees[example_id], &geomevaluator);
 #endif
@@ -1265,6 +1271,8 @@ void MainWindow::example_compileCSG(int example_id, bool procevents) {
 		// ichao : set graph here and draw it.
 		// qtreeViewer->setTree(&this->tree);	
 		this->exp_csgRoots[example_id] = csgrenderer.buildCSGTree(*this->exp_root_nodes[example_id]);
+		std::cout << "example hids size : " << exp_hids[example_id].size() << std::endl;
+		this->exp_csgRoots[example_id] = csgrenderer.buildCSGTree_w_hb(*this->exp_root_nodes[example_id], exp_hids[example_id]);
 		// this->csgRoot = csgrenderer.buildCSGTree(*root_node);
 #endif
 		GeometryCache::instance()->print();
@@ -1300,6 +1308,7 @@ void MainWindow::example_compileCSG(int example_id, bool procevents) {
 	}
 
 	const std::vector<shared_ptr<CSGNode> > &highlight_terms = csgrenderer.getHighlightNodes();
+	PRINTB("Highlight term size for example 0: %d...", highlight_terms.size());
 	if (highlight_terms.size() > 0) {
 		PRINTB("Compiling highlights (%d CSG Trees)...", highlight_terms.size());
 		this->processEvents();
@@ -3333,6 +3342,7 @@ void MainWindow::example_selectedSlot(int example_id) {
 	boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
 	tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()), this->data_basepath);
 	pair_viewer->setSTree(layout_tree, 1);
+
 	// Tree* result_tree = transferer->transfer(3, 2);
 	// this->root_node = const_cast<AbstractNode*>(result_tree->root());
 	// // // // clean the cache first and re-dump again..
@@ -3399,14 +3409,26 @@ void MainWindow::export_htree_with_csginfo(tree_hnode* tree) {
 	// }
 }
 
-void MainWindow::slot_rerender_highlight(int idx, bool value) {
+void MainWindow::slot_rerender_highlight(int idx, bool value, int viewer_id) {
 	if (value == true) {
 		std::cout << "please rerender " << idx << " as highlight" << std::endl;
-		main_hids.push_back(idx);
+		if (viewer_id == 0) {
+			main_hids.push_back(idx);
+			csgReloadRender();
+		} else {
+			exp_hids[0].push_back(idx);
+			example_csgReloadRender(0);
+		}
 	} else {
 		std::cout << "please don't rerender " << idx << " as highlight" << std::endl;
 		// main_hids.push_back(idx);
-		main_hids.erase(std::find(main_hids.begin(), main_hids.end(), idx));
+		if (viewer_id == 0) {
+			main_hids.erase(std::find(main_hids.begin(), main_hids.end(), idx));
+			csgReloadRender();
+		} else {
+			exp_hids[0].erase(std::find(exp_hids[0].begin(), exp_hids[0].end(), idx));
+			example_csgReloadRender(0);
+		}
 	}
-	csgReloadRender();
+	
 }

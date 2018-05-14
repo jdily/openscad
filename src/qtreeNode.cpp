@@ -125,7 +125,6 @@ QVariant qtreeNode::itemChange(GraphicsItemChange change, const QVariant &value)
 // }
 
 // TODO : add function to de-select the node..
-
 void qtreeNode::mousePressEvent(QGraphicsSceneMouseEvent *e) {
     std::cout << "press" << std::endl;
     std::cout << idx << " " << type << " " << isSelected() << std::endl;
