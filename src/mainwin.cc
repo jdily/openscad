@@ -1269,13 +1269,14 @@ void MainWindow::example_compileCSG(int example_id, bool procevents) {
 #ifdef ENABLE_OPENCSG
 		this->processEvents();
 		// ichao : set graph here and draw it.
-		// qtreeViewer->setTree(&this->tree);	
-		// this->exp_csgRoots[example_id] = csgrenderer.buildCSGTree(*this->exp_root_nodes[example_id]);
+		// qtreeViewer->setTree(&this->tree);
+		this->exp_csgRoots[example_id] = csgrenderer.buildCSGTree(*this->exp_root_nodes[example_id]);
 		std::cout << "example hids size : " << exp_hids[example_id].size() << std::endl;
 		if (exp_hids[0].size() != 0) {
 			std::cout << "example hid : " << exp_hids[0][0] << std::endl;
 		}
-		this->exp_csgRoots[example_id] = csgrenderer.buildCSGTree_w_hb(*this->exp_root_nodes[example_id], exp_hids[example_id]);
+
+		// this->exp_csgRoots[example_id] = csgrenderer.buildCSGTree_w_hb(*this->exp_root_nodes[example_id], exp_hids[1]);
 		// this->csgRoot = csgrenderer.buildCSGTree(*root_node);
 #endif
 		GeometryCache::instance()->print();
@@ -1325,6 +1326,10 @@ void MainWindow::example_compileCSG(int example_id, bool procevents) {
 		this->exp_highlights_products[example_id].reset();
 	}
 	const auto &background_terms = csgrenderer.getBackgroundNodes();
+	// dump the background node to check it out
+	if (background_terms.size() > 0) {
+		std::cout << background_terms[0]->dump() << std::endl;
+	}
 	if (background_terms.size() > 0) {
 		PRINTB("Compiling background (%d CSG Trees)...", background_terms.size());
 		this->processEvents();
@@ -2080,9 +2085,9 @@ void MainWindow::actionReloadRenderPreview()
 void MainWindow::example_csgReloadRender(int example_id) {
 	// std::cout << "example_csgReloadRender " << std::endl;
 	if (this->exp_root_nodes[example_id]) {
-		// std::cout << "inside " << std::endl;
+		std::cout << "inside " << std::endl;
 		// PRINTB("example %d is being reload and need to be compiled ...", example_id);
-		this->processEvents();
+		// this->processEvents();
 		// compileCSG(true);
 		example_compileCSG(example_id, true);
 	}
@@ -3420,6 +3425,8 @@ void MainWindow::slot_rerender_highlight(int idx, bool value, int viewer_id) {
 			csgReloadRender();
 		} else {
 			exp_hids[0].push_back(idx);
+			std::cout << "0 : " << exp_hids[0].size() << std::endl;
+			std::cout << "1 : " << exp_hids[1].size() << std::endl;
 			example_csgReloadRender(0);
 		}
 	} else {
