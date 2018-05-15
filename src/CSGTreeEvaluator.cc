@@ -31,7 +31,7 @@
 
 shared_ptr<CSGNode> CSGTreeEvaluator::buildCSGTree(const AbstractNode &node)
 {
-	// std::cout << "CSGTreeEvaluator buildCSGTree" << std::endl;
+	std::cout << "CSGTreeEvaluator buildCSGTree" << std::endl;
 	this->traverse(node);
 	check_stored_term();
 	// std::cout << "node index : " << node.index() << std::endl;
@@ -50,12 +50,14 @@ shared_ptr<CSGNode> CSGTreeEvaluator::buildCSGTree(const AbstractNode &node)
 // The purpose is to visualize the relationship between tree nodes and the geometries...
 shared_ptr<class CSGNode> CSGTreeEvaluator::buildCSGTree_w_hb(const AbstractNode &node, std::vector<int> hids) {
 	this->traverse(node);
-	// for (int i = 0; i < this->stored_term.size(); i++) {
-	// 	this->stored_term[i]->setBackground(true);
-	// }
+	
+	check_stored_term();
+	this->stored_term[1]->setHighlight(false);
 	for (int i = 0; i < (int)hids.size(); i++) {
+		std::cout << hids[i] << std::endl;
 		this->stored_term[hids[i]]->setHighlight(true);
 	}
+	check_stored_term();
 	// for (int i = 0; i < this->stored_term.size(); i++) {
 	// 	if (std::find(hids.begin(), hids.end(), i) == hids.end()) {
 	// 		this->stored_term[i]->setBackground(true);
@@ -64,11 +66,14 @@ shared_ptr<class CSGNode> CSGTreeEvaluator::buildCSGTree_w_hb(const AbstractNode
 	shared_ptr<CSGNode> t(this->stored_term[node.index()]);
 	if (t) {
 		if (t->isHighlight()) this->highlightNodes.push_back(t);
-		if (t->isBackground()) {
-			this->backgroundNodes.push_back(t);
-			t.reset();
-		}
+		// TODO : check if this helps...
+		// if (t->isBackground()) {
+		// 	this->backgroundNodes.push_back(t);
+		// 	t.reset();
+		// }
 	}
+	std::cout << "number of highlight : " << this->highlightNodes.size() << std::endl;
+	std::cout << "number of background : " << this->backgroundNodes.size() << std::endl;
 	return this->rootNode = t;
 }
 
@@ -76,6 +81,16 @@ void CSGTreeEvaluator::check_stored_term() {
 	// go through all keys
 	std::cout << "check stored term" << std::endl;
 	std::cout << "stored size : " << stored_term.size() << std::endl;
+
+	std::cout << "number of highlight : " << this->highlightNodes.size() << std::endl;
+	std::cout << "number of background : " << this->backgroundNodes.size() << std::endl;
+	for (int i = 1; i < (int)this->stored_term.size()+1; i++) {
+		if (this->stored_term[i]->isHighlight()) {
+			std::cout << i << " is highlighted " << std::endl;
+		} else {
+			std::cout << i << " is background " << std::endl;
+		}
+	}
 
 	// manual change one of them as highlight
 	// this->stored_term[6]->setHighlight(true);

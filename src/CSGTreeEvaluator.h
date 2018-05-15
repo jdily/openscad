@@ -15,9 +15,9 @@ public:
 	CSGTreeEvaluator(const class Tree &tree, class GeometryEvaluator *geomevaluator = nullptr)
 		: tree(tree), geomevaluator(geomevaluator) {
 	}
-  ~CSGTreeEvaluator() {}
+  	~CSGTreeEvaluator() {}
 
-  Response visit(State &state, const class AbstractNode &node) override;
+  	Response visit(State &state, const class AbstractNode &node) override;
  	Response visit(State &state, const class AbstractIntersectionNode &node) override;
  	Response visit(State &state, const class AbstractPolyNode &node) override;
  	Response visit(State &state, const class CsgOpNode &node) override;
@@ -41,7 +41,7 @@ public:
 		return this->stored_leaf_term;
 	}
 private:
-  void addToParent(const State &state, const AbstractNode &node);
+  	void addToParent(const State &state, const AbstractNode &node);
 	void applyToChildren(State &state, const AbstractNode &node, OpenSCADOperator op);
 	shared_ptr<CSGNode> evaluateCSGNodeFromGeometry(State &state, 
 																									const shared_ptr<const class Geometry> &geom,
@@ -49,8 +49,8 @@ private:
 																									const AbstractNode &node);
 	void applyBackgroundAndHighlight(State &state, const AbstractNode &node);
 
-  const AbstractNode *root;
-  typedef std::list<const AbstractNode *> ChildList;
+	const AbstractNode *root;
+	typedef std::list<const AbstractNode *> ChildList;
 	std::map<int, ChildList> visitedchildren;
 
 

@@ -101,7 +101,7 @@
 #include "CSGVisitor.h"
 #include <random>
 #include <boost/algorithm/string.hpp>
-#include "LFD.h"
+// #include "LFD.h"
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 #include <QTextDocument>
@@ -1270,13 +1270,12 @@ void MainWindow::example_compileCSG(int example_id, bool procevents) {
 		this->processEvents();
 		// ichao : set graph here and draw it.
 		// qtreeViewer->setTree(&this->tree);
-		this->exp_csgRoots[example_id] = csgrenderer.buildCSGTree(*this->exp_root_nodes[example_id]);
+		// this->exp_csgRoots[example_id] = csgrenderer.buildCSGTree(*this->exp_root_nodes[example_id]);
 		std::cout << "example hids size : " << exp_hids[example_id].size() << std::endl;
 		if (exp_hids[0].size() != 0) {
 			std::cout << "example hid : " << exp_hids[0][0] << std::endl;
 		}
-
-		// this->exp_csgRoots[example_id] = csgrenderer.buildCSGTree_w_hb(*this->exp_root_nodes[example_id], exp_hids[1]);
+		this->exp_csgRoots[example_id] = csgrenderer.buildCSGTree_w_hb(*this->exp_root_nodes[example_id], exp_hids[0]);
 		// this->csgRoot = csgrenderer.buildCSGTree(*root_node);
 #endif
 		GeometryCache::instance()->print();
@@ -1311,21 +1310,23 @@ void MainWindow::example_compileCSG(int example_id, bool procevents) {
 		}
 	}
 
-	const std::vector<shared_ptr<CSGNode> > &highlight_terms = csgrenderer.getHighlightNodes();
-	PRINTB("Highlight term size for example 0: %d...", highlight_terms.size());
-	if (highlight_terms.size() > 0) {
-		PRINTB("Compiling highlights (%d CSG Trees)...", highlight_terms.size());
-		this->processEvents();
-		this->exp_highlights_products[example_id].reset(new CSGProducts());
-		for (unsigned int i = 0; i < highlight_terms.size(); i++) {
-			auto nterm = normalizer.normalize(highlight_terms[i]);
-			this->exp_highlights_products[example_id]->import(nterm);
-		}
-	}
-	else {
-		this->exp_highlights_products[example_id].reset();
-	}
+	// const std::vector<shared_ptr<CSGNode> > &highlight_terms = csgrenderer.getHighlightNodes();
+	// PRINTB("Highlight term size for example 0: %d...", highlight_terms.size());
+	// if (highlight_terms.size() > 0) {
+	// 	PRINTB("Compiling highlights (%d CSG Trees)...", highlight_terms.size());
+	// 	this->processEvents();
+	// 	this->exp_highlights_products[example_id].reset(new CSGProducts());
+	// 	for (unsigned int i = 0; i < highlight_terms.size(); i++) {
+	// 		auto nterm = normalizer.normalize(highlight_terms[i]);
+	// 		this->exp_highlights_products[example_id]->import(nterm);
+	// 	}
+	// }
+	// else {
+	// 	this->exp_highlights_products[example_id].reset();
+	// }
+
 	const auto &background_terms = csgrenderer.getBackgroundNodes();
+	// auto &background_terms = csgrenderer.getBackgroundNodes();
 	// dump the background node to check it out
 	if (background_terms.size() > 0) {
 		std::cout << background_terms[0]->dump() << std::endl;
@@ -1446,8 +1447,6 @@ void MainWindow::compileCSG(bool procevents)
 		// std::cout << i << " " << product.dump() << std::endl;
 
 	}
-
-	// TODO : first check the effect of highlight....
 	const std::vector<shared_ptr<CSGNode> > &highlight_terms = csgrenderer.getHighlightNodes();
 	PRINTB("Highlight term size : %d...", highlight_terms.size());
 	if (highlight_terms.size() > 0) {
@@ -1469,7 +1468,6 @@ void MainWindow::compileCSG(bool procevents)
 	if (background_terms.size() > 0) {
 		PRINTB("Compiling background (%d CSG Trees)...", background_terms.size());
 		this->processEvents();
-		
 		this->background_products.reset(new CSGProducts());
 		for (unsigned int i = 0; i < background_terms.size(); i++) {
 			auto nterm = normalizer.normalize(background_terms[i]);
@@ -2328,7 +2326,7 @@ void MainWindow::actionRenderDone(shared_ptr<const Geometry> root_geom)
 /**
  * Switch version label and progress widget. When switching to the progress
  * widget, the new instance is passed by the caller.
- * In case of resetting back to the version label, nullptr will be passed and
+ * In case of resetting back to the version label, nullptviewr will be passed and
  * multiple calls can happen. So this method must guard against adding the
  * version label multiple times.
  *
@@ -3338,7 +3336,6 @@ void MainWindow::example_selectedSlot(int example_id) {
 	if (this->transferer == nullptr) {
 		std::cout << "null transferer.." << std::endl;
 	}
-
 	transferer->add_example_tree(exp_trees[fixed_example_id]);
 	streeConverter *sconv = new streeConverter;
 	tree_hnode* htree = sconv->convert_tree(exp_trees[fixed_example_id]);
@@ -3423,6 +3420,8 @@ void MainWindow::slot_rerender_highlight(int idx, bool value, int viewer_id) {
 		if (viewer_id == 0) {
 			main_hids.push_back(idx);
 			csgReloadRender();
+			// exp_hids[0].push_back(idx);
+			// example_csgReloadRender(0);
 		} else {
 			exp_hids[0].push_back(idx);
 			std::cout << "0 : " << exp_hids[0].size() << std::endl;

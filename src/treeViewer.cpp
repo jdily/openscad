@@ -109,6 +109,7 @@ void treeViewer::setID(int id) {
 
 void treeViewer::setSTree(tree_hnode* htree) {
     clear_scene();
+    // disconnect(this, SLOT(set_child_selection(int, bool)));
     QMap<int, qtreeNode*> qtreenodes;
 	tree_hnode::sibling_iterator children;
 	tree_hnode::iterator iterator;
