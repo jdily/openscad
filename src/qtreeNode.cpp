@@ -130,8 +130,7 @@ void qtreeNode::mousePressEvent(QGraphicsSceneMouseEvent *e) {
     std::cout << idx << " " << type << " " << isSelected() << std::endl;
     if (e->button() == Qt::LeftButton) {
         if (e->modifiers() == Qt::ControlModifier) {
-            // this->setSelected(true);
-            if (!isSelected()) { 
+            if (!isSelected()) {
                 std::cout << "not selected before" << std::endl;
                 // this->setSelected(true);
                 my_selected = true;

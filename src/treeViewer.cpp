@@ -109,6 +109,7 @@ void treeViewer::setID(int id) {
 
 void treeViewer::setSTree(tree_hnode* htree) {
     clear_scene();
+    std::cout << "[before set] qnode map size : " << qnode_map.size() << std::endl;
     // disconnect(this, SLOT(set_child_selection(int, bool)));
     QMap<int, qtreeNode*> qtreenodes;
 	tree_hnode::sibling_iterator children;
@@ -158,7 +159,7 @@ void treeViewer::setSTree(tree_hnode* htree) {
         ++iterator;
     }
     std::cout << "there are " << m_pScene->items().size() << " items in the scene" << std::endl;
-
+    std::cout << "[after set] qnode map size : " << qnode_map.size() << std::endl;
     for(auto n : qnode_map.keys()) {
         const bool connected = connect(qnode_map[n], SIGNAL(select_childrens(int, bool)), this, SLOT(set_child_selection(int, bool)));
         // qDebug() << "Connection established?????" << connected;
@@ -270,9 +271,9 @@ void treeViewer::set_child_selection(int selected_id, bool value) {
         selected_nids.erase(std::find(selected_nids.begin(), selected_nids.end(), selected_id));
         std::cout << selected_nids.size() << " nodes are selected" << std::endl;
     }
+
     emit rerender_select_highlight(selected_id, value, this->viewer_id);
     
-
     // get the qnode using the selected_id;
     // qtreeNode* selected_node = qnode_map[selected_id];
     // tree_qnode::pre_order_iterator children, pre_iter;

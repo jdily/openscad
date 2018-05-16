@@ -25,7 +25,7 @@ public:
 	bool isBackground() const { return this->flags & FLAG_BACKGROUND; }
 	void setHighlight(bool on) { on ? this->flags |= FLAG_HIGHLIGHT : this->flags &= ~FLAG_HIGHLIGHT; }
 	void setBackground(bool on) { on ? this->flags |= FLAG_BACKGROUND : this->flags &= ~FLAG_BACKGROUND; }
-
+	// bool isNone() const { return this->flags & FLAG_None; }
 protected:
 	virtual void initBoundingBox() = 0;
 

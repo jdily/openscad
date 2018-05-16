@@ -435,8 +435,8 @@ MainWindow::MainWindow(const QString &filename)
 	connect(this->transActionTransferOne, SIGNAL(triggered()), this, SLOT(transModeTransferOne()));
 	connect(this->retrieveSimilarExamples, SIGNAL(triggered()), this, SLOT(retrieveExamples()));
 	connect(this->qglviewer_suggest->m_sugViewers[0], SIGNAL(exampleSelected(int)), this, SLOT(example_selectedSlot(int)));
-	connect(this->qglviewer_suggest->m_sugViewers[1], SIGNAL(exampleSelected(int)), this, SLOT(example_selectedSlot(int)));
-	connect(this->qglviewer_suggest->m_sugViewers[2], SIGNAL(exampleSelected(int)), this, SLOT(example_selectedSlot(int)));
+	// connect(this->qglviewer_suggest->m_sugViewers[1], SIGNAL(exampleSelected(int)), this, SLOT(example_selectedSlot(int)));
+	// connect(this->qglviewer_suggest->m_sugViewers[2], SIGNAL(exampleSelected(int)), this, SLOT(example_selectedSlot(int)));
 #ifdef OPENSCAD_UPDATER
 	this->menuBar()->addMenu(AutoUpdater::updater()->updateMenu);
 #endif
@@ -609,6 +609,19 @@ MainWindow::MainWindow(const QString &filename)
 	// ichao connect 
 	connect(this->pair_viewer->viewer0.get(), SIGNAL(rerender_select_highlight(int, bool, int)), this, SLOT(slot_rerender_highlight(int, bool, int)));
 	connect(this->pair_viewer->viewer1.get(), SIGNAL(rerender_select_highlight(int, bool, int)), this, SLOT(slot_rerender_highlight(int, bool, int)));
+
+	this->exp_abs_root_nodes = std::vector<AbstractNode*>(3, nullptr);
+	this->exp_root_nodes = std::vector<AbstractNode*>(3, nullptr);
+	this->exp_trees = std::vector<Tree*>(3, nullptr);
+	// ichao : init the exp csgroots list
+	this->exp_csgRoots = std::vector<shared_ptr<class CSGNode>>(3, nullptr);
+	this->exp_normalizedRoots = std::vector<shared_ptr<CSGNode>>(3, nullptr);
+	this->exp_root_products = std::vector<shared_ptr<class CSGProducts>>(3, nullptr);
+	this->exp_highlights_products = std::vector<shared_ptr<CSGProducts>>(3, nullptr);
+	this->exp_background_products = std::vector<shared_ptr<CSGProducts>>(3, nullptr);
+	this->exp_opencsgRenderer = std::vector<class OpenCSGRenderer*>(3, nullptr);
+	this->exp_thrownTogetherRenderer = std::vector<class ThrownTogetherRenderer*>(3, nullptr);
+	this->exp_hids = std::vector< std::vector<int> >(3);
 }
 
 void MainWindow::initActionIcon(QAction *action, const char *darkResource, const char *lightResource)
@@ -1043,7 +1056,7 @@ void MainWindow::compile(bool reload, bool forcedone, bool rebuildParameterWidge
 			}
 		}
 	}
-
+	
 	compileDone(didcompile | forcedone);
 }
 
@@ -1104,8 +1117,10 @@ void MainWindow::updateCompileResult()
 
 void MainWindow::compileDone(bool didchange)
 {
+	std::cout << "compile done~" << std::endl;
 	const char *callslot;
 	if (didchange) {
+		std::cout << "did change " << std::endl;
 		updateTemporalVariables();
 		instantiateRoot();
 		updateCompileResult();
@@ -1144,25 +1159,9 @@ void MainWindow::instantiateRoot()
 	delete this->absolute_root_node;
 	this->absolute_root_node = nullptr;
 
-	this->exp_abs_root_nodes = std::vector<AbstractNode*>(3, nullptr);
-	this->exp_root_nodes = std::vector<AbstractNode*>(3, nullptr);
-	this->exp_trees = std::vector<Tree*>(3, nullptr);
-
 	this->csgRoot.reset();
 	this->normalizedRoot.reset();
 	this->root_products.reset();
-	// ichao : init the exp csgroots list
-	this->exp_csgRoots = std::vector<shared_ptr<class CSGNode>>(3, nullptr);
-	this->exp_normalizedRoots = std::vector<shared_ptr<CSGNode>>(3, nullptr);
-	this->exp_root_products = std::vector<shared_ptr<class CSGProducts>>(3, nullptr);
-	this->exp_highlights_products = std::vector<shared_ptr<CSGProducts>>(3, nullptr);
-	this->exp_background_products = std::vector<shared_ptr<CSGProducts>>(3, nullptr);
-	this->exp_opencsgRenderer = std::vector<class OpenCSGRenderer*>(3, nullptr);
-	this->exp_thrownTogetherRenderer = std::vector<class ThrownTogetherRenderer*>(3, nullptr);
-	this->exp_hids = std::vector< std::vector<int> >(3);
-	// this->exp_hids[0] = std::vector<int>(1);
-	// this->exp_hids[1] = std::vector<int>(1);
-	// this->exp_hids[2] = std::vector<int>(1);
 
 	this->root_node = nullptr;
 	this->tree.setRoot(nullptr);
@@ -1221,7 +1220,7 @@ void MainWindow::instantiateRoot()
 			// qtreeViewer->setSTree(layout_tree);
 			// qtreeViewer_ref->setSTree(layout_tree);
 			pair_viewer->setSTree(layout_tree, 0);
-			pair_viewer->setSTree(layout_tree, 1);
+			// pair_viewer->setSTree(layout_tree, 1);
 			// qtreeViewer->setTree(&this->tree);	
 			// ichao : initialize the transferer
 			this->transferer = new geomTransferer(&this->tree);
@@ -1276,6 +1275,7 @@ void MainWindow::example_compileCSG(int example_id, bool procevents) {
 			std::cout << "example hid : " << exp_hids[0][0] << std::endl;
 		}
 		this->exp_csgRoots[example_id] = csgrenderer.buildCSGTree_w_hb(*this->exp_root_nodes[example_id], exp_hids[0]);
+		std::cout << "csg root dump : " << this->exp_csgRoots[example_id]->dump() << std::endl;
 		// this->csgRoot = csgrenderer.buildCSGTree(*root_node);
 #endif
 		GeometryCache::instance()->print();
@@ -1309,21 +1309,23 @@ void MainWindow::example_compileCSG(int example_id, bool procevents) {
 			this->processEvents();
 		}
 	}
+	PRINTB("root products size : %d...", this->exp_root_products[example_id]->size());
+	PRINTB("root produces : %s", this->exp_root_products[example_id]->dump());
 
-	// const std::vector<shared_ptr<CSGNode> > &highlight_terms = csgrenderer.getHighlightNodes();
-	// PRINTB("Highlight term size for example 0: %d...", highlight_terms.size());
-	// if (highlight_terms.size() > 0) {
-	// 	PRINTB("Compiling highlights (%d CSG Trees)...", highlight_terms.size());
-	// 	this->processEvents();
-	// 	this->exp_highlights_products[example_id].reset(new CSGProducts());
-	// 	for (unsigned int i = 0; i < highlight_terms.size(); i++) {
-	// 		auto nterm = normalizer.normalize(highlight_terms[i]);
-	// 		this->exp_highlights_products[example_id]->import(nterm);
-	// 	}
-	// }
-	// else {
-	// 	this->exp_highlights_products[example_id].reset();
-	// }
+	const std::vector<shared_ptr<CSGNode> > &highlight_terms = csgrenderer.getHighlightNodes();
+	PRINTB("Highlight term size for example 0: %d...", highlight_terms.size());
+	if (highlight_terms.size() > 0) {
+		PRINTB("Compiling highlights (%d CSG Trees)...", highlight_terms.size());
+		this->processEvents();
+		this->exp_highlights_products[example_id].reset(new CSGProducts());
+		for (unsigned int i = 0; i < highlight_terms.size(); i++) {
+			auto nterm = normalizer.normalize(highlight_terms[i]);
+			this->exp_highlights_products[example_id]->import(nterm);
+		}
+	}
+	else {
+		this->exp_highlights_products[example_id].reset();
+	}
 
 	const auto &background_terms = csgrenderer.getBackgroundNodes();
 	// auto &background_terms = csgrenderer.getBackgroundNodes();
@@ -1349,17 +1351,20 @@ void MainWindow::example_compileCSG(int example_id, bool procevents) {
 		PRINTB("WARNING: Normalized tree has %d elements!", this->exp_root_products[example_id]->size());
 		PRINT("WARNING: OpenCSG rendering has been disabled.");
 	}
-#ifdef ENABLE_OPENCSG
+	// TODO : this is the place for us to highlight...
+	// it's basically an error.... :(
+#ifdef ENABLE_OPENCSGauto fileInfo = QFileInfo(this->fileName);
 	else {
 		// modify here of the viewers
-		PRINTB("Normalized CSG tree has %d elements",
+		PRINTB("Normalized example CSG tree has %d elements",
 					 (this->exp_root_products[example_id] ? this->exp_root_products[example_id]->size() : 0));
 		this->exp_opencsgRenderer[example_id] = new OpenCSGRenderer(this->exp_root_products[example_id],
-																								this->exp_highlights_products[example_id],
-																								this->exp_background_products[example_id],
-																								this->qglviewer_suggest->m_sugViewers[example_id]->shaderinfo);
+																	this->exp_highlights_products[example_id],
+																	this->exp_background_products[example_id],
+																	this->qglviewer_suggest->m_sugViewers[example_id]->shaderinfo);
 	}
 #endif
+	PRINT("Thrown together >>>>>>>>>>");
 	this->exp_thrownTogetherRenderer[example_id] = new ThrownTogetherRenderer(this->exp_root_products[example_id],
 																			  this->exp_highlights_products[example_id],
 																			  this->exp_background_products[example_id]);
@@ -1378,7 +1383,6 @@ void MainWindow::compileCSG(bool procevents)
 	assert(this->root_node);
 	PRINT("Compiling design (CSG Products generation)...");
 	this->processEvents();
-
 	// Main CSG evaluation
 	this->progresswidget = new ProgressWidget(this);
 	connect(this->progresswidget, SIGNAL(requestShow()), this, SLOT(showProgress()));
@@ -1401,12 +1405,9 @@ void MainWindow::compileCSG(bool procevents)
 		// ichao : set graph here and draw it.
 		// qtreeViewer->setTree(&this->tree);	
 		// this->csgRoot = csgrenderer.buildCSGTree(*root_node);
-		std::vector<int> hids;
 		// hids.push_back(5);
 		// main_hids.push(3);
 		this->csgRoot = csgrenderer.buildCSGTree_w_hb(*root_node, main_hids);
-		// this->tree.csg_stored_leaf_term = csgrenderer.get_stored_leaf_term();
-		// this->
 		std::cout << "csg root dump : " << this->csgRoot->dump() << std::endl;
 #endif
 		GeometryCache::instance()->print();
@@ -1440,19 +1441,13 @@ void MainWindow::compileCSG(bool procevents)
 	}
 	PRINTB("root products size : %d...", this->root_products->size());
 	PRINTB("root produces : %s", this->root_products->dump());
-	for (int i = 0; i < this->root_products->size(); i++) {
-		// CSGProduct product = this->root_products->products[i];
-		// std::cout << i << ": intersetion size : " << intersections.size() 
-		// std::cout << product.intersections[0].leaf->dump() << " " << product.subtractions[0].leaf->dump() << std::endl;
-		// std::cout << i << " " << product.dump() << std::endl;
 
-	}
 	const std::vector<shared_ptr<CSGNode> > &highlight_terms = csgrenderer.getHighlightNodes();
 	PRINTB("Highlight term size : %d...", highlight_terms.size());
+	// std::cout << "highlight term size : " << highlight_terms.size() << std::endl;
 	if (highlight_terms.size() > 0) {
 		PRINTB("Compiling highlights (%d CSG Trees)...", highlight_terms.size());
 		this->processEvents();
-		
 		this->highlights_products.reset(new CSGProducts());
 		for (unsigned int i = 0; i < highlight_terms.size(); i++) {
 			auto nterm = normalizer.normalize(highlight_terms[i]);
@@ -1460,9 +1455,12 @@ void MainWindow::compileCSG(bool procevents)
 		}
 	}
 	else {
+		std::cout << "reset highlight products" << std::endl;
 		this->highlights_products.reset();
 	}
-	
+	// PRINTB("Highlight term size : %d...", this->highlights_products->size());
+
+
 	const auto &background_terms = csgrenderer.getBackgroundNodes();
 	PRINTB("Background term size : %d...", background_terms.size());
 	if (background_terms.size() > 0) {
@@ -1488,15 +1486,17 @@ void MainWindow::compileCSG(bool procevents)
 	else {
 		PRINTB("Normalized CSG tree has %d elements",
 					 (this->root_products ? this->root_products->size() : 0));
+		std::cout << "Q,.............Q " << std::endl;
 		this->opencsgRenderer = new OpenCSGRenderer(this->root_products,
-																								this->highlights_products,
-																								this->background_products,
-																								this->qglviewer_suggest->m_mainViewer->shaderinfo);
+													this->highlights_products,
+													this->background_products,
+													this->qglviewer_suggest->m_mainViewer->shaderinfo);
 	}
 #endif
+	PRINT("Thrown together >>>>>>>>>>");
 	this->thrownTogetherRenderer = new ThrownTogetherRenderer(this->root_products,
-																														this->highlights_products,
-																														this->background_products);
+															  this->highlights_products,
+															  this->background_products);
 	PRINT("Compile and preview finished.");
 	int s = this->renderingTime.elapsed() / 1000;
 	PRINTB("Total rendering time: %d hours, %d minutes, %d seconds", (s / (60*60)) % ((s / 60) % 60) % (s % 60));
@@ -2090,12 +2090,13 @@ void MainWindow::example_csgReloadRender(int example_id) {
 		example_compileCSG(example_id, true);
 	}
 	if (viewActionThrownTogether->isChecked()) {
-		// std::cout << "inside action thrown together " << std::endl;
+		std::cout << "inside action thrown together " << std::endl;
+
 		viewModeThrownTogether_exp(example_id);
 	}
 	else {
 #ifdef ENABLE_OPENCSG
-		// std::cout << "before view  mode preview" << std::endl;
+		std::cout << "before view  mode preview" << std::endl;
 		viewModePreview_exp(example_id);
 #else
 		viewModeThrownTogether_exp(example_id);
@@ -2109,11 +2110,13 @@ void MainWindow::csgReloadRender()
 	std::cout << "reload render" << std::endl;
 	if (this->root_node) compileCSG(true);
 	// Go to non-CGAL view mode
+	std::cout << "view action thrown together : " << viewActionThrownTogether->isChecked() << std::endl;
 	if (viewActionThrownTogether->isChecked()) {
 		viewModeThrownTogether();
 	}
 	else {
 #ifdef ENABLE_OPENCSG
+		std::cout << "original before view  mode preview" << std::endl;
 		viewModePreview();
 #else
 		viewModeThrownTogether();
@@ -2625,7 +2628,7 @@ void MainWindow::viewModeActionsUncheck()
 #ifdef ENABLE_OPENCSG
 
 void MainWindow::viewModePreview_exp(int example_id) {
-	std::cout << "inside view mode preview" << std::endl;
+	// std::cout << "inside view mode preview" << std::endl;
 	if (this->qglviewer_suggest->m_sugViewers[example_id]->hasOpenCSGSupport()) {
 		// std::cout << "inside view mode preview : hasOpenCSGSupport" << std::endl;
 		// if (this->exp_opencsgRenderer[example_id] == nullptr) {
@@ -2645,6 +2648,7 @@ void MainWindow::viewModePreview_exp(int example_id) {
 */
 void MainWindow::viewModePreview()
 {
+	// std::cout << "[main] inside view mode preview" << std::endl;
 	if (this->qglviewer_suggest->m_mainViewer->hasOpenCSGSupport()) {
 		viewModeActionsUncheck();
 		viewActionPreview->setChecked(true);
@@ -3316,8 +3320,9 @@ void MainWindow::retrieveExamples() {
 	setCurrentOutput();
 	QString exp_filename0 = QString("%1/manual_transfer/two_rect_cover.scad").arg(this->data_basepath);
 	tmp_loadSimilarExample(0, exp_filename0);
-	example_csgReloadRender(0);
-
+	// example_csgReloadRender(0);
+	example_csgRender(0);
+	example_selectedSlot(0);
 	// QString exp_filename1 = QString("%1/examples/uploads_7b_a5_5d_8a_5a_round_box_with_lid.scad").arg(this->data_basepath);
 	// tmp_loadSimilarExample(1, exp_filename1);
 	// example_csgReloadRender(1);
@@ -3427,6 +3432,7 @@ void MainWindow::slot_rerender_highlight(int idx, bool value, int viewer_id) {
 			std::cout << "0 : " << exp_hids[0].size() << std::endl;
 			std::cout << "1 : " << exp_hids[1].size() << std::endl;
 			example_csgReloadRender(0);
+			// example_csgRender(0);
 		}
 	} else {
 		std::cout << "please don't rerender " << idx << " as highlight" << std::endl;
@@ -3437,6 +3443,7 @@ void MainWindow::slot_rerender_highlight(int idx, bool value, int viewer_id) {
 		} else {
 			exp_hids[0].erase(std::find(exp_hids[0].begin(), exp_hids[0].end(), idx));
 			example_csgReloadRender(0);
+			// example_csgRender(0);
 		}
 	}
 	

@@ -19,10 +19,11 @@
 class GLViewer_suggest : public QWidget {
 public:
     GLViewer_suggest(QWidget *parent = nullptr);
-    QGridLayout mainLayout;
+    // QGridLayout mainLayout;
+    QHBoxLayout mainLayout;
     QGLView *m_sugViewer0;
-    QGLView *m_sugViewer1;
-    QGLView *m_sugViewer2;
+    // QGLView *m_sugViewer1;
+    // QGLView *m_sugViewer2;
     QGLView *m_mainViewer;
     std::vector<QGLView*> m_sugViewers;
 private:
