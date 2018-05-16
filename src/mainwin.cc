@@ -1310,20 +1310,20 @@ void MainWindow::example_compileCSG(int example_id, bool procevents) {
 		}
 	}
 
-	// const std::vector<shared_ptr<CSGNode> > &highlight_terms = csgrenderer.getHighlightNodes();
-	// PRINTB("Highlight term size for example 0: %d...", highlight_terms.size());
-	// if (highlight_terms.size() > 0) {
-	// 	PRINTB("Compiling highlights (%d CSG Trees)...", highlight_terms.size());
-	// 	this->processEvents();
-	// 	this->exp_highlights_products[example_id].reset(new CSGProducts());
-	// 	for (unsigned int i = 0; i < highlight_terms.size(); i++) {
-	// 		auto nterm = normalizer.normalize(highlight_terms[i]);
-	// 		this->exp_highlights_products[example_id]->import(nterm);
-	// 	}
-	// }
-	// else {
-	// 	this->exp_highlights_products[example_id].reset();
-	// }
+	const std::vector<shared_ptr<CSGNode> > &highlight_terms = csgrenderer.getHighlightNodes();
+	PRINTB("Highlight term size for example 0: %d...", highlight_terms.size());
+	if (highlight_terms.size() > 0) {
+		PRINTB("Compiling highlights (%d CSG Trees)...", highlight_terms.size());
+		this->processEvents();
+		this->exp_highlights_products[example_id].reset(new CSGProducts());
+		for (unsigned int i = 0; i < highlight_terms.size(); i++) {
+			auto nterm = normalizer.normalize(highlight_terms[i]);
+			this->exp_highlights_products[example_id]->import(nterm);
+		}
+	}
+	else {
+		this->exp_highlights_products[example_id].reset();
+	}
 
 	const auto &background_terms = csgrenderer.getBackgroundNodes();
 	// auto &background_terms = csgrenderer.getBackgroundNodes();
@@ -2104,6 +2104,7 @@ void MainWindow::example_csgReloadRender(int example_id) {
 	compileEnded();
 }
 
+// TODO : check when to call csgReloadRender and when is the initialize and 
 void MainWindow::csgReloadRender()
 {
 	std::cout << "reload render" << std::endl;
@@ -2122,6 +2123,7 @@ void MainWindow::csgReloadRender()
 	compileEnded();
 }
 
+// TODO : check what is Preview really means...
 void MainWindow::actionRenderPreview(bool rebuildParameterWidget)
 {
 	static bool preview_requested;
