@@ -2105,6 +2105,7 @@ void MainWindow::example_csgReloadRender(int example_id) {
 	compileEnded();
 }
 
+// TODO : check when to call csgReloadRender and when is the initialize and 
 void MainWindow::csgReloadRender()
 {
 	std::cout << "reload render" << std::endl;
@@ -2125,6 +2126,7 @@ void MainWindow::csgReloadRender()
 	compileEnded();
 }
 
+// TODO : check what is Preview really means...
 void MainWindow::actionRenderPreview(bool rebuildParameterWidget)
 {
 	static bool preview_requested;
