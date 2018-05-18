@@ -84,16 +84,16 @@ void CSGTreeEvaluator::check_stored_term() {
 
 	std::cout << "number of highlight : " << this->highlightNodes.size() << std::endl;
 	std::cout << "number of background : " << this->backgroundNodes.size() << std::endl;
-	for (int i = 1; i < (int)this->stored_term.size()+1; i++) {
-		// std::cout << this->stored_term[i]->getFlags() << std::endl;
-		if (this->stored_term[i]->isHighlight()) {
-			std::cout << i << " is highlighted " << std::endl;
-		} else if (this->stored_term[i]->isBackground()){
-			std::cout << i << " is background " << std::endl;
-		} else {
-			std::cout << i << " is none " << std::endl;
-		}
-	}
+	// for (int i = 1; i < (int)this->stored_term.size()+1; i++) {
+	// 	// std::cout << this->stored_term[i]->getFlags() << std::endl;
+	// 	if (this->stored_term[i]->isHighlight()) {
+	// 		std::cout << i << " is highlighted " << std::endl;
+	// 	} else if (this->stored_term[i]->isBackground()){
+	// 		std::cout << i << " is background " << std::endl;
+	// 	} else {
+	// 		std::cout << i << " is none " << std::endl;
+	// 	}
+	// }
 
 	// manual change one of them as highlight
 	// this->stored_term[6]->setHighlight(true);

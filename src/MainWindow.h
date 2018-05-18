@@ -302,6 +302,8 @@ public slots:
 	void tmp_loadSimilarExample(int example_id, QString exp_filename);
 	void export_htree_with_csginfo(tree_hnode* tree);
 	void slot_rerender_highlight(int, bool, int);
+	void transfer_slot();
+
 
 private:
 	static void report_func(const class AbstractNode*, void *vp, int mark);

@@ -48,9 +48,7 @@ class pair_treeViewer : public QWidget {
         QMenu *menu;
         // action for establish correspondece.
         QAction *act_est_cor;
-
         std::vector<correspondence> corrs;
-
     protected:
         void mousePressEvent(QMouseEvent *event) override;
     public slots:

@@ -87,7 +87,7 @@ Tree* geomTransferer::transfer(int self_node_id, int exp_node_id) {
 
     // Process : replace a subtree (**box** in this example)
     // 1. remove it from the original tree..
-    // TODO : how to propagate this modification back to the rendered and text editor...
+    // 
     NodeDeleter *deleter = new NodeDeleter(out_tree);
     deleter->remove_node(*out_tree->root()->children[0], *out_tree->root());
     // // 2. insert the desire subtree into the original tree

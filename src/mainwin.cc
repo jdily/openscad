@@ -622,6 +622,10 @@ MainWindow::MainWindow(const QString &filename)
 	this->exp_opencsgRenderer = std::vector<class OpenCSGRenderer*>(3, nullptr);
 	this->exp_thrownTogetherRenderer = std::vector<class ThrownTogetherRenderer*>(3, nullptr);
 	this->exp_hids = std::vector< std::vector<int> >(3);
+
+	// connection for pair_treeviewer
+	connect(this->pair_viewer->trans_button, SIGNAL(clicked()), this, SLOT(transfer_slot()));
+
 }
 
 void MainWindow::initActionIcon(QAction *action, const char *darkResource, const char *lightResource)
@@ -1229,7 +1233,6 @@ void MainWindow::instantiateRoot()
 				return;
 			} else {
 				std::cout << "after build tree gui not lock" << std::endl;
-
 			}
 			
 		}
@@ -3169,6 +3172,26 @@ void MainWindow::processEvents()
 	if (this->procevents) QApplication::processEvents();
 }
 
+
+void MainWindow::transfer_slot() {
+	PRINT("[ichao] transfer slot here...");
+	this->processEvents();
+	setCurrentOutput();
+	transferer->add_example_tree(exp_trees[0]);
+	Tree* result_tree = transferer->transfer(3, 2);
+	// Tree* result_tree = transferer->transfer_cylinder();
+	// // // redraw the tree viz..
+	std::cout << "finish transfer " << std::endl;
+	// qtreeViewer->setTree(result_tree);
+	this->root_node = const_cast<AbstractNode*>(result_tree->root());
+	// // // clean the cache first and re-dump again..
+	this->tree.clear_cache();
+	this->tree.getString(*this->root_node);
+	std::cout << "new node count : " << this->tree.node_count() << std::endl;
+	csgReloadRender();
+}
+
+
 // ichao : transfer test function..
 void MainWindow::transModeTransferOne() {
 	// std::cout << "transfer one test function here" << std::endl;
@@ -3227,7 +3250,7 @@ void MainWindow::transModeTransferOne() {
 
 	// stree convert
 	// streeConverter *sconv = new streeConverter();
-	// std::cout << "start convert" << std::endl;
+	// std::cout << "start convert"exp_trees[example_id] << std::endl;
 	// tree_hnode* htree = sconv->convert_tree(&tree);
 	// std::vector<std::string> tmps;
 	// std::string _filename = this->fileName.toStdString();
@@ -3448,5 +3471,4 @@ void MainWindow::slot_rerender_highlight(int idx, bool value, int viewer_id) {
 			// example_csgRender(0);
 		}
 	}
-	
 }
