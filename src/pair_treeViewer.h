@@ -38,7 +38,7 @@ class pair_treeViewer : public QWidget {
         shared_ptr<treeViewer> viewer1;
         QHBoxLayout *layout;
         QGridLayout *grid_layout;
-        QTableWidget *tab_list;
+        QTableWidget *tablist;
         QPushButton *cor_button;
         QMenu *menu;
         // action for establish correspondece.

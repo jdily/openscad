@@ -17,9 +17,9 @@ pair_treeViewer::pair_treeViewer(QWidget *parent) : QWidget(parent) {
     grid_layout->addWidget(viewer0.get(), 0, 0, 1, 1);
     grid_layout->addWidget(viewer1.get(), 0, 1, 1, 1);
 
-    tab_list = new QTableWidget(this);
-    tab_list->setColumnCount(2);
-    grid_layout->addWidget(tab_list, 1, 0, 1, 1);
+    tablist = new QTableWidget(this);
+    tablist->setColumnCount(2);
+    grid_layout->addWidget(tablist, 1, 0, 1, 1);
     // TODO : add buttons..
     // but_group = new QButtonGroup(this);
     cor_button = new QPushButton("Correspondence", this);
@@ -69,5 +69,16 @@ void pair_treeViewer::est_correspondences() {
     viewer0->clear_selection();
     viewer1->clear_selection();
     std::cout << "current count of correspondences : " << corrs.size() << std::endl;
-    
+
+    // add item into tablewidget..
+    int cur_row = tablist->rowCount();
+    int cur_col = tablist->columnCount();
+    // std::cout << "row count : " << cur_row << std::endl;
+    // std::cout << "col count : " << cur_col << std::endl;
+    tablist->insertRow(cur_row);
+    // QString num0(QString::number(1));
+    QTableWidgetItem item0(QString::number(1));
+    tablist->setItem(cur_row, 0, new QTableWidgetItem(QString::number(snids0[0])));
+    QTableWidgetItem item1(QString::number(2));
+    tablist->setItem(cur_row, 1, new QTableWidgetItem(QString::number(snids1[0])));
 }
