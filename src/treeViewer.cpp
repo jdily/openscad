@@ -165,6 +165,10 @@ void treeViewer::setSTree(tree_hnode* htree) {
         // qDebug() << "Connection established?????" << connected;
     }
     // qnode_map = qtreenodes;
+
+    // redraw the view with new bounding box ?
+    QRectF bounds = m_pScene->itemsBoundingRect();
+    // fitInView(bounds, Qt::KeepAspectRatio);
 }
 
 

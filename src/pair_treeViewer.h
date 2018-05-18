@@ -14,7 +14,11 @@
 #include "correspondence.h"
 #include "treeViewer.h"
 #include <QHBoxLayout>
+#include <QGridLayout>
 #include <QMouseEvent>
+#include <QTableWidget>
+#include <QPushButton>
+#include <QButtonGroup>
 
 class qtreeNode;
 typedef stree<hnode*> tree_hnode;
@@ -33,6 +37,9 @@ class pair_treeViewer : public QWidget {
         shared_ptr<treeViewer> viewer0;
         shared_ptr<treeViewer> viewer1;
         QHBoxLayout *layout;
+        QGridLayout *grid_layout;
+        QTableWidget *tab_list;
+        QPushButton *cor_button;
         QMenu *menu;
         // action for establish correspondece.
         QAction *act_est_cor;

@@ -2,15 +2,31 @@
 
 pair_treeViewer::pair_treeViewer(QWidget *parent) : QWidget(parent) {
     layout = new QHBoxLayout;
+    grid_layout = new QGridLayout;
     viewer0.reset(new treeViewer(this));
     viewer1.reset(new treeViewer(this));
     viewer0->setName(QString("viewer0"));
     viewer1->setName(QString("viewer1"));
     viewer0->setID(0);
     viewer1->setID(1);
-    layout->addWidget(viewer0.get());
-    layout->addWidget(viewer1.get());
-    this->setLayout(layout);
+    // layout->addWidget(viewer0.get());
+    // layout->addWidget(viewer1.get());
+    // this->setLayout(layout);
+
+    // change to grid layout
+    grid_layout->addWidget(viewer0.get(), 0, 0, 1, 1);
+    grid_layout->addWidget(viewer1.get(), 0, 1, 1, 1);
+
+    tab_list = new QTableWidget(this);
+    tab_list->setColumnCount(2);
+    grid_layout->addWidget(tab_list, 1, 0, 1, 1);
+    // TODO : add buttons..
+    // but_group = new QButtonGroup(this);
+    cor_button = new QPushButton("Correspondence", this);
+    connect(cor_button, SIGNAL(clicked()), this, SLOT(est_correspondences()));
+    grid_layout->addWidget(cor_button, 1, 1, 1, 1);
+
+    this->setLayout(grid_layout);
 
     menu = new QMenu(this);
     act_est_cor = new QAction(tr("&Make correspondences."), this);
