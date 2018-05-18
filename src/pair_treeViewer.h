@@ -19,6 +19,7 @@
 #include <QTableWidget>
 #include <QPushButton>
 #include <QButtonGroup>
+#include <QGroupBox>
 
 class qtreeNode;
 typedef stree<hnode*> tree_hnode;
@@ -37,9 +38,13 @@ class pair_treeViewer : public QWidget {
         shared_ptr<treeViewer> viewer0;
         shared_ptr<treeViewer> viewer1;
         QHBoxLayout *layout;
+        QBoxLayout *but_layout;
         QGridLayout *grid_layout;
         QTableWidget *tablist;
         QPushButton *cor_button;
+        QPushButton *trans_button;
+        QGroupBox *but_groupbox;
+
         QMenu *menu;
         // action for establish correspondece.
         QAction *act_est_cor;

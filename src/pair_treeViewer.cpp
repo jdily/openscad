@@ -24,7 +24,17 @@ pair_treeViewer::pair_treeViewer(QWidget *parent) : QWidget(parent) {
     // but_group = new QButtonGroup(this);
     cor_button = new QPushButton("Correspondence", this);
     connect(cor_button, SIGNAL(clicked()), this, SLOT(est_correspondences()));
-    grid_layout->addWidget(cor_button, 1, 1, 1, 1);
+    trans_button = new QPushButton("Transfer", this);
+
+    but_layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
+    but_layout->addWidget(cor_button);
+    but_layout->addWidget(trans_button);
+    but_groupbox = new QGroupBox(tr("Manipulation buttons"));
+    but_groupbox->setLayout(but_layout);
+    
+    grid_layout->addWidget(but_groupbox, 1, 1, 1, 1);
+    // grid_layout->addWidget(cor_button, 1, 1, 1, 1);
+    // grid_layout->addWidget(trans_button, 1, 1, 1, 1);
 
     this->setLayout(grid_layout);
 
