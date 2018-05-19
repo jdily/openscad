@@ -20,6 +20,8 @@
 #include <QPushButton>
 #include <QButtonGroup>
 #include <QGroupBox>
+#include <QHeaderView>
+#include "relation.h"
 
 class qtreeNode;
 typedef stree<hnode*> tree_hnode;
@@ -40,17 +42,22 @@ class pair_treeViewer : public QWidget {
         QHBoxLayout *layout;
         QBoxLayout *but_layout;
         QGridLayout *grid_layout;
-        QTableWidget *tablist;
+        QTableWidget *corr_list;
+        QTableWidget *relation_list;
         QPushButton *cor_button;
         QPushButton *trans_button;
+        QPushButton *relation_button;
         QGroupBox *but_groupbox;
+        QGroupBox *info_groupbox;
 
         QMenu *menu;
         // action for establish correspondece.
         QAction *act_est_cor;
         std::vector<correspondence> corrs;
+        std::vector<relation> relations;
     protected:
         void mousePressEvent(QMouseEvent *event) override;
     public slots:
         void est_correspondences();
+        void est_relations();
 };

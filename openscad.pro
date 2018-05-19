@@ -380,7 +380,8 @@ HEADERS += src/version_check.h \
            # src/LFD.h \ 
            src/pair_treeViewer.h \ 
            src/treeScene.h \ 
-           src/correspondence.h
+           src/correspondence.h \ 
+           src/relation.h
            # src/NodeModifier.h
 
 SOURCES += \
@@ -541,7 +542,8 @@ SOURCES += \
            src/MyCSGTreeTest.cpp \ 
            src/pair_treeViewer.cpp \ 
            src/treeScene.cpp \ 
-           src/correspondence.cpp
+           src/correspondence.cpp \
+           src/relation.cpp
            # src/NodeModifier.cpp
 
 # CGAL
