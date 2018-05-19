@@ -9,7 +9,7 @@
 #include "node.h"
 
 #include "transformnode.h"
-
+#include "correspondence.h"
 // class PrimitiveNode;
 // should we make it as a subclass of NodeVisitor???
 
@@ -28,6 +28,7 @@ class geomTransferer {
         // 1. first version use the node id pair 
         Tree* transfer(int self_node_id, int exp_node_id);
         Tree* yet_another_transfer(int self_node_id, int exp_node_id);
+        Tree* transfer_corrs(std::vector<correspondence> corrs);
         // the test function for two_cylinder transfer cases.
         Tree* transfer_cylinder();
 

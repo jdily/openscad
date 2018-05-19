@@ -56,6 +56,41 @@ Tree* geomTransferer::transfer_cylinder() {
     return out_tree;
 }
 
+Tree* geomTransferer::transfer_corrs(std::vector<correspondence> corrs) {
+    std::cout << "[another] transfer_corrs" << std::endl;
+    // // debug here
+    NodeRecoder *recorder = new NodeRecoder(m_pSelf, aux_to_node);
+    Tree *out_tree = new Tree(*m_pSelf);
+    aux_to_node = recorder->append_aux_name("src", *out_tree->root());
+    aux_to_node = recorder->append_aux_name("exp", *m_pExample->root());
+    std::cout << "finish record the data" << std::endl;
+    // check the count of the map
+    std::cout << "size of the recorder : " << aux_to_node.size() << std::endl;
+
+    NodeDeleter *deleter = new NodeDeleter(out_tree);
+    NodeInserter *inserter = new NodeInserter(out_tree);
+
+    QString src_id, src_pid, exp_id;
+    int parent_id = 0;
+    const AbstractNode* src_node = nullptr;
+    const AbstractNode* src_pnode = nullptr;
+    const AbstractNode* exp_node = nullptr;
+    for (int i = 0; i < (int)corrs.size(); i++) {
+        correspondence c = corrs[i];
+        src_id = QString("src_%1").arg(c.corr[0].first);
+        src_node = aux_to_node[src_id.toStdString()];
+        parent_id = src_node->parent->index();
+        src_pid = QString("src_%1").arg(parent_id);
+        src_pnode = aux_to_node[src_pid.toStdString()];
+        exp_id = QString("exp_%1").arg(c.corr[0].second);
+        exp_node = aux_to_node[exp_id.toStdString()];
+        deleter->remove_node(*src_node, *src_pnode);
+        inserter->insert_node(*src_pnode, *exp_node);
+    }
+
+    return out_tree;
+}
+
 Tree* geomTransferer::yet_another_transfer(int self_node_id, int exp_node_id) {
     std::cout << "[another] transfer test" << std::endl;
     // // debug here
@@ -67,9 +102,29 @@ Tree* geomTransferer::yet_another_transfer(int self_node_id, int exp_node_id) {
     // check the count of the map
     std::cout << "size of the recorder : " << aux_to_node.size() << std::endl;
 
-    // NodeDeleter *deleter = new NodeDeleter(out_tree);
-    // NodeInserter *inserter = new NodeInserter(out_tree);
-    return nullptr;
+    NodeDeleter *deleter = new NodeDeleter(out_tree);
+    NodeInserter *inserter = new NodeInserter(out_tree);
+
+    // 1. find parent id...
+    QString src_id = QString("src_%1").arg(self_node_id);
+    const AbstractNode* src_node = aux_to_node[src_id.toStdString()];
+    int parent_id = src_node->parent->index();
+    // std::cout << "parent id : " << parent_id << std::endl;
+    QString src_pid = QString("src_%1").arg(parent_id);
+    const AbstractNode* src_pnode = aux_to_node[src_pid.toStdString()];
+    QString exp_id = QString("exp_%1").arg(exp_node_id);
+    const AbstractNode* exp_node = aux_to_node[exp_id.toStdString()];
+    
+    deleter->remove_node(*src_node, *src_pnode);
+    inserter->insert_node(*src_pnode, *exp_node);
+    // deleter->remove_node(*out_tree->root()->children[0], *out_tree->root());
+    // inserter->insert_node(*out_tree->root(), *m_pExample->root()->children[0]);
+
+    // // for another part of the geometry
+    // deleter->remove_node(*out_tree->root()->children[0], *out_tree->root());
+    // inserter->insert_node(*out_tree->root(), *m_pExample->root()->children[1]);
+
+    return out_tree;
 }
 
 
