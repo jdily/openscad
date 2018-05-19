@@ -56,7 +56,24 @@ Tree* geomTransferer::transfer_cylinder() {
     return out_tree;
 }
 
-// 1. first version use the node id pair 
+Tree* geomTransferer::yet_another_transfer(int self_node_id, int exp_node_id) {
+    std::cout << "[another] transfer test" << std::endl;
+    // // debug here
+    NodeRecoder *recorder = new NodeRecoder(m_pSelf, aux_to_node);
+    Tree *out_tree = new Tree(*m_pSelf);
+    aux_to_node = recorder->append_aux_name("src", *out_tree->root());
+    aux_to_node = recorder->append_aux_name("exp", *m_pExample->root());
+    std::cout << "finish record the data" << std::endl;
+    // check the count of the map
+    std::cout << "size of the recorder : " << aux_to_node.size() << std::endl;
+
+    // NodeDeleter *deleter = new NodeDeleter(out_tree);
+    // NodeInserter *inserter = new NodeInserter(out_tree);
+    return nullptr;
+}
+
+
+// 1. first version use the node id pair
 Tree* geomTransferer::transfer(int self_node_id, int exp_node_id) {
     std::cout << "do transfer from " << self_node_id << " to " << exp_node_id << std::endl;
     // debug here

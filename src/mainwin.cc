@@ -3178,17 +3178,19 @@ void MainWindow::transfer_slot() {
 	this->processEvents();
 	setCurrentOutput();
 	transferer->add_example_tree(exp_trees[0]);
-	Tree* result_tree = transferer->transfer(3, 2);
+	// Tree* result_tree = transferer->transfer(3, 2);
+	Tree* result_tree = transferer->yet_another_transfer(3,2);
+
 	// Tree* result_tree = transferer->transfer_cylinder();
 	// // // redraw the tree viz..
 	std::cout << "finish transfer " << std::endl;
 	// qtreeViewer->setTree(result_tree);
-	this->root_node = const_cast<AbstractNode*>(result_tree->root());
-	// // // clean the cache first and re-dump again..
-	this->tree.clear_cache();
-	this->tree.getString(*this->root_node);
-	std::cout << "new node count : " << this->tree.node_count() << std::endl;
-	csgReloadRender();
+	// this->root_node = const_cast<AbstractNode*>(result_tree->root());
+	// // // // clean the cache first and re-dump again..
+	// this->tree.clear_cache();
+	// this->tree.getString(*this->root_node);
+	// std::cout << "new node count : " << this->tree.node_count() << std::endl;
+	// csgReloadRender();
 }
 
 
