@@ -3203,6 +3203,7 @@ void MainWindow::transModeTransferOne() {
 	// set output to console 
 	setCurrentOutput();
 	QString exp_filename = QString("%1/manual_transfer/two_rect_cover.scad").arg(this->data_basepath);
+	// QString exp_filename = QString("%1/manual_transfer/two_rect_hinge.scad").arg(this->data_basepath);
 	// QString exp_filename("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_rect_cover.scad");
 	// QString exp_filename("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/manual_transfer/two_cylinder_cover.scad");
 	// QString example_file("C:\Users\jdily\Desktop\project\ddCAD\data\manual_transfer/\two_rect_cover");

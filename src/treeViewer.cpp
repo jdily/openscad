@@ -184,19 +184,19 @@ void treeViewer::wheelEvent(QWheelEvent *event) {
 }
 
 void treeViewer::mousePressEvent(QMouseEvent *e) {
-    // if (e->button() == Qt::RightButton) {
-    //     if (e->modifiers() == Qt::ControlModifier) {
-    //         std::cout << "ctrl pressed " << std::endl;
-    //         rubberBand->show();
-    //         rb_start = e->pos();
-    //         draw_rubberband = true;
-    //         // if (rubberBand->geometry().contains(e->pos())) {
-    //         //     rubberband_offset = e->pos() - rubberBand->pos();
-    //         //     move_rubberband = true;
+    if (e->button() == Qt::RightButton) {
+        if (e->modifiers() == Qt::ControlModifier) {
+            std::cout << "ctrl pressed " << std::endl;
+            rubberBand->show();
+            rb_start = e->pos();
+            draw_rubberband = true;
+            // if (rubberBand->geometry().contains(e->pos())) {
+            //     rubberband_offset = e->pos() - rubberBand->pos();
+            //     move_rubberband = true;
                 
-    //         // }
-    //     }
-    // } 
+            // }
+        }
+    } 
     QGraphicsView::mousePressEvent(e);
 }
 
@@ -243,7 +243,7 @@ void treeViewer::mouseReleaseEvent(QMouseEvent *e) {
     }
     // if (event->button() == Qt::RightButton) {
     //     std::cout << this->name.toStdString() << std::endl;
-    // }
+    // }treeViewer
     QGraphicsView::mouseReleaseEvent(e);
 }
 

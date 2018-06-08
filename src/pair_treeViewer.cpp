@@ -80,9 +80,9 @@ void pair_treeViewer::setSTree(tree_hnode *htree, int index) {
 
 
 void pair_treeViewer::mousePressEvent(QMouseEvent* e) {
-    if (e->button() == Qt::RightButton) {
-        menu->exec(e->globalPos());
-    }
+    // if (e->button() == Qt::RightButton) {
+    //     menu->exec(e->globalPos());
+    // }
 }
 
 void pair_treeViewer::est_correspondences() {
@@ -90,7 +90,8 @@ void pair_treeViewer::est_correspondences() {
     // go to two viewer -> collect each selected node ids..
     // make correspondece, first assume only 1 nid is selected.
     std::vector<int> snids0 = viewer0->selected_nids;
-    std::vector<int> snids1 = viewer1->selected_nids; 
+    std::vector<int> snids1 = viewer1->selected_nids;
+    std::cout << snids0.size() << " " << snids1.size() << std::endl;
     correspondence corr;
     corr.add_corr(snids0[0], snids1[0]);
     corrs.push_back(corr);
