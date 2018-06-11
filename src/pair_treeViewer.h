@@ -20,6 +20,7 @@
 #include <QPushButton>
 #include <QButtonGroup>
 #include <QGroupBox>
+#include <QComboBox>
 #include <QHeaderView>
 #include "relation.h"
 
@@ -49,7 +50,7 @@ class pair_treeViewer : public QWidget {
         QPushButton *relation_button;
         QGroupBox *but_groupbox;
         QGroupBox *info_groupbox;
-
+        QComboBox *rela_drop;
         QMenu *menu;
         // action for establish correspondece.
         QAction *act_est_cor;

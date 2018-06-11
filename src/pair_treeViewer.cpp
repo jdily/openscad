@@ -45,11 +45,24 @@ pair_treeViewer::pair_treeViewer(QWidget *parent) : QWidget(parent) {
     relation_button = new QPushButton("Relation", this);
     connect(relation_button, SIGNAL(clicked()), this, SLOT(est_relations()));
 
+    rela_drop = new QComboBox(this);
+    QString s = "cover";
+    rela_drop->addItem(s);
+    s = "hinge";
+    rela_drop->addItem(s);
+    s = "sliding";
+    rela_drop->addItem(s);
+    s = "lock";
+    rela_drop->addItem(s);
+
+
     but_layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
     but_layout->addWidget(relation_list);
     but_layout->addWidget(cor_button);
     but_layout->addWidget(trans_button);
+    but_layout->addWidget(rela_drop);
     but_layout->addWidget(relation_button);
+    
     but_groupbox = new QGroupBox(tr("Manipulation buttons"));
     but_groupbox->setLayout(but_layout);
     
@@ -121,7 +134,11 @@ void pair_treeViewer::est_relations() {
     std::cout << "est relation" << std::endl;
     std::vector<int> snids0 = viewer0->selected_nids;
     std::vector<int> snids1 = viewer1->selected_nids; 
-    relation r(snids0[0], snids0[1], QString("cover"));
+    // fixed relationship -> have a drop down to select?
+    QString cb = this->rela_drop ->currentText();
+    std::cout << "current choice : " << cb.toStdString() << std::endl;
+    relation r(snids0[0], snids0[1], cb);
+    // relation r(snids0[0], snids0[1], QString("cover"));
     relations.push_back(r);
     // clean the selelcted
     viewer0->clear_selection();
