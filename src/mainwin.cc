@@ -1204,7 +1204,8 @@ void MainWindow::instantiateRoot()
 			// FIXME: We shouldn't really need to do this explicitly..
 			this->tree.getString(*this->root_node);
 			// // ichao : set graph here and draw it.
-			streeConverter *sconv = new streeConverter();
+			// streeConverter *sconv = new streeConverter();
+			simpTreeConverter *sconv = new simpTreeConverter();
 			tree_hnode* htree = sconv->convert_tree(&tree);
 			std::cout << "htree size : " << htree->size() << std::endl;
 			// std::cout << sconv->with_csginfo() << std::endl;
@@ -3348,7 +3349,8 @@ void MainWindow::retrieveExamples() {
 	PRINT("[ichao] retrieve test function here...");
 	this->processEvents();
 	setCurrentOutput();
-	QString exp_filename0 = QString("%1/manual_transfer/two_rect_cover.scad").arg(this->data_basepath);
+	// QString exp_filename0 = QString("%1/manual_transfer/two_rect_cover.scad").arg(this->data_basepath);
+	QString exp_filename0 = QString("%1/manual_transfer/two_rect_hinge.scad").arg(this->data_basepath);
 	tmp_loadSimilarExample(0, exp_filename0);
 	// example_csgReloadRender(0);
 	example_csgRender(0);
@@ -3372,19 +3374,8 @@ void MainWindow::example_selectedSlot(int example_id) {
 		std::cout << "null transferer.." << std::endl;
 	}
 	transferer->add_example_tree(exp_trees[fixed_example_id]);
-	// streeConverter *sconv = new streeConverter;
-	// tree_hnode* htree = sconv->convert_tree(exp_trees[fixed_example_id]);
-	// QString exp_filename0 = QString("%1/manual_transfer/two_rect_cover.scad").arg(this->data_basepath);
-	// std::string _filename0 = exp_filename0.toStdString();
-	// std::vector<std::string> tmps;
-    // boost::split(tmps, _filename0, boost::is_any_of("/"));
-	// std::vector<std::string> strs;
-	// boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
-	// tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()), this->data_basepath);
-	// pair_viewer->setSTree(layout_tree, 1);
-
-	simpTreeConverter *conv = new simpTreeConverter;
-	tree_hnode* htree = conv->convert_tree(exp_trees[fixed_example_id]);	
+	streeConverter *sconv = new streeConverter;
+	tree_hnode* htree = sconv->convert_tree(exp_trees[fixed_example_id]);
 	QString exp_filename0 = QString("%1/manual_transfer/two_rect_cover.scad").arg(this->data_basepath);
 	std::string _filename0 = exp_filename0.toStdString();
 	std::vector<std::string> tmps;
@@ -3393,7 +3384,19 @@ void MainWindow::example_selectedSlot(int example_id) {
 	boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
 	tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()), this->data_basepath);
 	pair_viewer->setSTree(layout_tree, 1);
-	// pair_viewer->setSTree(htree, 1);
+
+	// [TODO] : dig out why the hinge case fails.....
+	// simpTreeConverter *conv = new simpTreeConverter;
+	// tree_hnode* htree = conv->convert_tree(exp_trees[fixed_example_id]);	
+	// QString exp_filename0 = QString("%1/manual_transfer/two_rect_cover.scad").arg(this->data_basepath);
+	// // QString exp_filename0 = QString("%1/manual_transfer/two_rect_hinge.scad").arg(this->data_basepath);
+	// std::string _filename0 = exp_filename0.toStdString();
+	// std::vector<std::string> tmps;
+    // boost::split(tmps, _filename0, boost::is_any_of("/"));
+	// std::vector<std::string> strs;
+	// boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
+	// tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()), this->data_basepath);
+	// pair_viewer->setSTree(layout_tree, 1);
 
 
 	// Tree* result_tree = transferer->transfer(3, 2);
