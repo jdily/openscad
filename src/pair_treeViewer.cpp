@@ -24,6 +24,14 @@ pair_treeViewer::pair_treeViewer(QWidget *parent) : QWidget(parent) {
     colHeaders.push_back(QString("example"));
     corr_list->setHorizontalHeaderLabels(colHeaders);
     corr_list->horizontalHeader()->setStretchLastSection(true);
+    cor_button = new QPushButton("Correspondence", this);
+    connect(cor_button, SIGNAL(clicked()), this, SLOT(est_correspondences()));
+    corr_layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
+    corr_layout->addWidget(corr_list);
+    corr_layout->addWidget(cor_button);
+    corr_groupbox = new QGroupBox(tr("Correspondences"));
+    corr_groupbox->setLayout(corr_layout);
+    grid_layout->addWidget(corr_groupbox, 1, 0, 1, 1);
 
     relation_list = new QTableWidget(this);
     relation_list->setColumnCount(3);
@@ -36,11 +44,9 @@ pair_treeViewer::pair_treeViewer(QWidget *parent) : QWidget(parent) {
     // info_groupbox = new QGroupBox(tr(""))
     // QString str = tablist->horizontalHeaderItem(1)->text();
     // std::cout << "test column header : " << str.toStdString() << std::endl;
-    grid_layout->addWidget(corr_list, 1, 0, 1, 1);
+    // grid_layout->addWidget(corr_list, 1, 0, 1, 1);
     // TODO : add buttons..
     // but_group = new QButtonGroup(this);
-    cor_button = new QPushButton("Correspondence", this);
-    connect(cor_button, SIGNAL(clicked()), this, SLOT(est_correspondences()));
     trans_button = new QPushButton("Transfer", this);
     relation_button = new QPushButton("Relation", this);
     connect(relation_button, SIGNAL(clicked()), this, SLOT(est_relations()));
@@ -58,12 +64,12 @@ pair_treeViewer::pair_treeViewer(QWidget *parent) : QWidget(parent) {
 
     but_layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
     but_layout->addWidget(relation_list);
-    but_layout->addWidget(cor_button);
+    // but_layout->addWidget(cor_button);
     but_layout->addWidget(trans_button);
     but_layout->addWidget(rela_drop);
     but_layout->addWidget(relation_button);
     
-    but_groupbox = new QGroupBox(tr("Manipulation buttons"));
+    but_groupbox = new QGroupBox(tr("Relationships"));
     but_groupbox->setLayout(but_layout);
     
     grid_layout->addWidget(but_groupbox, 1, 1, 1, 1);

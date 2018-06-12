@@ -50,6 +50,8 @@ class pair_treeViewer : public QWidget {
         QPushButton *relation_button;
         QGroupBox *but_groupbox;
         QGroupBox *info_groupbox;
+        QGroupBox *corr_groupbox;
+        QBoxLayout *corr_layout;
         QComboBox *rela_drop;
         QMenu *menu;
         // action for establish correspondece.
