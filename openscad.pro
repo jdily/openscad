@@ -381,7 +381,8 @@ HEADERS += src/version_check.h \
            src/pair_treeViewer.h \ 
            src/treeScene.h \ 
            src/correspondence.h \ 
-           src/relation.h
+           src/relation.h \ 
+           src/simpTreeConverter.h
            # src/NodeModifier.h
 
 SOURCES += \
@@ -543,7 +544,8 @@ SOURCES += \
            src/pair_treeViewer.cpp \ 
            src/treeScene.cpp \ 
            src/correspondence.cpp \
-           src/relation.cpp
+           src/relation.cpp \ 
+           src/simpTreeConverter.cpp
            # src/NodeModifier.cpp
 
 # CGAL

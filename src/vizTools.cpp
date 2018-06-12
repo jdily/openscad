@@ -127,9 +127,12 @@ tree_hnode* vizTools::make_layout_graphviz(tree_hnode *tree, QString filename, Q
     std::vector<QString> node_info;
     std::vector<QString> edge_info;
 
+    std::cout << "here is fine " << std::endl;
+
     while(iterator!= tree->end()) {
         std::string type = (*iterator)->type;
         int index = (*iterator)->idx;
+        std::cout << index << " " << (*iterator)->type <<  std::endl;
         // TODO : check should it start from 0
         QString indexstr = QString::number(index);
         QString label = QString("[label=%1]").arg(type.c_str());
@@ -154,6 +157,8 @@ tree_hnode* vizTools::make_layout_graphviz(tree_hnode *tree, QString filename, Q
 
     out << "}" << endl;
     file.close();
+
+    std::cout << "here is fine as well.." << std::endl;
     ///////////////////////////////////////////////
     QString layout_dot_filename = QString("%1/graph_viz/%2_layout.dot").arg(basepath).arg(filename);
     // QString layout_dot_filename = QString("/mnt/c/Users/jdily/Desktop/project/ddCAD/data/graph_viz/%1_layout.dot").arg(filename);
@@ -165,7 +170,7 @@ tree_hnode* vizTools::make_layout_graphviz(tree_hnode *tree, QString filename, Q
 
     // read it back
     tree_hnode* layout_tree = vizTools::read_graphviz(layout_dot_filename);
-
+    // tree_hnode* layout_tree = nullptr;
     return layout_tree;
 }
 
@@ -256,6 +261,7 @@ tree_hnode* vizTools::read_graphviz(QString filename) {
     for (int k : keys) {
         tree_hnode::iterator newNodeIter;
         int parent_id = hnodes[k]->parent_idx;
+        std::cout << k << "parent id : " << parent_id << std::endl;
         if (parent_id == -1) {
             newNodeIter = out->begin();
             newNodeIter = out->insert(newNodeIter, hnodes[k]);
