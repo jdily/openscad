@@ -3376,7 +3376,7 @@ void MainWindow::example_selectedSlot(int example_id) {
 	transferer->add_example_tree(exp_trees[fixed_example_id]);
 	streeConverter *sconv = new streeConverter;
 	tree_hnode* htree = sconv->convert_tree(exp_trees[fixed_example_id]);
-	QString exp_filename0 = QString("%1/manual_transfer/two_rect_cover.scad").arg(this->data_basepath);
+	QString exp_filename0 = QString("%1/manual_transfer/two_rect_hinge.scad").arg(this->data_basepath);
 	std::string _filename0 = exp_filename0.toStdString();
 	std::vector<std::string> tmps;
     boost::split(tmps, _filename0, boost::is_any_of("/"));
