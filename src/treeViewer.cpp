@@ -107,6 +107,8 @@ void treeViewer::setID(int id) {
     viewer_id = id;
 }
 
+
+// [TODO] Do position centering on x-axis
 void treeViewer::setSTree(tree_hnode* htree) {
     clear_scene();
     std::cout << "[before set] qnode map size : " << qnode_map.size() << std::endl;
@@ -115,21 +117,43 @@ void treeViewer::setSTree(tree_hnode* htree) {
 	tree_hnode::sibling_iterator children;
 	tree_hnode::iterator iterator;
 	iterator = htree->begin();
+    float x_coord = 0.0, y_coord = 0.0;
+    int node_count = 0;
     while(iterator!= htree->end()) {
         std::string type = (*iterator)->type;
         qtreeNode *qnode = new qtreeNode(this, type);
         qnode->set_id((*iterator)->idx);
         qnode->parent_idx = (*iterator)->parent_idx;
         QPointF pos;
-        pos.setX(scene_width-(*iterator)->pos_x);
+        // pos.setX(scene_width-(*iterator)->pos_x);
+        // pos.setY(scene_height-(*iterator)->pos_y);
+        pos.setX((*iterator)->pos_x);
         pos.setY(scene_height-(*iterator)->pos_y);
+        // std::cout << "pos : " << pos.x() << " " << pos.y() << std::endl;
+        x_coord += (*iterator)->pos_x;
         qnode->setPos(pos);
         // qnode->setPos(rand_pos());
         qnode_map.insert((*iterator)->idx, qnode);
         m_pScene->addItem(qnode);
         ++iterator;
     }
+    // float cen_x = x_coord / m_pScene->items().size();
+    QRectF bounds = m_pScene->itemsBoundingRect();
+    std::cout << "width : " << bounds.width() << " height : "  << bounds.height() << std::endl;
+    std::cout << bounds.topLeft().x() << " " << bounds.topLeft().y() << std::endl;
+    std::cout << bounds.bottomRight().x() << " " << bounds.bottomRight().y() << std::endl;
+    for (auto node : m_pScene->items()) {
+        node->moveBy(-bounds.topLeft().x(), 0.0);
+        // std::cout << "pos : " << pos.x() << " " << pos.y() << std::endl;
+    }    
+    QRectF _bounds = m_pScene->itemsBoundingRect();
+    std::cout << "width : " << _bounds.width() << " height : "  << _bounds.height() << std::endl;
+    std::cout << _bounds.topLeft().x() << " " << _bounds.topLeft().y() << std::endl;
+    std::cout << _bounds.bottomRight().x() << " " << _bounds.bottomRight().y() << std::endl;
+    // this->resize();
 
+    // fitInView(_bounds, Qt::KeepAspectRatio);
+    // centerOn(0,0);
     QMap<int, tree_qnode::iterator> qnode_iters;
     this->qtree = new tree_qnode();
     QList<int> keys = qnode_map.keys();
@@ -145,7 +169,15 @@ void treeViewer::setSTree(tree_hnode* htree) {
         qnode_iters.insert(k, newNodeIter);
     }
 
-
+    // redraw the view with new bounding box  -> before add edge 
+    // [ISSUE] might be bug about the edge, so it's not stable -> check later
+    // QRectF bounds = m_pScene->itemsBoundingRect();
+    // std::cout << "width : " << bounds.width() << " height : "  << bounds.height() << std::endl;
+    // std::cout << bounds.topLeft().x() << " " << bounds.topLeft().y() << std::endl;
+    // std::cout << bounds.bottomRight().x() << " " << bounds.bottomRight().y() << std::endl;
+    // ensureVisible(bounds);
+    // fitInView(bounds, Qt::KeepAspectRatio);
+    // fitInView(m_pScene->items(), Qt::KeepAspectRatio);
     iterator = htree->begin();
     while (iterator!=htree->end()) {
         children = htree->begin(iterator);
@@ -164,13 +196,14 @@ void treeViewer::setSTree(tree_hnode* htree) {
         const bool connected = connect(qnode_map[n], SIGNAL(select_childrens(int, bool)), this, SLOT(set_child_selection(int, bool)));
         // qDebug() << "Connection established?????" << connected;
     }
-    // qnode_map = qtreenodes;
-
-    // redraw the view with new bounding box ?
-    QRectF bounds = m_pScene->itemsBoundingRect();
-    // fitInView(bounds, Qt::KeepAspectRatio);
 }
 
+
+void treeViewer::resizeEvent(QResizeEvent *event) {
+    // QRectF bounds = m_pScene->itemsBoundingRect();
+    std::cout << "resize event invoked." << std::endl;
+
+}
 
 void treeViewer::wheelEvent(QWheelEvent *event) {
     if(event->delta() > 0)
