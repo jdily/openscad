@@ -57,7 +57,7 @@ Tree* geomTransferer::transfer_cylinder() {
 }
 
 Tree* geomTransferer::transfer_corrs(std::vector<correspondence> corrs) {
-    std::cout << "[another] transfer_corrs" << std::endl;
+    std::cout << "transfer_corrs" << std::endl;
     // // debug here
     NodeRecoder *recorder = new NodeRecoder(m_pSelf, aux_to_node);
     Tree *out_tree = new Tree(*m_pSelf);

@@ -3349,8 +3349,8 @@ void MainWindow::retrieveExamples() {
 	PRINT("[ichao] retrieve test function here...");
 	this->processEvents();
 	setCurrentOutput();
-	// QString exp_filename0 = QString("%1/manual_transfer/two_rect_cover.scad").arg(this->data_basepath);
-	QString exp_filename0 = QString("%1/manual_transfer/two_rect_hinge.scad").arg(this->data_basepath);
+	QString exp_filename0 = QString("%1/manual_transfer/two_rect_cover.scad").arg(this->data_basepath);
+	// QString exp_filename0 = QString("%1/manual_transfer/two_rect_hinge.scad").arg(this->data_basepath);
 	tmp_loadSimilarExample(0, exp_filename0);
 	// example_csgReloadRender(0);
 	example_csgRender(0);
