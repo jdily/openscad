@@ -131,29 +131,32 @@ void treeViewer::setSTree(tree_hnode* htree) {
         pos.setY(scene_height-(*iterator)->pos_y);
         // std::cout << "pos : " << pos.x() << " " << pos.y() << std::endl;
         x_coord += (*iterator)->pos_x;
+        y_coord += scene_height-(*iterator)->pos_y;
         qnode->setPos(pos);
         // qnode->setPos(rand_pos());
         qnode_map.insert((*iterator)->idx, qnode);
         m_pScene->addItem(qnode);
         ++iterator;
     }
-    // float cen_x = x_coord / m_pScene->items().size();
+    float cen_x = x_coord / m_pScene->items().size();
+    float cen_y = y_coord / m_pScene->items().size();
     QRectF bounds = m_pScene->itemsBoundingRect();
     std::cout << "width : " << bounds.width() << " height : "  << bounds.height() << std::endl;
     std::cout << bounds.topLeft().x() << " " << bounds.topLeft().y() << std::endl;
     std::cout << bounds.bottomRight().x() << " " << bounds.bottomRight().y() << std::endl;
-    for (auto node : m_pScene->items()) {
-        node->moveBy(-bounds.topLeft().x(), 0.0);
-        // std::cout << "pos : " << pos.x() << " " << pos.y() << std::endl;
-    }    
+    // for (auto node : m_pScene->items()) {
+    //     node->moveBy(-bounds.topLeft().x(), 0.0);
+    //     // std::cout << "pos : " << pos.x() << " " << pos.y() << std::endl;
+    // }    
     QRectF _bounds = m_pScene->itemsBoundingRect();
     std::cout << "width : " << _bounds.width() << " height : "  << _bounds.height() << std::endl;
     std::cout << _bounds.topLeft().x() << " " << _bounds.topLeft().y() << std::endl;
     std::cout << _bounds.bottomRight().x() << " " << _bounds.bottomRight().y() << std::endl;
     // this->resize();
-
-    // fitInView(_bounds, Qt::KeepAspectRatio);
-    // centerOn(0,0);
+    // 
+    // centerOn(cen_x, cen_y);
+    setSceneRect(m_pScene->itemsBoundingRect());
+    fitInView(_bounds, Qt::KeepAspectRatio);
     QMap<int, tree_qnode::iterator> qnode_iters;
     this->qtree = new tree_qnode();
     QList<int> keys = qnode_map.keys();
