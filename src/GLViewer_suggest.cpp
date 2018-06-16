@@ -2,10 +2,11 @@
 
 GLViewer_suggest::GLViewer_suggest(QWidget *parent): QWidget(parent) {
     m_mainViewer = new QGLView(this);
+    m_mainViewer->set_viewer_id(0);
     m_sugViewer0 = new QGLView(this);
     // m_sugViewer1 = new QGLView(this);
     // m_sugViewer2 = new QGLView(this);
-    m_sugViewer0->set_viewer_id(0);
+    m_sugViewer0->set_viewer_id(1);
     // m_sugViewer1->set_viewer_id(1);
     // m_sugViewer2->set_viewer_id(2);
     QString css = "border: 20px solid #FF0000;";
@@ -22,10 +23,5 @@ GLViewer_suggest::GLViewer_suggest(QWidget *parent): QWidget(parent) {
     // mainLayout.addWidget(m_sugViewer1, 2, 1, 1, 1);
     // mainLayout.addWidget(m_sugViewer2, 2, 2, 1, 1);
     
-    
-    
     setLayout(&mainLayout);
-
-
-
 }
