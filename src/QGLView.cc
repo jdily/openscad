@@ -201,7 +201,7 @@ void QGLView::paintGL()
   glDisable(GL_DEPTH_TEST);
   painter->endNativePainting();
   painter->drawPath(stroke_path);
-  painter->end();  
+  painter->end(); 
 
 #if defined(_WIN32) && !defined(USE_QOPENGLWIDGET)
   if (running_under_wine) swapBuffers();
@@ -305,10 +305,67 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
         cam.object_rot.z() += dx;
 			}
       normalizeAngle(cam.object_rot.x());
-      normalizeAngle(cam.object_rot.y());
-      normalizeAngle(cam.object_rot.z());
+      normalizeAngle(cQPainterPath path(QPointF(80, 320));
+path.lineTo(QPointF(240,90));
+path.lineTo(QPointF(330,240));
+path.lineTo(QPointF(620,180));
+path.lineTo(QPointF(730,110));
+ 
+QPainterPathStroker stroker;
+stroker.setCapStyle(Qt::RoundCap);
+stroker.setJoinStyle(Qt::RoundJoin);
+stroker.setWidth(100);
+ 
+QPainterPath strokePath = stroker.createStroke(path).simplified();
+ 
+for (int i = 0; i < strokePath.elementCount()-1; i++)
+{
+  QPainterPath::Element p1 = strokePath.elementAt(i);
+  QPainterPath::Element p2 = strokePath.elementAt(i+1);
+  painter->setPen(QPen(i % 2 == 0 ? Qt::red : Qt::green, 1));
+  painter->drawLine(QPointF(p1.x, p1.y), QPointF(p2.x, p2.y));
+}rot.y());
+      normalizeAngle(cQPainterPath path(QPointF(80, 320));
+path.lineTo(QPointF(240,90));
+path.lineTo(QPointF(330,240));
+path.lineTo(QPointF(620,180));
+path.lineTo(QPointF(730,110));
+ 
+QPainterPathStroker stroker;
+stroker.setCapStyle(Qt::RoundCap);
+stroker.setJoinStyle(Qt::RoundJoin);
+stroker.setWidth(100);
+ 
+QPainterPath strokePath = stroker.createStroke(path).simplified();
+ 
+for (int i = 0; i < strokePath.elementCount()-1; i++)
+{
+  QPainterPath::Element p1 = strokePath.elementAt(i);
+  QPainterPath::Element p2 = strokePath.elementAt(i+1);
+  painter->setPen(QPen(i % 2 == 0 ? Qt::red : Qt::green, 1));
+  painter->drawLine(QPointF(p1.x, p1.y), QPointF(p2.x, p2.y));
+}rot.z());
     } 
-    // stroke things..
+    // stroke things..QPainterPath path(QPointF(80, 320));
+path.lineTo(QPointF(240,90));
+path.lineTo(QPointF(330,240));
+path.lineTo(QPointF(620,180));
+path.lineTo(QPointF(730,110));
+ 
+QPainterPathStroker stroker;
+stroker.setCapStyle(Qt::RoundCap);
+stroker.setJoinStyle(Qt::RoundJoin);
+stroker.setWidth(100);
+ 
+QPainterPath strokePath = stroker.createStroke(path).simplified();
+ 
+for (int i = 0; i < strokePath.elementCount()-1; i++)
+{
+  QPainterPath::Element p1 = strokePath.elementAt(i);
+  QPainterPath::Element p2 = strokePath.elementAt(i+1);
+  painter->setPen(QPen(i % 2 == 0 ? Qt::red : Qt::green, 1));
+  painter->drawLine(QPointF(p1.x, p1.y), QPointF(p2.x, p2.y));
+}
     else if (event->buttons() & Qt::RightButton) {
       if (event->modifiers() == Qt::ControlModifier && stroking) {
         std::cout << "keep stroking " << std::endl;
@@ -373,6 +430,8 @@ void QGLView::mouseReleaseEvent(QMouseEvent*)
   mouse_drag_active = false;
   stroking = false;
   painter = nullptr;
+  // create the stroker for checking inside/outside...
+
   releaseMouse();
 }
 
