@@ -39,6 +39,7 @@ treeViewer::treeViewer(QWidget *parent) : QGraphicsView(parent) {
     // rubberBand->setGeometry(0,0,1,1);
     // ru
     draw_rubberband = false;
+    stroking = false;
 
     // setDragMode(QGraphicsView::RubberBandDrag);
     setRubberBandSelectionMode(Qt::ContainsItemShape);
@@ -210,6 +211,15 @@ void treeViewer::mousePressEvent(QMouseEvent *e) {
             //     move_rubberband = true;
                 
             // }
+        } else if (e->modifiers() == Qt::ShiftModifier) {
+            std::cout << "draw stroke on shift" << std::endl;
+            stroking = true;
+            stroke_pnts.append(e->pos());
+            // stroke_p = new QPainter(this);
+            // stroke_p->setRenderHint(QPainter::Antialiasing);
+            // stroke_p->setPen({Qt::green, 5.0});
+            // last_stroke = e->pos();
+            // stroke_p->drawLine(last_stroke, e->pos());
         }
     } 
     QGraphicsView::mousePressEvent(e);
@@ -218,6 +228,11 @@ void treeViewer::mousePressEvent(QMouseEvent *e) {
 void treeViewer::mouseMoveEvent(QMouseEvent *e) {
     if (draw_rubberband) {
         rubberBand->setGeometry(QRect(rb_start, e->pos()));
+    }
+    if (stroking) {
+        // stroke_p->drawLine(last_stroke, e->pos());
+        stroke_pnts.append(e->pos());
+        last_stroke = e->pos();
     }
     // if(move_rubberband)
     // {   
@@ -230,6 +245,7 @@ void treeViewer::mouseMoveEvent(QMouseEvent *e) {
 }
 void treeViewer::mouseReleaseEvent(QMouseEvent *e) {
     if (e->button() == Qt::RightButton) {
+        
         std::cout << "release event" << std::endl;
         rb_end = e->pos();
         rb_rect = QRect(rb_start, rb_end);

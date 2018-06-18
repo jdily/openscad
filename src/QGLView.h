@@ -92,6 +92,8 @@ private:
 	QPainter *painter;
 	QPointF last_point;
 	bool stroking;
+	QPen stroke_pen;
+	QPainterPath stroke_path;
 
 	void initializeGL() override;
 	void resizeGL(int w, int h) override;

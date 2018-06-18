@@ -85,7 +85,6 @@ void QGLView::init()
     if ( (void *)GetProcAddress(hntdll, "wine_get_version") )
       running_under_wine = true;
 #endif
-
   stroking = false;
 }
 
@@ -183,6 +182,11 @@ void QGLView::resizeGL(int w, int h)
 
 void QGLView::paintGL()
 {
+  painter = new QPainter(this);
+  painter->setRenderHints(QPainter::Antialiasing);
+  painter->setPen({QColor(135,206,250, 128), 20.0}); 
+  painter->beginNativePainting();
+  glEnable(GL_DEPTH_TEST);
   GLView::paintGL();
 
   if (statusLabel) {
@@ -194,13 +198,17 @@ void QGLView::paintGL()
 			.arg(size().rheight());
     statusLabel->setText(status);
   }
+  glDisable(GL_DEPTH_TEST);
+  painter->endNativePainting();
+  painter->drawPath(stroke_path);
+  painter->end();  
 
 #if defined(_WIN32) && !defined(USE_QOPENGLWIDGET)
   if (running_under_wine) swapBuffers();
 #endif
 }
 
-void QGLView::mouseDoubleClickEvent (QMouseEvent *event) {
+void QGLView::mouseDoubleClickEvent(QMouseEvent *event) {
 
 	setupCamera();
 
@@ -247,12 +255,31 @@ void QGLView::mousePressEvent(QMouseEvent *event)
   mouse_drag_active = true;
   last_mouse = event->globalPos();
   if(event->button() == Qt::RightButton) {
-    QString mes = QString("right mouse button is pressed at viewer %1").arg(viewer_id);
-    std::cout << mes.toStdString() << std::endl;
-    // emit exampleSelected(viewer_id);
-    painter = new QPainter(this);
-    stroking = true;
-    last_point = event->pos();
+    if (event->modifiers() == Qt::ControlModifier) {
+      QString mes = QString("right mouse button is pressed at viewer %1").arg(viewer_id);
+      std::cout << mes.toStdString() << std::endl;
+      // emit exampleSelected(viewer_id);
+      // painter = new QPainter(this);
+      // painter->setRenderHint(QPainter::Antialiasing);
+      // painter->setPen({Qt::blue, 10.0});
+      stroking = true;
+      // last_point = event->pos();
+      // // std::cout << stroking << std::endl;
+      stroke_path = QPainterPath(event->pos());
+      // std::cout << "start" << std::endl;
+      // std::cout << last_point.x() << " " << last_point.y() << std::endl;
+      // std::cout << event->pos().x() << " " << event->pos().y() << std::endl;
+      // painter-> beginNativePainting();
+      // // QRectF rect_(last_point, QSizeF(10, 50));
+      // // painter->drawEllipse(rect_);
+      // painter->drawLine(last_point, event->pos());
+      // painter->endNativePainting();
+
+      // QPainter p(this);
+      // p.setPen(Qt::red);
+      // p.drawLine(rect().topLeft(), rect().bottomRight()); 
+      // std::cout << rect().bottomRight().x() << " " << rect().bottomRight().y() << std::endl;
+    }
   }
 }
 
@@ -262,6 +289,7 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
   double dx = (this_mouse.x() - last_mouse.x()) * 0.7;
   double dy = (this_mouse.y() - last_mouse.y()) * 0.7;
   if (mouse_drag_active) {
+    // std::cout << "mouse drag active " << std::endl;
     if (event->buttons() & Qt::LeftButton
 #ifdef Q_OS_MAC
         && !(event->modifiers() & Qt::MetaModifier)
@@ -276,11 +304,18 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
       else {
         cam.object_rot.z() += dx;
 			}
-
       normalizeAngle(cam.object_rot.x());
       normalizeAngle(cam.object_rot.y());
       normalizeAngle(cam.object_rot.z());
-    } else {
+    } 
+    // stroke things..
+    else if (event->buttons() & Qt::RightButton) {
+      if (event->modifiers() == Qt::ControlModifier && stroking) {
+        std::cout << "keep stroking " << std::endl;
+        stroke_path.lineTo(event->pos());
+      }
+    }
+    else {
       // Right button pans in the xz plane
       // Middle button pans in the xy plane
       // Shift-right and Shift-middle zooms
@@ -329,16 +364,15 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
     }
     updateGL();
     emit doAnimateUpdate();
-  } else if (event->button() == Qt::RightButton && stroking) {
-    std::cout << "keep stroking " << std::endl;
-
-  }
+  } 
   last_mouse = this_mouse;
 }
 
 void QGLView::mouseReleaseEvent(QMouseEvent*)
 {
   mouse_drag_active = false;
+  stroking = false;
+  painter = nullptr;
   releaseMouse();
 }
 

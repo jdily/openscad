@@ -70,6 +70,11 @@ class treeViewer : public QGraphicsView {
         QPoint rb_end;
         QRect rb_rect;
 
+        QPainter *stroke_p;
+        QPointF last_stroke; 
+        bool stroking;
+        QList<QPointF> stroke_pnts;
+
         std::vector<QGraphicsItem*> selected_nodes;
         std::vector<int> selected_nids;
 
