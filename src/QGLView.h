@@ -14,6 +14,7 @@
 #include <Eigen/Geometry>
 #include "GLView.h"
 #include "renderer.h"
+#include <QPainter>
 
 class QGLView :
 #ifdef USE_QOPENGLWIDGET
@@ -87,6 +88,10 @@ private:
 	void mouseMoveEvent(QMouseEvent *event) override;
 	void mouseReleaseEvent(QMouseEvent *event) override;
 	void mouseDoubleClickEvent(QMouseEvent *event) override;
+
+	QPainter *painter;
+	QPointF last_point;
+	bool stroking;
 
 	void initializeGL() override;
 	void resizeGL(int w, int h) override;

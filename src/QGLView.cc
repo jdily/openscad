@@ -85,6 +85,8 @@ void QGLView::init()
     if ( (void *)GetProcAddress(hntdll, "wine_get_version") )
       running_under_wine = true;
 #endif
+
+  stroking = false;
 }
 
 void QGLView::resetView()
@@ -198,17 +200,6 @@ void QGLView::paintGL()
 #endif
 }
 
-void QGLView::mousePressEvent(QMouseEvent *event)
-{
-  mouse_drag_active = true;
-  last_mouse = event->globalPos();
-  if(event->button() == Qt::RightButton) {
-    QString mes = QString("right mouse button is pressed at viewer %1").arg(viewer_id);
-    std::cout << mes.toStdString() << std::endl;
-    emit exampleSelected(viewer_id);
-  }
-}
-
 void QGLView::mouseDoubleClickEvent (QMouseEvent *event) {
 
 	setupCamera();
@@ -249,6 +240,20 @@ void QGLView::normalizeAngle(GLdouble& angle)
 {
   while(angle < 0) angle += 360;
   while(angle > 360) angle -= 360;
+}
+
+void QGLView::mousePressEvent(QMouseEvent *event)
+{
+  mouse_drag_active = true;
+  last_mouse = event->globalPos();
+  if(event->button() == Qt::RightButton) {
+    QString mes = QString("right mouse button is pressed at viewer %1").arg(viewer_id);
+    std::cout << mes.toStdString() << std::endl;
+    // emit exampleSelected(viewer_id);
+    painter = new QPainter(this);
+    stroking = true;
+    last_point = event->pos();
+  }
 }
 
 void QGLView::mouseMoveEvent(QMouseEvent *event)
@@ -324,6 +329,9 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
     }
     updateGL();
     emit doAnimateUpdate();
+  } else if (event->button() == Qt::RightButton && stroking) {
+    std::cout << "keep stroking " << std::endl;
+
   }
   last_mouse = this_mouse;
 }
