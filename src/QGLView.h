@@ -94,6 +94,9 @@ private:
 	bool stroking;
 	QPen stroke_pen;
 	QPainterPath stroke_path;
+	QPainterPathStroker path_stroker;
+	QList<QPolygonF> stroke_poly;
+	void get_stroke_poly();
 
 	void initializeGL() override;
 	void resizeGL(int w, int h) override;

@@ -137,7 +137,6 @@ std::string QGLView::getRendererInfo() const
   info << glew_extensions_dump();
   return info.str();
 }
-
 #ifdef ENABLE_OPENCSG
 void QGLView::display_opencsg_warning()
 {
@@ -200,7 +199,24 @@ void QGLView::paintGL()
   }
   glDisable(GL_DEPTH_TEST);
   painter->endNativePainting();
-  painter->drawPath(stroke_path);
+
+  path_stroker.setWidth(20.0);
+  path_stroker.setCapStyle(Qt::RoundCap);
+  path_stroker.setJoinStyle(Qt::RoundJoin);
+  QPainterPath _path = path_stroker.createStroke(stroke_path);
+  std::cout << "element count : " << _path.elementCount() << std::endl;
+  for (int i = 0; i < _path.elementCount()-1; i++) {
+    QPainterPath::Element p1 = _path.elementAt(i);
+    QPainterPath::Element p2 = _path.elementAt(i+1);
+    // painter->setPen(QPen(i % 2 == 0 ? Qt::red : Qt::green, 1));
+    painter->setPen({QColor(135,206,250, 128), 1.0}); 
+    painter->drawLine(QPointF(p1.x, p1.y), QPointF(p2.x, p2.y));
+  }
+  // painter->drawPath(stroke_path); 
+  for (int i = 0; i < stroke_poly.length(); i++) {
+    painter->setPen({Qt::red, 2.0}); 
+    painter->drawPolygon(stroke_poly[i]);
+  }
   painter->end(); 
 
 #if defined(_WIN32) && !defined(USE_QOPENGLWIDGET)
@@ -305,67 +321,9 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
         cam.object_rot.z() += dx;
 			}
       normalizeAngle(cam.object_rot.x());
-      normalizeAngle(cQPainterPath path(QPointF(80, 320));
-path.lineTo(QPointF(240,90));
-path.lineTo(QPointF(330,240));
-path.lineTo(QPointF(620,180));
-path.lineTo(QPointF(730,110));
- 
-QPainterPathStroker stroker;
-stroker.setCapStyle(Qt::RoundCap);
-stroker.setJoinStyle(Qt::RoundJoin);
-stroker.setWidth(100);
- 
-QPainterPath strokePath = stroker.createStroke(path).simplified();
- 
-for (int i = 0; i < strokePath.elementCount()-1; i++)
-{
-  QPainterPath::Element p1 = strokePath.elementAt(i);
-  QPainterPath::Element p2 = strokePath.elementAt(i+1);
-  painter->setPen(QPen(i % 2 == 0 ? Qt::red : Qt::green, 1));
-  painter->drawLine(QPointF(p1.x, p1.y), QPointF(p2.x, p2.y));
-}rot.y());
-      normalizeAngle(cQPainterPath path(QPointF(80, 320));
-path.lineTo(QPointF(240,90));
-path.lineTo(QPointF(330,240));
-path.lineTo(QPointF(620,180));
-path.lineTo(QPointF(730,110));
- 
-QPainterPathStroker stroker;
-stroker.setCapStyle(Qt::RoundCap);
-stroker.setJoinStyle(Qt::RoundJoin);
-stroker.setWidth(100);
- 
-QPainterPath strokePath = stroker.createStroke(path).simplified();
- 
-for (int i = 0; i < strokePath.elementCount()-1; i++)
-{
-  QPainterPath::Element p1 = strokePath.elementAt(i);
-  QPainterPath::Element p2 = strokePath.elementAt(i+1);
-  painter->setPen(QPen(i % 2 == 0 ? Qt::red : Qt::green, 1));
-  painter->drawLine(QPointF(p1.x, p1.y), QPointF(p2.x, p2.y));
-}rot.z());
-    } 
-    // stroke things..QPainterPath path(QPointF(80, 320));
-path.lineTo(QPointF(240,90));
-path.lineTo(QPointF(330,240));
-path.lineTo(QPointF(620,180));
-path.lineTo(QPointF(730,110));
- 
-QPainterPathStroker stroker;
-stroker.setCapStyle(Qt::RoundCap);
-stroker.setJoinStyle(Qt::RoundJoin);
-stroker.setWidth(100);
- 
-QPainterPath strokePath = stroker.createStroke(path).simplified();
- 
-for (int i = 0; i < strokePath.elementCount()-1; i++)
-{
-  QPainterPath::Element p1 = strokePath.elementAt(i);
-  QPainterPath::Element p2 = strokePath.elementAt(i+1);
-  painter->setPen(QPen(i % 2 == 0 ? Qt::red : Qt::green, 1));
-  painter->drawLine(QPointF(p1.x, p1.y), QPointF(p2.x, p2.y));
-}
+      normalizeAngle(cam.object_rot.y());
+      normalizeAngle(cam.object_rot.z());
+    }
     else if (event->buttons() & Qt::RightButton) {
       if (event->modifiers() == Qt::ControlModifier && stroking) {
         std::cout << "keep stroking " << std::endl;
@@ -430,9 +388,30 @@ void QGLView::mouseReleaseEvent(QMouseEvent*)
   mouse_drag_active = false;
   stroking = false;
   painter = nullptr;
-  // create the stroker for checking inside/outside...
-
+  // create the stroker for checking
+  get_stroke_poly();
   releaseMouse();
+}
+
+
+void QGLView::get_stroke_poly() {
+  QPainterPathStroker stroker;
+  stroker.setWidth(20.0);
+  stroker.setCapStyle(Qt::RoundCap);
+  stroker.setJoinStyle(Qt::RoundJoin);
+
+  QPainterPath _path = stroker.createStroke(stroke_path);
+  stroke_poly = _path.toFillPolygons();
+  std::cout << "poly count : " << stroke_poly.length() << std::endl;
+  // std::cout << "point count : "
+  // std::cout << "element count : " << _path.elementCount() << std::endl;
+  // for (int i = 0; i < _path.elementCount()-1; i++) {
+  //   QPainterPath::Element p1 = _path.elementAt(i);
+  //   QPainterPath::Element p2 = _path.elementAt(i+1);
+  //   // painter->setPen(QPen(i % 2 == 0 ? Qt::red : Qt::green, 1));
+  //   painter->setPen({QColor(135,206,250, 128), 1.0}); 
+  //   painter->drawLine(QPointF(p1.x, p1.y), QPointF(p2.x, p2.y));
+  // }
 }
 
 const QImage & QGLView::grabFrame()
