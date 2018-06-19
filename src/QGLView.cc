@@ -183,7 +183,7 @@ void QGLView::paintGL()
 {
   painter = new QPainter(this);
   painter->setRenderHints(QPainter::Antialiasing);
-  painter->setPen({QColor(135,206,250, 128), 20.0}); 
+  painter->setPen({QColor(135,206,250, 64), 20.0}); 
   painter->beginNativePainting();
   glEnable(GL_DEPTH_TEST);
   GLView::paintGL();
@@ -200,23 +200,23 @@ void QGLView::paintGL()
   glDisable(GL_DEPTH_TEST);
   painter->endNativePainting();
 
-  path_stroker.setWidth(20.0);
-  path_stroker.setCapStyle(Qt::RoundCap);
-  path_stroker.setJoinStyle(Qt::RoundJoin);
-  QPainterPath _path = path_stroker.createStroke(stroke_path);
-  std::cout << "element count : " << _path.elementCount() << std::endl;
-  for (int i = 0; i < _path.elementCount()-1; i++) {
-    QPainterPath::Element p1 = _path.elementAt(i);
-    QPainterPath::Element p2 = _path.elementAt(i+1);
-    // painter->setPen(QPen(i % 2 == 0 ? Qt::red : Qt::green, 1));
-    painter->setPen({QColor(135,206,250, 128), 1.0}); 
-    painter->drawLine(QPointF(p1.x, p1.y), QPointF(p2.x, p2.y));
-  }
-  // painter->drawPath(stroke_path); 
-  for (int i = 0; i < stroke_poly.length(); i++) {
-    painter->setPen({Qt::red, 2.0}); 
-    painter->drawPolygon(stroke_poly[i]);
-  }
+  // path_stroker.setWidth(20.0);
+  // path_stroker.setCapStyle(Qt::RoundCap);
+  // path_stroker.setJoinStyle(Qt::RoundJoin);
+  // QPainterPath _path = path_stroker.createStroke(stroke_path);
+  // // std::cout << "element count : " << _path.elementCount() << std::endl;
+  // for (int i = 0; i < _path.elementCount()-1; i++) {
+  //   QPainterPath::Element p1 = _path.elementAt(i);
+  //   QPainterPath::Element p2 = _path.elementAt(i+1);
+  //   // painter->setPen(QPen(i % 2 == 0 ? Qt::red : Qt::green, 1));
+  //   painter->setPen({QColor(135,206,250, 128), 1.0}); 
+  //   painter->drawLine(QPointF(p1.x, p1.y), QPointF(p2.x, p2.y));
+  // }
+  // for (int i = 0; i < stroke_poly.length(); i++) {
+  //   painter->setPen({Qt::red, 2.0}); 
+  //   painter->drawPolygon(stroke_poly[i]);
+  // }
+  painter->drawPath(stroke_path); 
   painter->end(); 
 
 #if defined(_WIN32) && !defined(USE_QOPENGLWIDGET)
@@ -274,27 +274,8 @@ void QGLView::mousePressEvent(QMouseEvent *event)
     if (event->modifiers() == Qt::ControlModifier) {
       QString mes = QString("right mouse button is pressed at viewer %1").arg(viewer_id);
       std::cout << mes.toStdString() << std::endl;
-      // emit exampleSelected(viewer_id);
-      // painter = new QPainter(this);
-      // painter->setRenderHint(QPainter::Antialiasing);
-      // painter->setPen({Qt::blue, 10.0});
       stroking = true;
-      // last_point = event->pos();
-      // // std::cout << stroking << std::endl;
       stroke_path = QPainterPath(event->pos());
-      // std::cout << "start" << std::endl;
-      // std::cout << last_point.x() << " " << last_point.y() << std::endl;
-      // std::cout << event->pos().x() << " " << event->pos().y() << std::endl;
-      // painter-> beginNativePainting();
-      // // QRectF rect_(last_point, QSizeF(10, 50));
-      // // painter->drawEllipse(rect_);
-      // painter->drawLine(last_point, event->pos());
-      // painter->endNativePainting();
-
-      // QPainter p(this);
-      // p.setPen(Qt::red);
-      // p.drawLine(rect().topLeft(), rect().bottomRight()); 
-      // std::cout << rect().bottomRight().x() << " " << rect().bottomRight().y() << std::endl;
     }
   }
 }
@@ -326,7 +307,7 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
     }
     else if (event->buttons() & Qt::RightButton) {
       if (event->modifiers() == Qt::ControlModifier && stroking) {
-        std::cout << "keep stroking " << std::endl;
+        // std::cout << "keep stroking " << std::endl;
         stroke_path.lineTo(event->pos());
       }
     }
@@ -390,6 +371,8 @@ void QGLView::mouseReleaseEvent(QMouseEvent*)
   painter = nullptr;
   // create the stroker for checking
   get_stroke_poly();
+  // TODO : emit something to pass the polygon to upper chain..
+  emit strokeUpdate(stroke_poly);
   releaseMouse();
 }
 
@@ -397,21 +380,13 @@ void QGLView::mouseReleaseEvent(QMouseEvent*)
 void QGLView::get_stroke_poly() {
   QPainterPathStroker stroker;
   stroker.setWidth(20.0);
-  stroker.setCapStyle(Qt::RoundCap);
+  stroker.setCapStyle(Qt::RoundCap);  
   stroker.setJoinStyle(Qt::RoundJoin);
 
   QPainterPath _path = stroker.createStroke(stroke_path);
   stroke_poly = _path.toFillPolygons();
-  std::cout << "poly count : " << stroke_poly.length() << std::endl;
-  // std::cout << "point count : "
-  // std::cout << "element count : " << _path.elementCount() << std::endl;
-  // for (int i = 0; i < _path.elementCount()-1; i++) {
-  //   QPainterPath::Element p1 = _path.elementAt(i);
-  //   QPainterPath::Element p2 = _path.elementAt(i+1);
-  //   // painter->setPen(QPen(i % 2 == 0 ? Qt::red : Qt::green, 1));
-  //   painter->setPen({QColor(135,206,250, 128), 1.0}); 
-  //   painter->drawLine(QPointF(p1.x, p1.y), QPointF(p2.x, p2.y));
-  // }
+  
+  // std::cout << "poly count : " << stroke_poly.length() << std::endl;
 }
 
 const QImage & QGLView::grabFrame()

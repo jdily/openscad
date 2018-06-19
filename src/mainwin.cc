@@ -438,6 +438,8 @@ MainWindow::MainWindow(const QString &filename)
 	connect(this->qglviewer_suggest->m_sugViewers[0], SIGNAL(exampleSelected(int)), this, SLOT(example_selectedSlot(int)));
 	// connect(this->qglviewer_suggest->m_sugViewers[1], SIGNAL(exampleSelected(int)), this, SLOT(example_selectedSlot(int)));
 	// connect(this->qglviewer_suggest->m_sugViewers[2], SIGNAL(exampleSelected(int)), this, SLOT(example_selectedSlot(int)));
+	connect(this->qglviewer_suggest->m_sugViewers[0], SIGNAL(strokeUpdate(QList<QPolygonF>)), this, SLOT(example_strokeUpdatedSlot(QList<QPolygonF>)));
+
 #ifdef OPENSCAD_UPDATER
 	this->menuBar()->addMenu(AutoUpdater::updater()->updateMenu);
 #endif
@@ -3427,6 +3429,11 @@ void MainWindow::example_selectedSlot(int example_id) {
 	// pair_viewer->setSTree(layout_tree, 1);
 	// GuiLocker::unlock();
 
+}
+
+void MainWindow::example_strokeUpdatedSlot(QList<QPolygonF> stroke_polys) {
+	std::cout << "example_strokeUpdatedSlot" << std::endl;
+	std::cout << "poly count : " << stroke_polys.length() << std::endl;
 }
 
 void MainWindow::export_htree_with_csginfo(tree_hnode* tree) {

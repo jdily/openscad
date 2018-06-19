@@ -113,4 +113,5 @@ private slots:
 signals:
 	void doAnimateUpdate();
 	void exampleSelected(int exp_id);
+	void strokeUpdate(QList<QPolygonF> polys);
 };
