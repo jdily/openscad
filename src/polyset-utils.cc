@@ -109,4 +109,7 @@ namespace PolysetUtils {
 #endif
 	}
 
+	std::vector<Vector3d> random_sample(const PolySet &ps) {
+		
+	}
 }

@@ -245,7 +245,6 @@ void treeViewer::mouseMoveEvent(QMouseEvent *e) {
 }
 void treeViewer::mouseReleaseEvent(QMouseEvent *e) {
     if (e->button() == Qt::RightButton) {
-        
         std::cout << "release event" << std::endl;
         rb_end = e->pos();
         rb_rect = QRect(rb_start, rb_end);

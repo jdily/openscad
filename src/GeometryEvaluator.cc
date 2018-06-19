@@ -70,8 +70,7 @@ shared_ptr<const Geometry> GeometryEvaluator::iso_evaluateGeometry(const Abstrac
 /*!
 	Set allownef to false to force the result to _not_ be a Nef polyhedron
 */
-shared_ptr<const Geometry> GeometryEvaluator::evaluateGeometry(const AbstractNode &node, 
-																															 bool allownef)
+shared_ptr<const Geometry> GeometryEvaluator::evaluateGeometry(const AbstractNode &node, bool allownef)
 {
 	if (!GeometryCache::instance()->contains(this->tree.getIdString(node))) {
 		shared_ptr<const CGAL_Nef_polyhedron> N;

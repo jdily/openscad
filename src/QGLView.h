@@ -15,6 +15,7 @@
 #include "GLView.h"
 #include "renderer.h"
 #include <QPainter>
+#include <QGraphicsEllipseItem>
 
 class QGLView :
 #ifdef USE_QOPENGLWIDGET
@@ -97,6 +98,14 @@ private:
 	QPainterPathStroker path_stroker;
 	QList<QPolygonF> stroke_poly;
 	void get_stroke_poly();
+	QList<QGraphicsEllipseItem*> test_circles;
+	QList<int> covered_circ_ids;
+	int cur_width = 0;
+	int cur_height = 0;
+	bool circ_drawn;
+
+	void gen_random_circles();
+	void check_covered();
 
 	void initializeGL() override;
 	void resizeGL(int w, int h) override;

@@ -86,6 +86,9 @@ void QGLView::init()
       running_under_wine = true;
 #endif
   stroking = false;
+  srand(time(NULL));
+  // gen_random_circles();
+  circ_drawn = false;
 }
 
 void QGLView::resetView()
@@ -174,8 +177,29 @@ void QGLView::display_opencsg_warning_dialog()
 }
 #endif
 
+void QGLView::gen_random_circles() {
+  // get width and height
+  // int w = QWidget::size().rwidth();
+  // int h = QWidget::size().rheight();
+  // std::cout << w << " " << h << std::endl;
+  int count = 20;
+  float x = 0.0, y = 0.0;
+  // create random 
+  for (int i = 0; i < count; i++) {
+    x = rand() % cur_width; 
+    y = rand() % cur_height;
+    QGraphicsEllipseItem *circ = new QGraphicsEllipseItem(x, y, 5, 5);
+    test_circles.append(circ);
+  }
+
+}
+
+
 void QGLView::resizeGL(int w, int h)
 {
+  std::cout << "resize : " << w << " " << h << std::endl;
+  cur_width = w;
+  cur_height = h;
   GLView::resizeGL(w,h);
 }
 
@@ -183,7 +207,7 @@ void QGLView::paintGL()
 {
   painter = new QPainter(this);
   painter->setRenderHints(QPainter::Antialiasing);
-  painter->setPen({QColor(135,206,250, 64), 20.0}); 
+  
   painter->beginNativePainting();
   glEnable(GL_DEPTH_TEST);
   GLView::paintGL();
@@ -200,6 +224,19 @@ void QGLView::paintGL()
   glDisable(GL_DEPTH_TEST);
   painter->endNativePainting();
 
+  // if (!circ_drawn) {
+  //   gen_random_circles();
+  //   circ_drawn = true;
+  // }
+  // QPainter pt_painter(this);
+  // pt_painter.setRenderHints(QPainter::Antialiasing);
+  painter->setPen({QColor(0,255,100, 255), 5.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin});
+  // pt_painter.setPen({QColor(0,255,100, 255), 5.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin});
+  for (int i = 0; i < test_circles.length(); i++) {
+    // test_circles[i]->paint(painter, this);
+    painter->drawEllipse(test_circles[i]->rect());
+  }
+  // pt_painter.end();
   // path_stroker.setWidth(20.0);
   // path_stroker.setCapStyle(Qt::RoundCap);
   // path_stroker.setJoinStyle(Qt::RoundJoin);
@@ -216,6 +253,7 @@ void QGLView::paintGL()
   //   painter->setPen({Qt::red, 2.0}); 
   //   painter->drawPolygon(stroke_poly[i]);
   // }
+  painter->setPen({QColor(135,206,250, 100), 20.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin}); 
   painter->drawPath(stroke_path); 
   painter->end(); 
 
@@ -289,7 +327,7 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
     // std::cout << "mouse drag active " << std::endl;
     if (event->buttons() & Qt::LeftButton
 #ifdef Q_OS_MAC
-        && !(event->modifiers() & Qt::MetaModifier)
+        && !(event->modifiers() & Qt::MetaModifier)GLView::height
 #endif
       ) {
       // Left button rotates in xz, Shift-left rotates in xy
@@ -371,7 +409,9 @@ void QGLView::mouseReleaseEvent(QMouseEvent*)
   painter = nullptr;
   // create the stroker for checking
   get_stroke_poly();
-  // TODO : emit something to pass the polygon to upper chain..
+  // TODO : check the covered test..
+  check_covered();
+
   emit strokeUpdate(stroke_poly);
   releaseMouse();
 }
@@ -388,6 +428,19 @@ void QGLView::get_stroke_poly() {
   
   // std::cout << "poly count : " << stroke_poly.length() << std::endl;
 }
+
+void QGLView::check_covered() {
+  for (int i = 0; i < test_circles.length(); i++) {
+    const QPointF pt = test_circles[i]->rect().center();
+    bool covered = stroke_poly[0].containsPoint(pt, Qt::WindingFill);
+    if (covered) {
+      covered_circ_ids.append(i);
+    }
+  }
+  std::cout << covered_circ_ids.length() << " circles are covered." << std::endl;
+  covered_circ_ids.clear();
+}
+
 
 const QImage & QGLView::grabFrame()
 {

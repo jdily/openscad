@@ -382,7 +382,8 @@ HEADERS += src/version_check.h \
            src/treeScene.h \ 
            src/correspondence.h \ 
            src/relation.h \ 
-           src/simpTreeConverter.h
+           src/simpTreeConverter.h \ 
+           src/TreeSampler.h
            # src/NodeModifier.h
 
 SOURCES += \
@@ -545,7 +546,8 @@ SOURCES += \
            src/treeScene.cpp \ 
            src/correspondence.cpp \
            src/relation.cpp \ 
-           src/simpTreeConverter.cpp
+           src/simpTreeConverter.cpp \
+           src/TreeSampler.cpp
            # src/NodeModifier.cpp
 
 # CGAL
