@@ -110,6 +110,22 @@ namespace PolysetUtils {
 	}
 
 	std::vector<Vector3d> random_sample(const PolySet &ps) {
-		
+		srand ( time(NULL) );
+		float sample_ratio = 0.5;
+		std::vector<Vector3d> pnts;
+		for (const auto &p : ps.polygons) {	
+			int num_pnts = (int)p.size();
+			int num_samples = int(num_pnts*sample_ratio);
+			if (num_samples < 1) {
+				// just return the only point you get...
+				pnts.push_back(p[0]);
+			} else {
+				std::vector<int> rand_inds;
+				for (int k = 0; k < num_samples; k++) {
+					rand_inds.push_back(k);
+				}
+				// TODO : get the random order.
+			}
+		}
 	}
 }
