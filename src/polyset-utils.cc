@@ -5,6 +5,8 @@
 #include "GeometryUtils.h"
 #include "Reindexer.h"
 #include "grid.h"
+#include <algorithm>
+
 #ifdef ENABLE_CGAL
 #include "cgalutils.h"
 #endif
@@ -109,7 +111,7 @@ namespace PolysetUtils {
 #endif
 	}
 
-	std::vector<Vector3d> random_sample(const PolySet &ps) {
+	std::vector<Vector3d> random_sample(shared_ptr<PolySet> ps) {
 		srand ( time(NULL) );
 		float sample_ratio = 0.5;
 		std::vector<Vector3d> pnts;
@@ -121,11 +123,15 @@ namespace PolysetUtils {
 				pnts.push_back(p[0]);
 			} else {
 				std::vector<int> rand_inds;
-				for (int k = 0; k < num_samples; k++) {
+				for (int k = 0; k < num_pnts; k++) {
 					rand_inds.push_back(k);
 				}
-				// TODO : get the random order.
+				std::random_shuffle(rand_inds.begin(), rand_inds.end());
+				for (int k = 0; k < num_samples; k++) {
+					pnts.push_back(p[rand_inds[k]]);
+				}
 			}
 		}
+		return pnts;
 	}
 }

@@ -1,4 +1,5 @@
 #include "TreeSampler.h"
+#include "polyset-utils.h"
 
 TreeSampler::TreeSampler() {}
 TreeSampler::TreeSampler(Tree *tree) {}
@@ -25,7 +26,11 @@ Response TreeSampler::visit(State &state, const AbstractPolyNode &node) {
         if (this->m_geomeval) {
             // TODO : check the geom type? PolySet or Nef_Poly?
             auto geom = this->m_geomeval->evaluateGeometry(node, false);
-            // TODO : find centroid using this geom object.
+            // TODO : sample points from the polyset geom??
+            // TODO : check the type of the geom -> cast to const PolySet??
+            // or do it in the random_sample function?
+            
+            std::vector<Vector3d> samples = PolysetUtils::random_sample(geom);
         }
     }
     return Response::ContinueTraversal;    
