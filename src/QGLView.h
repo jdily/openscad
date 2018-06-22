@@ -64,6 +64,7 @@ public:
 	// ichao added -> for multiple suggest viewer cases
 	void set_viewer_id(int id);
 	int viewer_id;
+	std::vector<Eigen::Vector3d> project_samples(std::vector<Eigen::Vector3d> samples);
 
 public slots:
 	void ZoomIn(void);

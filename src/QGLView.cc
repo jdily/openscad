@@ -224,18 +224,12 @@ void QGLView::paintGL()
   glDisable(GL_DEPTH_TEST);
   painter->endNativePainting();
 
-  // if (!circ_drawn) {
-  //   gen_random_circles();
-  //   circ_drawn = true;
-  // }
-  // QPainter pt_painter(this);
-  // pt_painter.setRenderHints(QPainter::Antialiasing);
   painter->setPen({QColor(0,255,100, 255), 5.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin});
   // pt_painter.setPen({QColor(0,255,100, 255), 5.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin});
-  for (int i = 0; i < test_circles.length(); i++) {
-    // test_circles[i]->paint(painter, this);
-    painter->drawEllipse(test_circles[i]->rect());
-  }
+  // for (int i = 0; i < test_circles.length(); i++) {
+  //   // test_circles[i]->paint(painter, this);
+  //   painter->drawEllipse(test_circles[i]->rect());
+  // }
   // pt_painter.end();
   // path_stroker.setWidth(20.0);
   // path_stroker.setCapStyle(Qt::RoundCap);
@@ -260,6 +254,29 @@ void QGLView::paintGL()
 #if defined(_WIN32) && !defined(USE_QOPENGLWIDGET)
   if (running_under_wine) swapBuffers();
 #endif
+}
+
+std::vector<Eigen::Vector3d> QGLView::project_samples(std::vector<Eigen::Vector3d> samples) {
+  std::vector<Eigen::Vector3d> out;
+  int count = (int)samples.size();
+  setupCamera();
+	int viewport[4];
+	GLdouble modelview[16];
+	GLdouble projection[16];
+
+	glGetIntegerv( GL_VIEWPORT, viewport);
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+	glGetDoublev(GL_PROJECTION_MATRIX, projection);
+
+  GLdouble px, py, pz;
+  for (int i = 0; i < count; i++) {
+    auto success = gluProject(samples[i][0], samples[i][1], samples[i][2], modelview, projection, viewport, &px, &py, &pz);
+    if (success) {
+      Vector3d v(px, py, pz);
+      out.push_back(v);
+    }
+  }
+  return out;
 }
 
 void QGLView::mouseDoubleClickEvent(QMouseEvent *event) {
@@ -410,8 +427,7 @@ void QGLView::mouseReleaseEvent(QMouseEvent*)
   // create the stroker for checking
   get_stroke_poly();
   // TODO : check the covered test..
-  check_covered();
-
+  // check_covered();
   emit strokeUpdate(stroke_poly);
   releaseMouse();
 }

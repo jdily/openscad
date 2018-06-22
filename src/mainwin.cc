@@ -102,6 +102,7 @@
 #include "CSGVisitor.h"
 #include <random>
 #include <boost/algorithm/string.hpp>
+#include "TreeSampler.h"
 // #include "LFD.h"
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
@@ -3417,7 +3418,7 @@ void MainWindow::example_selectedSlot(int example_id) {
 	// streeConverter *sconv = new streeConverter();
 	// tree_hnode* htree = sconv->convert_tree(&tree);
 	// std::vector<std::string> tmps;
-	// std::string _filename = this->fileName.toStdString();
+	// std::string _filename = this->fileName.toStdString();0 circles are covered.
     // boost::split(tmps, _filename, boost::is_any_of("/"));
 	// std::vector<std::string> strs;
 	// boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
@@ -3437,8 +3438,13 @@ void MainWindow::example_strokeUpdatedSlot(QList<QPolygonF> stroke_polys) {
 	std::cout << "poly count : " << stroke_polys.length() << std::endl;
 	// TODO : get the center of the primitives project onto current 2D
 	// 1. collect the leaf node...
-	
-	// TODO : throw random dots in the 2D space and check if we can select them?
+	GeometryEvaluator geomevaluator(this->tree);
+	// CSGTreeEvaluator csgrenderer(this->tree, &geomevaluator);
+	TreeSampler *sampler = new TreeSampler(&tree, &geomevaluator);
+	Camera main_cam = this->qglviewer_suggest->m_mainViewer->cam;
+	// std::map<int, std::vector<Eigen::Vector3d>> sample_dict = 
+	sampler->get_samples(*root_node, this->qglviewer_suggest->m_mainViewer);
+	// 2. project all the point?
 
 }
 

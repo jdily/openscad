@@ -6,6 +6,7 @@
 #include "Reindexer.h"
 #include "grid.h"
 #include <algorithm>
+#include "memory.h"
 
 #ifdef ENABLE_CGAL
 #include "cgalutils.h"
@@ -111,11 +112,13 @@ namespace PolysetUtils {
 #endif
 	}
 
-	std::vector<Vector3d> random_sample(shared_ptr<PolySet> ps) {
+	std::vector<Vector3d> random_sample(Geometry* ps) {
 		srand ( time(NULL) );
 		float sample_ratio = 0.5;
 		std::vector<Vector3d> pnts;
-		for (const auto &p : ps.polygons) {	
+		PolySet* newps = static_cast<PolySet*>(ps);
+		// shared_ptr<PolySet> newps = dynamic_pointer_cast<PolySet>(ps);
+		for (const auto &p : newps->polygons) {	
 			int num_pnts = (int)p.size();
 			int num_samples = int(num_pnts*sample_ratio);
 			if (num_samples < 1) {
