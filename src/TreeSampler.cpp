@@ -32,22 +32,30 @@ Response TreeSampler::visit(State &state, const AbstractPolyNode &node) {
             // TODO : check the type of the geom -> cast to const PolySet??
             // or do it in the random_sample function?
             std::vector<Vector3d> samples = PolysetUtils::random_sample((const_cast<Geometry*>(geom.get())));
+            sample_dict.insert(node.idx, samples);
             // sample_dict.insert(std::make_pair(node.idx, samples));
         }
     }
     return Response::ContinueTraversal;    
 }
 
-std::map<int, std::vector<Eigen::Vector3d>> TreeSampler::get_samples(const AbstractNode &node, QGLView* cam) {
+QMap<int, std::vector<Eigen::Vector3d>> TreeSampler::get_samples(const AbstractNode &node, QGLView* viewer) {
     this->traverse(node);
     std::cout << "finish traverse" << std::endl;
 
-    if (cam == nullptr) {
+    if (viewer == nullptr) {
         return sample_dict; 
     } else {
         // TODO : do the projection on the 2D plane..
-        std::cout << "there is camera" << std::endl;
-        return sample_dict;
+        std::cout << "there is viewer" << std::endl;
+        proj_sample_dict.clear();
+        // for (int i = 0; i < sample_dict.size(); i++) {
+        for (int k : sample_dict.keys()) {
+            // int k = sample_dict.keys()[k];
+            auto proj_samples = viewer->project_samples(sample_dict[k]);
+            proj_sample_dict.insert(k, proj_samples);
+        }
+        return proj_sample_dict;
     }
 }
 
