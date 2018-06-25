@@ -118,6 +118,7 @@ namespace PolysetUtils {
 		std::vector<Vector3d> pnts;
 		PolySet* newps = static_cast<PolySet*>(ps);
 		// shared_ptr<PolySet> newps = dynamic_pointer_cast<PolySet>(ps);
+		std::cout << newps->numPolygons() << " polygons exist." << std::endl;
 		for (const auto &p : newps->polygons) {	
 			int num_pnts = (int)p.size();
 			int num_samples = int(num_pnts*sample_ratio);
@@ -129,8 +130,10 @@ namespace PolysetUtils {
 				for (int k = 0; k < num_pnts; k++) {
 					rand_inds.push_back(k);
 				}
-				std::random_shuffle(rand_inds.begin(), rand_inds.end());
-				for (int k = 0; k < num_samples; k++) {
+				// test for all the vertices.
+				// std::random_shuffle(rand_inds.begin(), rand_inds.end());
+				for (int k = 0; k < num_pnts; k++) {
+				// for (int k = 0; k < num_samples; k++) {
 					pnts.push_back(p[rand_inds[k]]);
 				}
 			}

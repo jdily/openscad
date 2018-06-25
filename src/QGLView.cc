@@ -224,7 +224,6 @@ void QGLView::paintGL()
   glDisable(GL_DEPTH_TEST);
   painter->endNativePainting();
 
-  painter->setPen({QColor(0,255,100, 255), 5.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin});
   // pt_painter.setPen({QColor(0,255,100, 255), 5.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin});
   // for (int i = 0; i < test_circles.length(); i++) {
   //   // test_circles[i]->paint(painter, this);
@@ -247,35 +246,76 @@ void QGLView::paintGL()
   //   painter->setPen({Qt::red, 2.0}); 
   //   painter->drawPolygon(stroke_poly[i]);
   // }
-  painter->setPen({QColor(135,206,250, 100), 20.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin}); 
-  painter->drawPath(stroke_path); 
-  painter->end(); 
+
+  // test draw projected sample points..
+  painter->setPen({QColor(0,255,100, 255), 5.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin});
+  int count = 0;
+  float x = 0.0, y = 0.0, z = 0.0;
+  std::cout << "proj sample size : " << this->proj_sample_dict.size() << std::endl;
+  for (int i = 0; i < proj_sample_dict.keys().size(); i++) {
+    int k = proj_sample_dict.keys()[i];
+  // for (const int& k : proj_sample_dict.keys()) {
+    count = proj_sample_dict[k].size();
+    std::cout << "k : " << k << " " << count << std::endl;
+    std::cout << proj_sample_dict[k][0][0] << " " << proj_sample_dict[k][0][1] << std::endl;
+    std::cout << cur_width << " " << cur_height << std::endl;
+    for (int i = 0; i < count; i++) {
+      x = proj_sample_dict[k][i][0];
+      y = proj_sample_dict[k][i][1];
+      // z = proj_sample_dict[k][i][2];
+      // x = rand() % cur_width; 
+      // y = rand() % cur_height;
+      // std::cout << x << " " << y << " " << z << std::endl;
+      // QGraphicsEllipseItem *circ = new QGraphicsEllipseItem(x, y, 5, 5);
+      painter->drawEllipse(x, y, 10, 10);
+    }
+  }
+  painter->end();
+
+  // // draw strokes.
+  // painter->setPen({QColor(0,255,100, 255), 5.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin});
+  // painter->setPen({QColor(135,206,250, 100), 20.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin}); 
+  // painter->drawPath(stroke_path); 
+  // painter->end(); 
 
 #if defined(_WIN32) && !defined(USE_QOPENGLWIDGET)
   if (running_under_wine) swapBuffers();
 #endif
 }
 
-std::vector<Eigen::Vector3d> QGLView::project_samples(std::vector<Eigen::Vector3d> samples) {
+std::vector<Eigen::Vector3d> QGLView::project_samples(std::vector<Eigen::Vector3d> samples, int index) {
   std::vector<Eigen::Vector3d> out;
   int count = (int)samples.size();
+  std::cout << "[QGLView::project_samples] count -> " << count << std::endl;
   setupCamera();
 	int viewport[4];
 	GLdouble modelview[16];
 	GLdouble projection[16];
 
-	glGetIntegerv( GL_VIEWPORT, viewport);
+	glGetIntegerv(GL_VIEWPORT, viewport);
 	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
 	glGetDoublev(GL_PROJECTION_MATRIX, projection);
-
-  GLdouble px, py, pz;
+  
+  viewport[2] = cur_width;
+  viewport[3] = cur_height;
+  std::cout << "index : " << index << std::endl;
+  std::cout << "viewport things : " << viewport[0] << " " << viewport[1] << " " << viewport[2] << " " << viewport[3] << std::endl;
+  // GLdouble px, py, pz;
+  GLdouble wx, wy, wz;
   for (int i = 0; i < count; i++) {
-    auto success = gluProject(samples[i][0], samples[i][1], samples[i][2], modelview, projection, viewport, &px, &py, &pz);
+    auto success = gluProject(samples[i][0], samples[i][1], samples[i][2], modelview, projection, viewport, &wx, &wy, &wz);
     if (success) {
-      Vector3d v(px, py, pz);
+      // std::cout << wx << " " << cur_height-wy << " " << wz << std::endl;
+      Vector3d v(wx, cur_height-wy, wz);
+      // QGraphicsEllipseItem *circ = new QGraphicsEllipseItem(wx, cur_height-wy, 5, 5);
+      // vert_lists.append(circ);
       out.push_back(v);
     }
   }
+  std::cout << "[QGLView::project_samples] out count -> " << out.size() << std::endl;
+  this->proj_sample_dict.insert(index, out);
+  std::cout << "[QGLView::project_samples] proj_sample_dict count -> " << proj_sample_dict.size() << std::endl;
+  // std::cout << "[QGLView::project_samples] vert list count -> " << vert_lists.length() << std::endl;
   return out;
 }
 

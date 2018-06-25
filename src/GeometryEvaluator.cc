@@ -82,6 +82,7 @@ shared_ptr<const Geometry> GeometryEvaluator::evaluateGeometry(const AbstractNod
 		if (N) {
 			this->root = N;
 		} else {
+			std::cout << "traverse in geom_evaluator" << std::endl;
 			this->traverse(node);
 		}
 
@@ -101,6 +102,7 @@ shared_ptr<const Geometry> GeometryEvaluator::evaluateGeometry(const AbstractNod
 		smartCacheInsert(node, this->root);
 		return this->root;
 	}
+	std::cout << "smart cache already contains the item" << std::endl;
 	return GeometryCache::instance()->get(this->tree.getIdString(node));
 }
 
@@ -508,6 +510,7 @@ Response GeometryEvaluator::visit(State &state, const RenderNode &node)
 Response GeometryEvaluator::visit(State &state, const LeafNode &node)
 {
 	if (state.isPrefix()) {
+		std::cout << "evaluate using leaf module" << std::endl;
 		shared_ptr<const Geometry> geom;
 		if (!isSmartCached(node)) {
 			const Geometry *geometry = node.createGeometry();
@@ -970,6 +973,7 @@ Response GeometryEvaluator::visit(State &state, const RotateExtrudeNode &node)
 */
 Response GeometryEvaluator::visit(State & /*state*/, const AbstractPolyNode & /*node*/)
 {
+	std::cout << "evaluate using AbstractPoly module" << std::endl;
 	assert(false);
 	return Response::AbortTraversal;
 }

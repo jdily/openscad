@@ -3441,7 +3441,7 @@ void MainWindow::example_strokeUpdatedSlot(QList<QPolygonF> stroke_polys) {
 	GeometryEvaluator geomevaluator(this->tree);
 	// CSGTreeEvaluator csgrenderer(this->tree, &geomevaluator);
 	TreeSampler *sampler = new TreeSampler(&tree, &geomevaluator);
-	Camera main_cam = this->qglviewer_suggest->m_mainViewer->cam;
+	// Camera main_cam = this->qglviewer_suggest->m_mainViewer->cam;
 	// std::map<int, std::vector<Eigen::Vector3d>> sample_dict = 
 	auto sample_dict = sampler->get_samples(*root_node, this->qglviewer_suggest->m_mainViewer);
 	// 2. project all the point?

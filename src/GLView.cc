@@ -77,6 +77,7 @@ void GLView::resizeGL(int w, int h)
   shaderinfo[9] = w;
   shaderinfo[10] = h;
 #endif
+	std::cout << "resize viewport into " << w << " x " << h << std::endl;
   cam.pixel_width = w;
   cam.pixel_height = h;
   glViewport(0, 0, w, h);

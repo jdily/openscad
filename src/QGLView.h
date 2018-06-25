@@ -64,7 +64,7 @@ public:
 	// ichao added -> for multiple suggest viewer cases
 	void set_viewer_id(int id);
 	int viewer_id;
-	std::vector<Eigen::Vector3d> project_samples(std::vector<Eigen::Vector3d> samples);
+	std::vector<Eigen::Vector3d> project_samples(std::vector<Eigen::Vector3d> samples, int index);
 
 public slots:
 	void ZoomIn(void);
@@ -104,6 +104,8 @@ private:
 	int cur_width = 0;
 	int cur_height = 0;
 	bool circ_drawn;
+	QMap<int, std::vector<Eigen::Vector3d> > proj_sample_dict;
+	QList<QGraphicsEllipseItem*> vert_lists;
 
 	void gen_random_circles();
 	void check_covered();
