@@ -7,6 +7,8 @@
 #include "grid.h"
 #include <algorithm>
 #include "memory.h"
+#include <time.h> 
+#include <random>
 
 #ifdef ENABLE_CGAL
 #include "cgalutils.h"
@@ -112,6 +114,32 @@ namespace PolysetUtils {
 #endif
 	}
 
+	Eigen::Vector3d sample_tri(Polygon p) {
+		srand( time( NULL ) );
+		double a = 0.0, b = 0.0, c = 0.0;
+		a = ((double) rand() / (RAND_MAX));
+		b = ((double) rand() / (RAND_MAX));
+		c = ((double) rand() / (RAND_MAX));
+		double n = 1.0 / (a+b+c);
+		// barycentric coordinate.
+		a = a/n; b = b/n; c = c/n;
+		Eigen::Vector3d out = a*p[0] + b*p[1] + c*p[2];
+		return out;
+	}
+
+	Eigen::Vector3d sample_quad(Polygon p) {
+		// https://stackoverflow.com/questions/240778/random-points-inside-a-parallelogram
+		// If your parallelogram is defined by the points ABCD such that AB, BC, CD and DA are the sides, then take your point as being:
+		// p = A + (u * AB) + (v * AD)
+        // Where AB is the vector from A to B and AD the vector from A to D.
+		double a = 0.0, b = 0.0, c = 0.0, d = 0.0;
+		a = ((double) rand() / (RAND_MAX));
+		b = ((double) rand() / (RAND_MAX));
+		c = ((double) rand() / (RAND_MAX));
+		d = ((double) rand() / (RAND_MAX));
+
+	}
+
 	std::vector<Vector3d> random_sample(Geometry* ps) {
 		srand ( time(NULL) );
 		float sample_ratio = 0.5;
@@ -121,6 +149,7 @@ namespace PolysetUtils {
 		std::cout << newps->numPolygons() << " polygons exist." << std::endl;
 		for (const auto &p : newps->polygons) {	
 			int num_pnts = (int)p.size();
+			std::cout << "num pnts in polygon : " << num_pnts << std::endl;
 			int num_samples = int(num_pnts*sample_ratio);
 			if (num_samples < 1) {
 				// just return the only point you get...

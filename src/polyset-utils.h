@@ -6,7 +6,8 @@ class PolySet;
 #include "linalg.h"
 #include "memory.h"
 #include "Geometry.h"
-
+#include "linalg.h"
+#include "GeometryUtils.h"
 namespace PolysetUtils {
 
 	Polygon2d *project(const PolySet &ps);
@@ -15,4 +16,6 @@ namespace PolysetUtils {
 
 	// std::vector<Eigen::Vector3d> random_sample(PolySet &ps);
 	std::vector<Eigen::Vector3d> random_sample(Geometry* ps);
+	Eigen::Vector3d sample_tri(Polygon p);
+	Eigen::Vector3d sample_quad(Polygon p);
 };
