@@ -1408,8 +1408,9 @@ void MainWindow::compileCSG(bool procevents)
 		// csgvisitor.buildCSGTree(*root_node);
 #endif
 	// ichao added -> do the polyset sampling on the geometry here
-	// TreeSampler *sampler = new TreeSampler(&tree, &geomevaluator);
-	// cur_proj_samples = sampler->get_samples(*root_node, this->qglviewer_suggest->m_mainViewer);
+	TreeSampler *sampler = new TreeSampler(&tree, &geomevaluator);
+	// cur_proj_samples = sampler->get_samples(*root_node, this->qglviewer_suggest->m_mainViewer, true);
+	cur_samples = sampler->get_samples(*root_node, this->qglviewer_suggest->m_mainViewer, false);
 	
 	progress_report_prep(this->root_node, report_func, this);
 	try {
@@ -3437,25 +3438,31 @@ void MainWindow::example_selectedSlot(int example_id) {
 
 }
 
+// [TODO] -> find out why this function is called when I didn't invoke the stroke command...
 void MainWindow::example_strokeUpdatedSlot(QList<QPolygonF> stroke_polys) {
 	std::cout << "example_strokeUpdatedSlot" << std::endl;
 	std::cout << "poly count : " << stroke_polys.length() << std::endl;
-	// TODO : get the center of the primitives project onto current 2D
-	// 1. collect the leaf node...
-	GeometryEvaluator geomevaluator(this->tree);
-	TreeSampler *sampler = new TreeSampler(&tree, &geomevaluator);
-	// Camera main_cam = this->qglviewer_suggest->m_mainViewer->cam;
-	auto sample_dict = sampler->get_samples(*root_node, this->qglviewer_suggest->m_mainViewer);
+	// [TODO] : do the project based on current view using cur_samples
+	auto sample_dict = this->qglviewer_suggest->m_mainViewer->project_samples_map(cur_samples);
+
+
+	// // 1. collect the leaf node...
+	// // GeometryEvaluator geomevaluator(this->tree);
+	// // update the sample points...
+
+	// // TreeSampler *sampler = new TreeSampler(&tree, &geomevaluator);
+	// // auto sample_dict = sampler->get_samples(*root_node, this->qglviewer_suggest->m_mainViewer);
+
 	Selector *selector = new Selector(stroke_polys);
 	QList<int> selected_ids = selector->cover_select(sample_dict);
 
 	for (auto &id : selected_ids) {
 		std::cout << id << " is selected ..." << std::endl;
 		slot_rerender_highlight(id, true, 0);
-		// emit rerender_select_highlight(selected_id, value, this->viewer_id);
+	// 	// emit rerender_select_highlight(selected_id, value, this->viewer_id);
 	}
-	// highlight the selected primitives..
-	
+	// // highlight the selected primitives..
+	this->qglviewer_suggest->m_mainViewer->clean_stroke();
 
 }
 

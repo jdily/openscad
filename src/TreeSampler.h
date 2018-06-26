@@ -23,7 +23,7 @@ public:
     Response visit(State &state, const GroupNode &node) override;
     Response visit(State &state, const TransformNode &node) override;
 
-    QMap<int, std::vector<Eigen::Vector3d>> get_samples(const AbstractNode &node, QGLView* cam);
+    QMap<int, std::vector<Eigen::Vector3d>> get_samples(const AbstractNode &node, QGLView* viewer, bool proj);
     
 private:
     std::map<int, Eigen::Vector3d> centroids;

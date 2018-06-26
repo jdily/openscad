@@ -248,40 +248,52 @@ void QGLView::paintGL()
   // }
 
   // test draw projected sample points..
-  painter->setPen({QColor(0,255,100, 255), 5.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin});
-  int count = 0;
-  float x = 0.0, y = 0.0, z = 0.0;
-  std::cout << "proj sample size : " << this->proj_sample_dict.size() << std::endl;
-  for (int i = 0; i < proj_sample_dict.keys().size(); i++) {
-    int k = proj_sample_dict.keys()[i];
-  // for (const int& k : proj_sample_dict.keys()) {
-    count = proj_sample_dict[k].size();
-    std::cout << "k : " << k << " " << count << std::endl;
-    std::cout << proj_sample_dict[k][0][0] << " " << proj_sample_dict[k][0][1] << std::endl;
-    std::cout << cur_width << " " << cur_height << std::endl;
-    for (int i = 0; i < count; i++) {
-      x = proj_sample_dict[k][i][0];
-      y = proj_sample_dict[k][i][1];
-      // z = proj_sample_dict[k][i][2];
-      // x = rand() % cur_width; 
-      // y = rand() % cur_height;
-      // std::cout << x << " " << y << " " << z << std::endl;
-      // QGraphicsEllipseItem *circ = new QGraphicsEllipseItem(x, y, 5, 5);
-      painter->drawEllipse(x, y, 10, 10);
-    }
-  }
-  painter->end();
-
-  // // draw strokes.
   // painter->setPen({QColor(0,255,100, 255), 5.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin});
-  // painter->setPen({QColor(135,206,250, 100), 20.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin}); 
-  // painter->drawPath(stroke_path); 
-  // painter->end(); 
+  // int count = 0;
+  // float x = 0.0, y = 0.0, z = 0.0;
+  // std::cout << "proj sample size : " << this->proj_sample_dict.size() << std::endl;
+  // for (int i = 0; i < proj_sample_dict.keys().size(); i++) {
+  //   int k = proj_sample_dict.keys()[i];
+  // // for (const int& k : proj_sample_dict.keys()) {
+  //   count = proj_sample_dict[k].size();
+  //   // std::cout << "k : " << k << " " << count << std::endl;
+  //   // std::cout << proj_sample_dict[k][0][0] << " " << proj_sample_dict[k][0][1] << std::endl;
+  //   // std::cout << cur_width << " " << cur_height << std::endl;
+  //   for (int i = 0; i < count; i++) {
+  //     x = proj_sample_dict[k][i][0];
+  //     y = proj_sample_dict[k][i][1];
+  //     // z = proj_sample_dict[k][i][2];
+  //     // x = rand() % cur_width; 
+  //     // y = rand() % cur_height;
+  //     // std::cout << x << " " << y << " " << z << std::endl;
+  //     // QGraphicsEllipseItem *circ = new QGraphicsEllipseItem(x, y, 5, 5);
+  //     painter->drawEllipse(x, y, 10, 10);
+  //   }
+  // }
+  // painter->end();
+
+  // draw strokes.
+  painter->setPen({QColor(0,255,100, 255), 5.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin});
+  painter->setPen({QColor(135,206,250, 100), 20.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin}); 
+  painter->drawPath(stroke_path); 
+  painter->end(); 
 
 #if defined(_WIN32) && !defined(USE_QOPENGLWIDGET)
   if (running_under_wine) swapBuffers();
 #endif
 }
+
+QMap<int, std::vector<Eigen::Vector3d>> QGLView::project_samples_map(QMap<int, std::vector<Eigen::Vector3d>> sample_map) {
+  // this->proj_sample_dict.clear();
+  QMap<int, std::vector<Eigen::Vector3d>> out;
+  for (auto &k : sample_map.keys()) {
+    std::vector<Eigen::Vector3d> p_s = project_samples(sample_map[k], k);
+    out.insert(k, p_s);
+  }
+  updateGL();
+  return out;
+}
+
 
 std::vector<Eigen::Vector3d> QGLView::project_samples(std::vector<Eigen::Vector3d> samples, int index) {
   std::vector<Eigen::Vector3d> out;
@@ -462,13 +474,15 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
 void QGLView::mouseReleaseEvent(QMouseEvent*)
 {
   mouse_drag_active = false;
-  stroking = false;
   painter = nullptr;
   // create the stroker for checking
   get_stroke_poly();
   // TODO : check the covered test..
   // check_covered();
-  emit strokeUpdate(stroke_poly);
+  if (stroking) {
+    emit strokeUpdate(stroke_poly);
+    stroking = false;
+  }
   releaseMouse();
 }
 
@@ -537,4 +551,9 @@ void QGLView::setOrthoMode(bool enabled)
 {
 	if (enabled) this->cam.setProjection(Camera::ProjectionType::ORTHOGONAL);
 	else this->cam.setProjection(Camera::ProjectionType::PERSPECTIVE);
+}
+
+void QGLView::clean_stroke() {
+  stroke_path =  QPainterPath();
+  updateGL();
 }

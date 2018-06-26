@@ -74,23 +74,36 @@ Response TreeSampler::visit(State &state, const LeafNode &node) {
     return Response::ContinueTraversal;    
 }
 
-QMap<int, std::vector<Eigen::Vector3d>> TreeSampler::get_samples(const AbstractNode &node, QGLView* viewer) {
+QMap<int, std::vector<Eigen::Vector3d>> TreeSampler::get_samples(const AbstractNode &node, QGLView* viewer, bool proj) {
     this->traverse(node);
     std::cout << "finish traverse" << std::endl;
-    if (viewer == nullptr) {
-        return sample_dict; 
+    // [TODO] -> check this place..
+    proj_sample_dict.clear();
+    for (int k : sample_dict.keys()) {
+        // int k = sample_dict.keys()[k];
+        auto proj_samples = viewer->project_samples(sample_dict[k], k);
+        proj_sample_dict.insert(k, proj_samples);
+    }
+    if (!proj) {
+        return sample_dict;
     } else {
-        // TODO : do the projection on the 2D plane..
-        std::cout << "there is viewer" << std::endl;
-        proj_sample_dict.clear();
-        // for (int i = 0; i < sample_dict.size(); i++) {
-        for (int k : sample_dict.keys()) {
-            // int k = sample_dict.keys()[k];
-            auto proj_samples = viewer->project_samples(sample_dict[k], k);
-            proj_sample_dict.insert(k, proj_samples);
-        }
         return proj_sample_dict;
     }
+    
+    // if (viewer == nullptr) {
+    //     return sample_dict;
+    // } else {
+    //     // TODO : do the projection on the 2D plane..
+    //     std::cout << "there is viewer" << std::endl;
+    //     proj_sample_dict.clear();
+    //     // for (int i = 0; i < sample_dict.size(); i++) {
+    //     for (int k : sample_dict.keys()) {
+    //         // int k = sample_dict.keys()[k];
+    //         auto proj_samples = viewer->project_samples(sample_dict[k], k);
+    //         proj_sample_dict.insert(k, proj_samples);
+    //     }
+    //     return proj_sample_dict;
+    // }
 }
 
 void TreeSampler::addToParent(const State &state, const AbstractNode &node) {

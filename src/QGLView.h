@@ -64,7 +64,9 @@ public:
 	// ichao added -> for multiple suggest viewer cases
 	void set_viewer_id(int id);
 	int viewer_id;
+	QMap<int, std::vector<Eigen::Vector3d>> project_samples_map(QMap<int, std::vector<Eigen::Vector3d>> sample_map);
 	std::vector<Eigen::Vector3d> project_samples(std::vector<Eigen::Vector3d> samples, int index);
+	void clean_stroke();
 
 public slots:
 	void ZoomIn(void);
