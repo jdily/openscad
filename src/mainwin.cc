@@ -3451,9 +3451,11 @@ void MainWindow::example_strokeUpdatedSlot(QList<QPolygonF> stroke_polys) {
 
 	for (auto &id : selected_ids) {
 		std::cout << id << " is selected ..." << std::endl;
+		slot_rerender_highlight(id, true, 0);
+		// emit rerender_select_highlight(selected_id, value, this->viewer_id);
 	}
-
-	// 2. project all the point?
+	// highlight the selected primitives..
+	
 
 }
 
