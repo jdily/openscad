@@ -440,8 +440,8 @@ MainWindow::MainWindow(const QString &filename)
 	connect(this->qglviewer_suggest->m_sugViewers[0], SIGNAL(exampleSelected(int)), this, SLOT(example_selectedSlot(int)));
 	// connect(this->qglviewer_suggest->m_sugViewers[1], SIGNAL(exampleSelected(int)), this, SLOT(example_selectedSlot(int)));
 	// connect(this->qglviewer_suggest->m_sugViewers[2], SIGNAL(exampleSelected(int)), this, SLOT(example_selectedSlot(int)));
-	connect(this->qglviewer_suggest->m_sugViewers[0], SIGNAL(strokeUpdate(QList<QPolygonF>)), this, SLOT(example_strokeUpdatedSlot(QList<QPolygonF>)));
-	connect(this->qglviewer_suggest->m_mainViewer, SIGNAL(strokeUpdate(QList<QPolygonF>)), this, SLOT(example_strokeUpdatedSlot(QList<QPolygonF>)));
+	connect(this->qglviewer_suggest->m_sugViewers[0], SIGNAL(strokeUpdate(QList<QPolygonF>, QPainterPath)), this, SLOT(example_strokeUpdatedSlot(QList<QPolygonF>, QPainterPath)));
+	connect(this->qglviewer_suggest->m_mainViewer, SIGNAL(strokeUpdate(QList<QPolygonF>, QPainterPath)), this, SLOT(example_strokeUpdatedSlot(QList<QPolygonF>, QPainterPath)));
 
 #ifdef OPENSCAD_UPDATER
 	this->menuBar()->addMenu(AutoUpdater::updater()->updateMenu);
@@ -3441,7 +3441,7 @@ void MainWindow::example_selectedSlot(int example_id) {
 }
 
 // [TODO] -> find out why this function is called when I didn't invoke the stroke command...
-void MainWindow::example_strokeUpdatedSlot(QList<QPolygonF> stroke_polys) {
+void MainWindow::example_strokeUpdatedSlot(QList<QPolygonF> stroke_polys, QPainterPath stroke_path) {
 	std::cout << "example_strokeUpdatedSlot" << std::endl;
 	std::cout << "poly count : " << stroke_polys.length() << std::endl;
 	// [TODO] : do the project based on current view using cur_samples
@@ -3455,7 +3455,7 @@ void MainWindow::example_strokeUpdatedSlot(QList<QPolygonF> stroke_polys) {
 	// // TreeSampler *sampler = new TreeSampler(&tree, &geomevaluator);
 	// // auto sample_dict = sampler->get_samples(*root_node, this->qglviewer_suggest->m_mainViewer);
 
-	Selector *selector = new Selector(stroke_polys);
+	Selector *selector = new Selector(stroke_polys, stroke_path);
 	QList<int> selected_ids = selector->cover_select(sample_dict);
 
 	for (auto &id : selected_ids) {

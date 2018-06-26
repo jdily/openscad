@@ -476,11 +476,11 @@ void QGLView::mouseReleaseEvent(QMouseEvent*)
   mouse_drag_active = false;
   painter = nullptr;
   // create the stroker for checking
-  get_stroke_poly();
   // TODO : check the covered test..
   // check_covered();
   if (stroking) {
-    emit strokeUpdate(stroke_poly);
+    get_stroke_poly();
+    emit strokeUpdate(stroke_poly, stroke_path);
     stroking = false;
   }
   releaseMouse();
@@ -492,7 +492,7 @@ void QGLView::get_stroke_poly() {
   stroker.setWidth(20.0);
   stroker.setCapStyle(Qt::RoundCap);  
   stroker.setJoinStyle(Qt::RoundJoin);
-
+  
   QPainterPath _path = stroker.createStroke(stroke_path);
   stroke_poly = _path.toFillPolygons();
   

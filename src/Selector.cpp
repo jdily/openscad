@@ -1,7 +1,7 @@
 #include "Selector.h"
 
 Selector::Selector() {}
-Selector::Selector(QList<QPolygonF> stroke_polys) : m_stroke(stroke_polys) {
+Selector::Selector(QList<QPolygonF> stroke_polys, QPainterPath stroke) : m_poly(stroke_polys), m_stroke(stroke) {
 }
 
 Selector::~Selector() {}
@@ -11,7 +11,7 @@ QList<int> Selector::cover_select(QMap<int, std::vector<Eigen::Vector3d>> sample
     // use sample_geom_map and m_stroke to check contains things.
     build_sample_geom_map(samples);
     for (int i = 0; i < sample_geom_list.length(); i++) {
-        bool covered = m_stroke[0].containsPoint(sample_geom_list[i]._pt, Qt::WindingFill);
+        bool covered = m_poly[0].containsPoint(sample_geom_list[i]._pt, Qt::WindingFill);
         if (covered) {
             if (!out.contains(sample_geom_list[i]._id)) {
                 out.append(sample_geom_list[i]._id);
