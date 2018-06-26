@@ -103,6 +103,7 @@
 #include <random>
 #include <boost/algorithm/string.hpp>
 #include "TreeSampler.h"
+#include "Selector.h"
 // #include "LFD.h"
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
@@ -1406,7 +1407,10 @@ void MainWindow::compileCSG(bool procevents)
 		// CSGVisitor csgvisitor(this->tree, &geomevaluator);
 		// csgvisitor.buildCSGTree(*root_node);
 #endif
-
+	// ichao added -> do the polyset sampling on the geometry here
+	// TreeSampler *sampler = new TreeSampler(&tree, &geomevaluator);
+	// cur_proj_samples = sampler->get_samples(*root_node, this->qglviewer_suggest->m_mainViewer);
+	
 	progress_report_prep(this->root_node, report_func, this);
 	try {
 #ifdef ENABLE_OPENCSG
@@ -3439,11 +3443,16 @@ void MainWindow::example_strokeUpdatedSlot(QList<QPolygonF> stroke_polys) {
 	// TODO : get the center of the primitives project onto current 2D
 	// 1. collect the leaf node...
 	GeometryEvaluator geomevaluator(this->tree);
-	// CSGTreeEvaluator csgrenderer(this->tree, &geomevaluator);
 	TreeSampler *sampler = new TreeSampler(&tree, &geomevaluator);
 	// Camera main_cam = this->qglviewer_suggest->m_mainViewer->cam;
-	// std::map<int, std::vector<Eigen::Vector3d>> sample_dict = 
 	auto sample_dict = sampler->get_samples(*root_node, this->qglviewer_suggest->m_mainViewer);
+	Selector *selector = new Selector(stroke_polys);
+	QList<int> selected_ids = selector->cover_select(sample_dict);
+
+	for (auto &id : selected_ids) {
+		std::cout << id << " is selected ..." << std::endl;
+	}
+
 	// 2. project all the point?
 
 }

@@ -123,11 +123,11 @@ void TreeSampler::applyToChildren(State &state, const AbstractNode &node) {
             sample_count = sample_dict[chind].size();
             Transform3d trans = state.matrix();
             // chgeom->transform(state.matrix());
-            std::cout << sample_dict[chind][3][0] << " " << sample_dict[chind][3][1] << std::endl;
+            // std::cout << sample_dict[chind][3][0] << " " << sample_dict[chind][3][1] << std::endl;
             for (int i = 0; i < sample_count; i++) {
                 sample_dict[chind][i] = trans * sample_dict[chind][i];
             }
-            std::cout << sample_dict[chind][3][0] << " " << sample_dict[chind][3][1] << std::endl;
+            // std::cout << sample_dict[chind][3][0] << " " << sample_dict[chind][3][1] << std::endl;
         }
     }
 }

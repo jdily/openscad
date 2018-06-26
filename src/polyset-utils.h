@@ -19,3 +19,4 @@ namespace PolysetUtils {
 	Eigen::Vector3d sample_tri(Polygon p);
 	Eigen::Vector3d sample_quad(Polygon p);
 };
+	

@@ -329,6 +329,10 @@ private:
 	std::vector<shared_ptr<CSGProducts>> exp_highlights_products;
 	std::vector<shared_ptr<CSGProducts>> exp_background_products;
 
+	// ichao : for selection
+	QMap<int, std::vector<Eigen::Vector3d>> cur_proj_samples;
+	QMap<int, std::vector<Eigen::Vector3d>> exp_proj_samples;
+
 
 	char const * afterCompileSlot;
 	bool procevents;
