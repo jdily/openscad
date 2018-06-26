@@ -1408,9 +1408,11 @@ void MainWindow::compileCSG(bool procevents)
 		// csgvisitor.buildCSGTree(*root_node);
 #endif
 	// ichao added -> do the polyset sampling on the geometry here
-	TreeSampler *sampler = new TreeSampler(&tree, &geomevaluator);
 	// cur_proj_samples = sampler->get_samples(*root_node, this->qglviewer_suggest->m_mainViewer, true);
-	cur_samples = sampler->get_samples(*root_node, this->qglviewer_suggest->m_mainViewer, false);
+	if (cur_samples.isEmpty()) {
+		TreeSampler *sampler = new TreeSampler(&tree, &geomevaluator);
+		cur_samples = sampler->get_samples(*root_node, this->qglviewer_suggest->m_mainViewer, false);
+	}
 	
 	progress_report_prep(this->root_node, report_func, this);
 	try {
