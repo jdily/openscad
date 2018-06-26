@@ -27,6 +27,9 @@ public:
     ~Selector();
 
     QList<int> cover_select(QMap<int, std::vector<Eigen::Vector3d>> samples);
+    // [TODO] -> we need sample points, and the geometry itself. (probably the tree itself)?
+    // take the shape similarity into consideration.
+    // QList<int> smart_select();
 private:
     QList<QPolygonF> m_poly;
     QPainterPath m_stroke;
