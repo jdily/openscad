@@ -3456,7 +3456,8 @@ void MainWindow::example_strokeUpdatedSlot(QList<QPolygonF> stroke_polys, QPaint
 	// // auto sample_dict = sampler->get_samples(*root_node, this->qglviewer_suggest->m_mainViewer);
 
 	Selector *selector = new Selector(stroke_polys, stroke_path);
-	QList<int> selected_ids = selector->cover_select(sample_dict);
+	// QList<int> selected_ids = selector->cover_select(sample_dict);
+	QList<int> selected_ids = selector->smart_select(sample_dict, nullptr);
 
 	for (auto &id : selected_ids) {
 		std::cout << id << " is selected ..." << std::endl;
