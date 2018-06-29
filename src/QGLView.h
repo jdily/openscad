@@ -2,6 +2,7 @@
 
 #include "system-gl.h"
 #include <QtGlobal>
+#include <QMenu>
 
 #ifdef USE_QOPENGLWIDGET
 #include <QOpenGLWidget>
@@ -80,6 +81,10 @@ public:
 #ifdef USE_QOPENGLWIDGET
 	inline QImage grabFrameBuffer() { return grabFramebuffer(); }
 #endif
+	// action for grouping geometries.
+    QAction *act_group_geom;
+	// action for transfer geometries.
+	QAction *act_trans;
 private:
 	void init();
 
@@ -108,6 +113,9 @@ private:
 	bool circ_drawn;
 	QMap<int, std::vector<Eigen::Vector3d> > proj_sample_dict;
 	QList<QGraphicsEllipseItem*> vert_lists;
+	
+	QMenu *right_menu;
+
 
 	void gen_random_circles();
 	void check_covered();
@@ -128,4 +136,5 @@ signals:
 	void doAnimateUpdate();
 	void exampleSelected(int exp_id);
 	void strokeUpdate(QList<QPolygonF> polys, QPainterPath stroke);
+	// void sig_group_selected();
 };

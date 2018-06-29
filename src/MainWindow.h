@@ -300,6 +300,8 @@ public slots:
 	void example_selectedSlot(int example_id);
 	void example_strokeUpdatedSlot_sugg(QList<QPolygonF> stroke_polys, QPainterPath stroke_path);
 	void example_strokeUpdatedSlot_main(QList<QPolygonF> stroke_polys, QPainterPath stroke_path);
+	void example_groupSelectedSlot();
+	void example_transferGeomSlot();
 
 	// tmp function for loading
 	void tmp_loadSimilarExample(int example_id, QString exp_filename);
@@ -323,6 +325,8 @@ private:
 
 	std::vector<int> main_hids;
 	std::vector< std::vector<int> > exp_hids;
+	int exp_gid;
+	QMap<int, QList<int>> exp_g_groups;
 
 	// ichao: for examples
 	std::vector<shared_ptr<class CSGNode>> exp_csgRoots;
@@ -338,6 +342,8 @@ private:
 	QMap<int, std::vector<Eigen::Vector3d>> exp_samples;
 	QMap<int, std::vector<Eigen::Vector3d>> exp_proj_samples;
 
+	tree_hnode* main_tree;
+	tree_hnode* sugg_tree;
 
 	char const * afterCompileSlot;
 	bool procevents;

@@ -80,6 +80,11 @@ QList<int> Selector::smart_select(QMap<int, std::vector<Eigen::Vector3d>> sample
     
     // first do the passing test....
     QList<int> covered_geom_id = cover_select(samples);
+    if (covered_geom_id.length() == 0) {
+        return covered_geom_id;
+    }
+
+
     QMap<int, std::vector<Eigen::Vector3d>> covered_samples;
     for (int &id : covered_geom_id) {
         covered_samples.insert(id, samples[id]);

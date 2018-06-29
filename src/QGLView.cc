@@ -89,6 +89,12 @@ void QGLView::init()
   srand(time(NULL));
   // gen_random_circles();
   circ_drawn = false;
+  right_menu = new QMenu(this);
+  act_group_geom = new QAction(tr("&Group selected geometry"), this);
+  act_trans = new QAction(tr("&Transfer to current"), this);
+  right_menu->addAction(act_group_geom);
+  right_menu->addAction(act_trans);
+  
 }
 
 void QGLView::resetView()
@@ -383,6 +389,10 @@ void QGLView::mousePressEvent(QMouseEvent *event)
       std::cout << mes.toStdString() << std::endl;
       stroking = true;
       stroke_path = QPainterPath(event->pos());
+    } else if (event->modifiers() == Qt::ShiftModifier) {
+      mouse_drag_active = false;
+      // show up the context menu here for choosing actions after geometry selection.
+      right_menu->exec(event->globalPos());
     }
   }
 }

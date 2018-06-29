@@ -441,6 +441,9 @@ MainWindow::MainWindow(const QString &filename)
 	// connect(this->qglviewer_suggest->m_sugViewers[1], SIGNAL(exampleSelected(int)), this, SLOT(example_selectedSlot(int)));
 	// connect(this->qglviewer_suggest->m_sugViewers[2], SIGNAL(exampleSelected(int)), this, SLOT(example_selectedSlot(int)));
 	connect(this->qglviewer_suggest->m_sugViewers[0], SIGNAL(strokeUpdate(QList<QPolygonF>, QPainterPath)), this, SLOT(example_strokeUpdatedSlot_sugg(QList<QPolygonF>, QPainterPath)));
+	connect(this->qglviewer_suggest->m_sugViewers[0]->act_group_geom, SIGNAL(triggered()), this, SLOT(example_groupSelectedSlot()));
+	connect(this->qglviewer_suggest->m_sugViewers[0]->act_trans, SIGNAL(triggered()), this, SLOT(example_transferGeomSlot()));
+
 	connect(this->qglviewer_suggest->m_mainViewer, SIGNAL(strokeUpdate(QList<QPolygonF>, QPainterPath)), this, SLOT(example_strokeUpdatedSlot_main(QList<QPolygonF>, QPainterPath)));
 
 #ifdef OPENSCAD_UPDATER
@@ -628,6 +631,8 @@ MainWindow::MainWindow(const QString &filename)
 	this->exp_opencsgRenderer = std::vector<class OpenCSGRenderer*>(3, nullptr);
 	this->exp_thrownTogetherRenderer = std::vector<class ThrownTogetherRenderer*>(3, nullptr);
 	this->exp_hids = std::vector< std::vector<int> >(3);
+	exp_gid = 0;
+	exp_g_groups.clear();
 
 	// connection for pair_treeviewer
 	connect(this->pair_viewer->trans_button, SIGNAL(clicked()), this, SLOT(transfer_slot()));
@@ -1228,6 +1233,7 @@ void MainWindow::instantiateRoot()
 			std::cout << "finish convert" << std::endl;
 
 			tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()), this->data_basepath);
+			main_tree = new tree_hnode(*layout_tree);
 			// qtreeViewer->setSTree(layout_tree);
 			// qtreeViewer_ref->setSTree(layout_tree);
 			pair_viewer->setSTree(layout_tree, 0);
@@ -3409,6 +3415,7 @@ void MainWindow::example_selectedSlot(int example_id) {
 	std::vector<std::string> strs;
 	boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
 	tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()), this->data_basepath);
+	sugg_tree = new tree_hnode(*layout_tree);
 	pair_viewer->setSTree(layout_tree, 1);
 
 
@@ -3445,7 +3452,8 @@ void MainWindow::example_strokeUpdatedSlot_sugg(QList<QPolygonF> stroke_polys, Q
 	std::cout << "poly count : " << stroke_polys.length() << std::endl;
 	auto sample_dict = this->qglviewer_suggest->m_sugViewers[0]->project_samples_map(cur_samples);
 	Selector *selector = new Selector(stroke_polys, stroke_path);
-	QList<int> selected_ids = selector->cover_select(sample_dict);
+	// QList<int> selected_ids = selector->cover_select(sample_dict);
+	QList<int> selected_ids = selector->smart_select(sample_dict, sugg_tree);
 	for (auto &id : selected_ids) {
 		std::cout << id << " is selected ..." << std::endl;
 		slot_rerender_highlight(id, true, 1);
@@ -3462,8 +3470,6 @@ void MainWindow::example_strokeUpdatedSlot_main(QList<QPolygonF> stroke_polys, Q
 	std::cout << "poly count : " << stroke_polys.length() << std::endl;
 	// [TODO] : do the project based on current view using cur_samples
 	auto sample_dict = this->qglviewer_suggest->m_mainViewer->project_samples_map(cur_samples);
-
-
 	// // 1. collect the leaf node...
 	// // GeometryEvaluator geomevaluator(this->tree);
 	// // update the sample points...
@@ -3473,7 +3479,7 @@ void MainWindow::example_strokeUpdatedSlot_main(QList<QPolygonF> stroke_polys, Q
 
 	Selector *selector = new Selector(stroke_polys, stroke_path);
 	// QList<int> selected_ids = selector->cover_select(sample_dict);
-	QList<int> selected_ids = selector->smart_select(sample_dict, nullptr);
+	QList<int> selected_ids = selector->smart_select(sample_dict, main_tree);
 
 	for (auto &id : selected_ids) {
 		std::cout << id << " is selected ..." << std::endl;
@@ -3483,6 +3489,27 @@ void MainWindow::example_strokeUpdatedSlot_main(QList<QPolygonF> stroke_polys, Q
 	// highlight the selected primitives..
 	// check where to 
 	this->qglviewer_suggest->m_mainViewer->clean_stroke();
+
+}
+
+void MainWindow::example_groupSelectedSlot() {
+	// group the exp_hids geometry and transfer them to the main tree attached to root node in the beginning.
+	std::cout << "example_groupSelectedSlot" << std::endl;
+	// int selected_count = (int)exp_hids[0].size();
+	QList<int> selected_list;
+	selected_list.reserve(exp_hids[0].size());
+	std::copy(exp_hids[0].begin(), exp_hids[0].end(), std::back_inserter(selected_list));
+	// exp_hids[0].push_back(idx);
+	// 	exp_gid = 0;
+	// exp_g_groups.clear();
+	exp_g_groups.insert(exp_gid, selected_list);
+	exp_gid += 1;
+	std::cout << "there are " << exp_g_groups.size() << " groups to be transferred." << std::endl;
+}
+
+void MainWindow::example_transferGeomSlot() {
+	// first focus on gind = 0;
+	std::cout << "example_transferGeomSlot" << std::endl;
 
 }
 
