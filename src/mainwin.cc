@@ -291,7 +291,7 @@ MainWindow::MainWindow(const QString &filename)
 	connect(this->e_tval, SIGNAL(textChanged(QString)), this, SLOT(updatedAnimTval()));
 	connect(this->e_fps, SIGNAL(textChanged(QString)), this, SLOT(updatedAnimFps()));
 	connect(this->e_fsteps, SIGNAL(textChanged(QString)), this, SLOT(updatedAnimSteps()));
-	connect(this->e_dump, SIGNAL(toggled(bool)), this, SLOT(updatedAnimDump(bool)));
+	connect(this->e_dump, SIGNAL(toggled(bool)), this, SLOT(updatedAnimDump(booleval_group)));
 
 	animate_panel->hide();
 	this->hideFind(); 
@@ -440,8 +440,8 @@ MainWindow::MainWindow(const QString &filename)
 	connect(this->qglviewer_suggest->m_sugViewers[0], SIGNAL(exampleSelected(int)), this, SLOT(example_selectedSlot(int)));
 	// connect(this->qglviewer_suggest->m_sugViewers[1], SIGNAL(exampleSelected(int)), this, SLOT(example_selectedSlot(int)));
 	// connect(this->qglviewer_suggest->m_sugViewers[2], SIGNAL(exampleSelected(int)), this, SLOT(example_selectedSlot(int)));
-	connect(this->qglviewer_suggest->m_sugViewers[0], SIGNAL(strokeUpdate(QList<QPolygonF>, QPainterPath)), this, SLOT(example_strokeUpdatedSlot(QList<QPolygonF>, QPainterPath)));
-	connect(this->qglviewer_suggest->m_mainViewer, SIGNAL(strokeUpdate(QList<QPolygonF>, QPainterPath)), this, SLOT(example_strokeUpdatedSlot(QList<QPolygonF>, QPainterPath)));
+	connect(this->qglviewer_suggest->m_sugViewers[0], SIGNAL(strokeUpdate(QList<QPolygonF>, QPainterPath)), this, SLOT(example_strokeUpdatedSlot_sugg(QList<QPolygonF>, QPainterPath)));
+	connect(this->qglviewer_suggest->m_mainViewer, SIGNAL(strokeUpdate(QList<QPolygonF>, QPainterPath)), this, SLOT(example_strokeUpdatedSlot_main(QList<QPolygonF>, QPainterPath)));
 
 #ifdef OPENSCAD_UPDATER
 	this->menuBar()->addMenu(AutoUpdater::updater()->updateMenu);
@@ -3440,9 +3440,25 @@ void MainWindow::example_selectedSlot(int example_id) {
 
 }
 
+void MainWindow::example_strokeUpdatedSlot_sugg(QList<QPolygonF> stroke_polys, QPainterPath stroke_path) {
+	std::cout << "example_strokeUpdatedSlot_main" << std::endl;
+	std::cout << "poly count : " << stroke_polys.length() << std::endl;
+	auto sample_dict = this->qglviewer_suggest->m_sugViewers[0]->project_samples_map(cur_samples);
+	Selector *selector = new Selector(stroke_polys, stroke_path);
+	QList<int> selected_ids = selector->cover_select(sample_dict);
+	for (auto &id : selected_ids) {
+		std::cout << id << " is selected ..." << std::endl;
+		slot_rerender_highlight(id, true, 1);
+	// 	// emit rerender_select_highlight(selected_id, value, this->viewer_id);
+	}
+	// highlight the selected primitives..
+	// check where to 
+	this->qglviewer_suggest->m_sugViewers[0]->clean_stroke();
+}
+
 // [TODO] -> find out why this function is called when I didn't invoke the stroke command...
-void MainWindow::example_strokeUpdatedSlot(QList<QPolygonF> stroke_polys, QPainterPath stroke_path) {
-	std::cout << "example_strokeUpdatedSlot" << std::endl;
+void MainWindow::example_strokeUpdatedSlot_main(QList<QPolygonF> stroke_polys, QPainterPath stroke_path) {
+	std::cout << "example_strokeUpdatedSlot_main" << std::endl;
 	std::cout << "poly count : " << stroke_polys.length() << std::endl;
 	// [TODO] : do the project based on current view using cur_samples
 	auto sample_dict = this->qglviewer_suggest->m_mainViewer->project_samples_map(cur_samples);
@@ -3464,7 +3480,8 @@ void MainWindow::example_strokeUpdatedSlot(QList<QPolygonF> stroke_polys, QPaint
 		slot_rerender_highlight(id, true, 0);
 	// 	// emit rerender_select_highlight(selected_id, value, this->viewer_id);
 	}
-	// // highlight the selected primitives..
+	// highlight the selected primitives..
+	// check where to 
 	this->qglviewer_suggest->m_mainViewer->clean_stroke();
 
 }

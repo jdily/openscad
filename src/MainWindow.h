@@ -298,7 +298,9 @@ public slots:
 	void transModeTransferOne();
 	void retrieveExamples();
 	void example_selectedSlot(int example_id);
-	void example_strokeUpdatedSlot(QList<QPolygonF> stroke_polys, QPainterPath stroke_path);
+	void example_strokeUpdatedSlot_sugg(QList<QPolygonF> stroke_polys, QPainterPath stroke_path);
+	void example_strokeUpdatedSlot_main(QList<QPolygonF> stroke_polys, QPainterPath stroke_path);
+
 	// tmp function for loading
 	void tmp_loadSimilarExample(int example_id, QString exp_filename);
 	void export_htree_with_csginfo(tree_hnode* tree);

@@ -208,10 +208,6 @@ void Selector::eval_group(int ind, QList<int> group, QMap<int, std::vector<Eigen
     // stdev_scs.insert(gind, stdev_sc);
 }
 
-
-// void myfunction (int i) {
-//   std::cout << i << ' ';
-// }
 template <typename Iterator>
 inline bool next_combination(const Iterator first, Iterator k, const Iterator last)
 {
