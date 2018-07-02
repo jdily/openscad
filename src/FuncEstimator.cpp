@@ -7,8 +7,8 @@ FuncEstimator::FuncEstimator(tree_hnode* geom_tree) : m_tree(geom_tree) {}
 
 FuncEstimator::~FuncEstimator() {}
 
-QLine FuncEstimator::find_axis() {
-    QLine axis;
+QPair<Eigen::Vector3d, Eigen::Vector3d> FuncEstimator::find_axis() {
+    // QLine axis;
     QList<Eigen::Vector3d> centroids;
 
     // check if the node exist..
@@ -34,7 +34,7 @@ QLine FuncEstimator::find_axis() {
     Eigen::MatrixXd centered = centers.rowwise() - origin.transpose();
 	Eigen::MatrixXd cov = centered.adjoint() * centered;
 	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
-	Eigen::Vector3d _axis = eig.eigenvectors().col(2).normalized();
+	Eigen::Vector3d axis = eig.eigenvectors().col(2).normalized();
     // // get the center of all these centroids;
     // float c_x = 0.0, c_y = 0.0, c_z = 0.0;
     // for (int j = 0; j < centroids.length(); j++) {
@@ -47,6 +47,6 @@ QLine FuncEstimator::find_axis() {
     // c_z = c_z / centroids.length();
 
 
-
-    return axis;
+    QPair<Eigen::Vector3d, Eigen::Vector3d> out;
+    return out;
 }

@@ -13,7 +13,7 @@ public:
     FuncEstimator(tree_hnode* geom_tree);
     ~FuncEstimator();
 
-    QLine find_axis();
+    QPair<Eigen::Vector3d, Eigen::Vector3d> find_axis();
 private:
     tree_hnode* m_tree;
 };
