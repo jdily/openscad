@@ -47,6 +47,6 @@ QPair<Eigen::Vector3d, Eigen::Vector3d> FuncEstimator::find_axis() {
     // c_z = c_z / centroids.length();
 
 
-    QPair<Eigen::Vector3d, Eigen::Vector3d> out;
+    QPair<Eigen::Vector3d, Eigen::Vector3d> out(origin, axis);
     return out;
 }
