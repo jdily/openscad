@@ -12,6 +12,8 @@ simpTreeConverter::simpTreeConverter(Tree *tree) {
     this->m_Tree = new tree_hnode();
 }
 
+simpTreeConverter::simpTreeConverter(Tree *tree, class GeometryEvaluator *geomevaluator) : m_geomeval(geomevaluator) {}
+
 simpTreeConverter::~simpTreeConverter() {}
 
 Response simpTreeConverter::visit(State &state, const AbstractNode &node) {
@@ -80,6 +82,12 @@ Response simpTreeConverter::visit(State &state, const AbstractPolyNode &node) {
         hnodes.insert(node.index(), _node);
         for (auto child : visitedchildren[node.index()]) {
             child->parent_idx = node.index();
+        }
+        // do the geom eval
+        if (this->m_geomeval) {
+            std::cout << "do the geom eval for node idx : " << node.idx << std::endl;
+            auto geom = this->m_geomeval->evaluateGeometry(node, false);
+            _node->geom = geom;
         }
     }
     handleVisitedChildren(state, node, _node);

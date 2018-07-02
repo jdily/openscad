@@ -104,6 +104,9 @@
 #include <boost/algorithm/string.hpp>
 #include "TreeSampler.h"
 #include "Selector.h"
+#include "FuncEstimator.h"
+
+// #include "GeomGroup.h"
 // #include "LFD.h"
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
@@ -3504,12 +3507,19 @@ void MainWindow::example_groupSelectedSlot() {
 	QList<int> selected_list;
 	selected_list.reserve(exp_hids[0].size());
 	std::copy(exp_hids[0].begin(), exp_hids[0].end(), std::back_inserter(selected_list));
+
+	GeomGroup *g_group = new GeomGroup(selected_list, 0);
+	exp_g_groups.append(g_group);
 	// exp_hids[0].push_back(idx);
 	// 	exp_gid = 0;
 	// exp_g_groups.clear();
-	exp_g_groups.insert(exp_gid, selected_list);
+	// exp_g_groups.insert(exp_gid, selected_list);
 	exp_gid += 1;
 	std::cout << "there are " << exp_g_groups.size() << " groups to be transferred." << std::endl;
+
+	// [TODO] trigger the highlight of the tree visualizer?? 
+
+
 }
 
 void MainWindow::example_transferGeomSlot() {
@@ -3519,6 +3529,16 @@ void MainWindow::example_transferGeomSlot() {
 	// Get it from gind = 0;
 	if (!exp_g_groups.empty()) {
 		std::cout << "current transferred group count : " << exp_g_groups.size() << std::endl;
+		// move them together and update their relative shapes and positioning with "snap" 
+		// find different types of motion axis and pathes
+		for (int i = 0; i < exp_g_groups.size(); i++) {
+			int ftype = exp_g_groups[i]->func_type;
+			if (ftype == 0) {
+				// find middle axis
+				FuncEstimator *fest = new FuncEstimator();
+			
+			}
+		} 
 	}
 
 }

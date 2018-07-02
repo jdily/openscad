@@ -384,7 +384,9 @@ HEADERS += src/version_check.h \
            src/relation.h \ 
            src/simpTreeConverter.h \ 
            src/TreeSampler.h \
-           src/Selector.h
+           src/Selector.h \ 
+           src/GeomGroup.h \ 
+           src/FuncEstimator.h
            # src/NodeModifier.h
 
 SOURCES += \
@@ -549,7 +551,9 @@ SOURCES += \
            src/relation.cpp \ 
            src/simpTreeConverter.cpp \
            src/TreeSampler.cpp \ 
-           src/Selector.cpp
+           src/Selector.cpp \
+           src/GeomGroup.cpp \ 
+           src/FuncEstimator.cpp
            # src/NodeModifier.cpp
 
 # CGAL

@@ -14,12 +14,14 @@
 #include "transformnode.h"
 #include "csgops.h"
 #include "cgaladvnode.h"
+#include "GeometryEvaluator.h"
 typedef stree<hnode*> tree_hnode;
 
 class simpTreeConverter : public NodeVisitor {
 public:
     simpTreeConverter();
     simpTreeConverter(Tree *tree);
+    simpTreeConverter(Tree* tree, class GeometryEvaluator *geomevaluator = nullptr);
     ~simpTreeConverter();
     Response visit(State &state, const AbstractNode &node) override;
     Response visit(State &state, const RootNode &node) override;
@@ -51,5 +53,5 @@ private:
 
     // record things for parenting..
     std::map<int, int> parent_db;
-
+    GeometryEvaluator *m_geomeval;
 };

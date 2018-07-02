@@ -24,6 +24,7 @@
 #include "streeConverter.h"
 #include "vizTools.h"
 #include "pair_treeViewer.h"
+#include "GeomGroup.h"
 
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
@@ -326,7 +327,8 @@ private:
 	std::vector<int> main_hids;
 	std::vector< std::vector<int> > exp_hids;
 	int exp_gid;
-	QMap<int, QList<int>> exp_g_groups;
+	// QMap<int, QList<int>> exp_g_groups;
+	QList<GeomGroup*> exp_g_groups;
 
 	// ichao: for examples
 	std::vector<shared_ptr<class CSGNode>> exp_csgRoots;

@@ -66,6 +66,7 @@ struct hnode {
         posstr = "";
         pos_x = 0.0;
         pos_y = 0.0;
+        geom = nullptr;
     }
     std::string type;
     int idx;
@@ -77,6 +78,7 @@ struct hnode {
     const AbstractNode *node;
     shared_ptr<CSGLeaf> csgnode;
     std::string obj_filename;
+    shared_ptr<const Geometry> geom;
     // check for LFD feature
 };
 
