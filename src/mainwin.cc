@@ -1279,6 +1279,11 @@ void MainWindow::example_compileCSG(int example_id, bool procevents) {
 #ifdef ENABLE_OPENCSG
 		CSGTreeEvaluator csgrenderer(*this->exp_trees[example_id], &geomevaluator);
 #endif
+	if (exp_samples.isEmpty()) {
+		TreeSampler *sampler = new TreeSampler(this->exp_trees[example_id], &geomevaluator);
+		exp_samples = sampler->get_samples(*this->exp_root_nodes[example_id], this->qglviewer_suggest->m_sugViewers[0], false);
+	}
+	
 	progress_report_prep(this->exp_root_nodes[example_id], report_func, this);
 	try {
 #ifdef ENABLE_OPENCSG
@@ -3450,9 +3455,9 @@ void MainWindow::example_selectedSlot(int example_id) {
 void MainWindow::example_strokeUpdatedSlot_sugg(QList<QPolygonF> stroke_polys, QPainterPath stroke_path) {
 	std::cout << "example_strokeUpdatedSlot_main" << std::endl;
 	std::cout << "poly count : " << stroke_polys.length() << std::endl;
-	auto sample_dict = this->qglviewer_suggest->m_sugViewers[0]->project_samples_map(cur_samples);
+	auto sample_dict = this->qglviewer_suggest->m_sugViewers[0]->project_samples_map(exp_samples);
 	Selector *selector = new Selector(stroke_polys, stroke_path);
-	// QList<int> selected_ids = selector->cover_select(sample_dict);
+	//QList<int> selected_ids = selector->cover_select(sample_dict);
 	QList<int> selected_ids = selector->smart_select(sample_dict, sugg_tree);
 	for (auto &id : selected_ids) {
 		std::cout << id << " is selected ..." << std::endl;
@@ -3510,6 +3515,11 @@ void MainWindow::example_groupSelectedSlot() {
 void MainWindow::example_transferGeomSlot() {
 	// first focus on gind = 0;
 	std::cout << "example_transferGeomSlot" << std::endl;
+	// find the selected subtree, and move to the original tree? 
+	// Get it from gind = 0;
+	if (!exp_g_groups.empty()) {
+		std::cout << "current transferred group count : " << exp_g_groups.size() << std::endl;
+	}
 
 }
 

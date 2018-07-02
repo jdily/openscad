@@ -1,6 +1,7 @@
 #include "Selector.h"
 #include <numeric>      // std::accumulate
 #include <algorithm>
+#include <omp.h>
 
 Selector::Selector() {}
 Selector::Selector(QList<QPolygonF> stroke_polys, QPainterPath stroke) : m_poly(stroke_polys), m_stroke(stroke) {
@@ -163,6 +164,7 @@ void Selector::eval_group(int ind, QList<int> group, QMap<int, std::vector<Eigen
             pc.append(p);
         }
     }
+    #pragma omp parallel for 
     // measure the closest distance from pc to ps
     QList<double> T_cs;
     for (int i = 0; i < pc.length(); i++) {
@@ -180,6 +182,7 @@ void Selector::eval_group(int ind, QList<int> group, QMap<int, std::vector<Eigen
 
     // measure the closest distance from ps to pc
     QList<double> T_sc;
+    #pragma omp parallel for 
     for (int i = 0; i < ps.length(); i++) {
         QList<double> dists;
         double dist;

@@ -149,11 +149,12 @@ namespace PolysetUtils {
 	std::vector<Vector3d> random_sample(Geometry* ps) {
 		srand ( time(NULL) );
 		float sample_ratio = 0.5;
-		float sample_count = 5;
+		float sample_count = 10;
 		std::vector<Vector3d> pnts;
 		PolySet* newps = static_cast<PolySet*>(ps);
 		// shared_ptr<PolySet> newps = dynamic_pointer_cast<PolySet>(ps);
 		std::cout << newps->numPolygons() << " polygons exist." << std::endl;
+		//#pragma omp parallel for 
 		for (const auto &p : newps->polygons) {	
 			int num_pnts = (int)p.size();
 			std::cout << "num pnts in polygon : " << num_pnts << std::endl;
