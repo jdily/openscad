@@ -56,6 +56,7 @@ Response streeConverter::visit(State &state, const AbstractPolyNode &node) {
     handleVisitedChildren(state, node, _node);
     return Response::ContinueTraversal;
 }
+
 Response streeConverter::visit(State &state, const TransformNode &node) {
     hnode* _node = new hnode();
     if (state.isPostfix()) {

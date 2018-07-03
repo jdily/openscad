@@ -1218,7 +1218,8 @@ void MainWindow::instantiateRoot()
 			this->tree.getString(*this->root_node);
 			// // ichao : set graph here and draw it.
 			// streeConverter *sconv = new streeConverter();
-			simpTreeConverter *sconv = new simpTreeConverter();
+			GeometryEvaluator geomeval(this->tree);
+			simpTreeConverter *sconv = new simpTreeConverter(&tree, &geomeval);
 			tree_hnode* htree = sconv->convert_tree(&tree);
 			std::cout << "htree size : " << htree->size() << std::endl;
 			// std::cout << sconv->with_csginfo() << std::endl;
@@ -3497,13 +3498,11 @@ void MainWindow::example_strokeUpdatedSlot_main(QList<QPolygonF> stroke_polys, Q
 	// highlight the selected primitives..
 	// check where to 
 	this->qglviewer_suggest->m_mainViewer->clean_stroke();
-
 }
 
 void MainWindow::example_groupSelectedSlot() {
 	// group the exp_hids geometry and transfer them to the main tree attached to root node in the beginning.
 	std::cout << "example_groupSelectedSlot" << std::endl;
-	// int selected_count = (int)exp_hids[0].size();
 	QList<int> selected_list;
 	selected_list.reserve(exp_hids[0].size());
 	std::copy(exp_hids[0].begin(), exp_hids[0].end(), std::back_inserter(selected_list));
@@ -3535,8 +3534,24 @@ void MainWindow::example_transferGeomSlot() {
 			int ftype = exp_g_groups[i]->func_type;
 			if (ftype == 0) {
 				// find middle axis
-				FuncEstimator *fest = new FuncEstimator();
-			
+				FuncEstimator *fest = new FuncEstimator(main_tree);
+				QPair<Eigen::Vector3d, Eigen::Vector3d> main_func = fest->find_cover_axis();
+				FuncEstimator *sug_fest = new FuncEstimator(sugg_tree, exp_g_groups[i]->selected_nids);
+				QPair<Eigen::Vector3d, Eigen::Vector3d> sug_func = sug_fest->find_cover_axis();
+				// align sug_func to main_func 
+				// translation for center point.
+				Eigen::Vector3d translation = sug_func.first-main_func.first;
+				// Eigen::Vector3d cross = sug_func.second.cross(main_func.second);
+				Eigen::Quaterniond rot;
+				rot.setFromTwoVectors(sug_func.second, main_func.second);
+				Eigen::Matrix3d rotationMatrix;
+				rotationMatrix = rot.toRotationMatrix();
+				Transform3d matrix = Transform3d::Identity();
+				matrix.translate(translation);
+				matrix.rotate(rot);
+				TransformNode tnode(&this->root_inst);
+				// insert this tnode with the rest of the poly node to the root?
+				
 			}
 		} 
 	}
