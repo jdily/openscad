@@ -68,6 +68,7 @@ public:
 	QMap<int, std::vector<Eigen::Vector3d>> project_samples_map(QMap<int, std::vector<Eigen::Vector3d>> sample_map);
 	std::vector<Eigen::Vector3d> project_samples(std::vector<Eigen::Vector3d> samples, int index);
 	void clean_stroke();
+	void enable_func_info_viz(Eigen::Vector3d _centroid, Eigen::Vector3d _axis);
 
 public slots:
 	void ZoomIn(void);
@@ -115,6 +116,7 @@ private:
 	QList<QGraphicsEllipseItem*> vert_lists;
 	
 	QMenu *right_menu;
+	// bool show_func_annotation;
 
 
 	void gen_random_circles();

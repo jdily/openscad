@@ -94,6 +94,9 @@ void QGLView::init()
   act_trans = new QAction(tr("&Transfer to current"), this);
   right_menu->addAction(act_group_geom);
   right_menu->addAction(act_trans);
+  // show_func_annotation = false;
+  this->axis = Eigen::Vector3d::Zero();
+  this->centroid = Eigen::Vector3d::Zero();
   
 }
 
@@ -566,4 +569,10 @@ void QGLView::setOrthoMode(bool enabled)
 void QGLView::clean_stroke() {
   stroke_path =  QPainterPath();
   updateGL();
+}
+
+void QGLView::enable_func_info_viz(Eigen::Vector3d _centroid, Eigen::Vector3d _axis) {
+  this->show_func_info = true;
+  this->centroid = _centroid;
+  this->axis = _axis;
 }

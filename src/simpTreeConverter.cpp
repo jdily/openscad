@@ -87,12 +87,12 @@ Response simpTreeConverter::visit(State &state, const AbstractPolyNode &node) {
         for (auto child : visitedchildren[node.index()]) {
             child->parent_idx = node.index();
         }
-        // // do the geom eval
-        // if (this->m_geomeval) {
-        //     std::cout << "do the geom eval for node idx : " << node.idx << std::endl;
-        //     auto geom = this->m_geomeval->evaluateGeometry(node, false);
-        //     _node->geom = geom;
-        // }
+        // do the geom eval
+        if (this->m_geomeval) {
+            std::cout << "do the geom eval for node idx : " << node.idx << std::endl;
+            auto geom = this->m_geomeval->evaluateGeometry(node, false);
+            _node->geom = geom;
+        }
     }
     handleVisitedChildren(state, node, _node);
     return Response::ContinueTraversal;

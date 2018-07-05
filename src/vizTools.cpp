@@ -129,9 +129,13 @@ tree_hnode* vizTools::make_layout_graphviz(tree_hnode *tree, QString filename, Q
 
     std::cout << "here is fine " << std::endl;
 
+    QMap<int, shared_ptr<const Geometry>> tree_geom;
+    tree_geom.clear();
+
     while(iterator!= tree->end()) {
         std::string type = (*iterator)->type;
         int index = (*iterator)->idx;
+        tree_geom.insert(index, (*iterator)->geom);
         std::cout << index << " " << (*iterator)->type <<  std::endl;
         // TODO : check should it start from 0
         QString indexstr = QString::number(index);
@@ -170,6 +174,16 @@ tree_hnode* vizTools::make_layout_graphviz(tree_hnode *tree, QString filename, Q
 
     // read it back
     tree_hnode* layout_tree = vizTools::read_graphviz(layout_dot_filename);
+    // [TODO] assign the corresponding geom if any?? between "tree" and "layout tree"
+    iterator = layout_tree->begin();
+    while (iterator != layout_tree->end()) {
+        int idx = (*iterator)->idx;
+        (*iterator)->geom = tree_geom[idx];
+        ++iterator;
+    }
+
+
+
     // tree_hnode* layout_tree = nullptr;
     return layout_tree;
 }

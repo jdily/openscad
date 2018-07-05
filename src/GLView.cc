@@ -26,6 +26,7 @@ GLView::GLView()
   showaxes = false;
   showcrosshairs = false;
   showscale = false;
+	show_func_info = false;
   renderer = nullptr;
   colorscheme = &ColorMap::inst()->defaultColorScheme();
   cam = Camera();
@@ -173,6 +174,7 @@ void GLView::paintGL()
     if (showaxes) GLView::showAxes(axescolor);
     // mark the scale along the axis lines
     if (showaxes && showscale) GLView::showScalemarkers(axescolor);
+		if (show_func_info) GLView::showFuncInfo(this->centroid, this->axis, axescolor);
   }
 
   glEnable(GL_LIGHTING);
@@ -857,3 +859,24 @@ void GLView::decodeMarkerValue(double i, double l, int size_div_sm)
 	}
 }
 
+
+void GLView::showFuncInfo(Eigen::Vector3d centroid, Eigen::Vector3d axis, const Color4f &col) {
+	// draw a line passing through the centroid..
+	Eigen::Vector3d pt0, pt1;
+	float scale = 10;
+	pt0[0] = centroid[0]+scale*axis[0];
+	pt0[1] = centroid[1]+scale*axis[1];
+	pt0[2] = centroid[2]+scale*axis[2];
+	pt1[0] = centroid[0]-scale*axis[0];
+	pt1[1] = centroid[1]-scale*axis[1];
+	pt1[2] = centroid[2]-scale*axis[2];
+
+  glLineWidth(this->getDPI());
+	auto axescolor = ColorMap::getColor(*this->colorscheme, RenderColor::AXES_COLOR);
+  glColor3f(axescolor[0], axescolor[1], axescolor[2]);
+
+  glBegin(GL_LINES);
+  glVertex3d(pt0[0], pt0[1], pt0[2]);
+	glVertex3d(pt1[0], pt1[1], pt1[2]);
+  glEnd();
+}

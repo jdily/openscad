@@ -61,6 +61,10 @@ public:
 	bool showcrosshairs;
 	bool showscale;
 
+	Eigen::Vector3d axis;
+	Eigen::Vector3d centroid;
+	bool show_func_info;
+
 #ifdef ENABLE_OPENCSG
 	GLint shaderinfo[11];
 	bool is_opencsg_capable;
@@ -76,4 +80,7 @@ private:
 	void showSmallaxes(const Color4f &col);
 	void showScalemarkers(const Color4f &col);
 	void decodeMarkerValue(double i, double l, int size_div_sm);
+	// ichao added -> put here in order to allow upper class to call it from outside.
+	void showFuncInfo(Eigen::Vector3d centroid, Eigen::Vector3d axis, const Color4f &col);
+	
 };

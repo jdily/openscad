@@ -18,17 +18,21 @@ QPair<Eigen::Vector3d, Eigen::Vector3d> FuncEstimator::find_cover_axis() {
     tree_hnode::iterator iterator;
     iterator = m_tree->begin();
 
-    
     if (selected_ids.empty()) {
+        std::cout << "empty setting -> go all of them" << std::endl;
         // go through all of them
         while (iterator != m_tree->end()) {
             std::string type = (*iterator)->type;
             if (type == "poly") {
+                if ((*iterator)->geom == nullptr) {
+                    std::cout << "null geom" << std::endl;
+                }
                 PolySet* newps = static_cast<PolySet*>(const_cast<Geometry*>((*iterator)->geom.get()));
                 BoundingBox bbox = newps->getBoundingBox();
                 Eigen::Vector3d center = bbox.center();
                 centroids.append(center);
             }
+            ++iterator;
         }
     } else {
         while (iterator != m_tree->end()) {
@@ -42,6 +46,7 @@ QPair<Eigen::Vector3d, Eigen::Vector3d> FuncEstimator::find_cover_axis() {
                     centroids.append(center);
                 }
             }
+            ++iterator;
         }
     }
     Eigen::MatrixXd centers(centroids.length(), 3);

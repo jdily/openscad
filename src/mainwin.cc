@@ -3538,20 +3538,22 @@ void MainWindow::example_transferGeomSlot() {
 				// find middle axis
 				FuncEstimator *fest = new FuncEstimator(main_tree);
 				QPair<Eigen::Vector3d, Eigen::Vector3d> main_func = fest->find_cover_axis();
-				FuncEstimator *sug_fest = new FuncEstimator(sugg_tree, exp_g_groups[i]->selected_nids);
-				QPair<Eigen::Vector3d, Eigen::Vector3d> sug_func = sug_fest->find_cover_axis();
-				// align sug_func to main_func 
-				// translation for center point.
-				Eigen::Vector3d translation = sug_func.first-main_func.first;
-				// Eigen::Vector3d cross = sug_func.second.cross(main_func.second);
-				Eigen::Quaterniond rot;
-				rot.setFromTwoVectors(sug_func.second, main_func.second);
-				Eigen::Matrix3d rotationMatrix;
-				rotationMatrix = rot.toRotationMatrix();
-				Transform3d matrix = Transform3d::Identity();
-				matrix.translate(translation);
-				matrix.rotate(rot);
-				TransformNode tnode(&this->root_inst);
+				// this->qglviewer_suggest->m_mainViewer->enable_func_info_viz(main_func.first, main_func.second);
+				// FuncEstimator *sug_fest = new FuncEstimator(sugg_tree, exp_g_groups[i]->selected_nids);
+				// QPair<Eigen::Vector3d, Eigen::Vector3d> sug_func = sug_fest->find_cover_axis();
+				// // align sug_func to main_func 
+				// // translation for center point.
+				// Eigen::Vector3d translation = sug_func.first-main_func.first;
+				// // Eigen::Vector3d cross = sug_func.second.cross(main_func.second);
+				// Eigen::Quaterniond rot;
+				// rot.setFromTwoVectors(sug_func.second, main_func.second);
+				// Eigen::Matrix3d rotationMatrix;
+				// rotationMatrix = rot.toRotationMatrix();
+				// Transform3d matrix = Transform3d::Identity();
+				// matrix.translate(translation);
+				// matrix.rotate(rot);
+
+				// TransformNode tnode(&this->root_inst);
 				// insert this tnode with the rest of the poly node to the root?
 				
 			}
