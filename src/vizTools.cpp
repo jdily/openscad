@@ -182,8 +182,6 @@ tree_hnode* vizTools::make_layout_graphviz(tree_hnode *tree, QString filename, Q
         ++iterator;
     }
 
-
-
     // tree_hnode* layout_tree = nullptr;
     return layout_tree;
 }

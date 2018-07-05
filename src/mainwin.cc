@@ -3538,7 +3538,7 @@ void MainWindow::example_transferGeomSlot() {
 				// find middle axis
 				FuncEstimator *fest = new FuncEstimator(main_tree);
 				QPair<Eigen::Vector3d, Eigen::Vector3d> main_func = fest->find_cover_axis();
-				// this->qglviewer_suggest->m_mainViewer->enable_func_info_viz(main_func.first, main_func.second);
+				this->qglviewer_suggest->m_mainViewer->enable_func_info_viz(main_func.first, main_func.second);
 				// FuncEstimator *sug_fest = new FuncEstimator(sugg_tree, exp_g_groups[i]->selected_nids);
 				// QPair<Eigen::Vector3d, Eigen::Vector3d> sug_func = sug_fest->find_cover_axis();
 				// // align sug_func to main_func 
