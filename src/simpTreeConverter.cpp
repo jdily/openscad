@@ -10,9 +10,13 @@ simpTreeConverter::simpTreeConverter() {
 
 simpTreeConverter::simpTreeConverter(Tree *tree) {
     this->m_Tree = new tree_hnode();
+    this->has_csginfo = false;
 }
 
-simpTreeConverter::simpTreeConverter(Tree *tree, class GeometryEvaluator *geomevaluator) : m_geomeval(geomevaluator) {}
+simpTreeConverter::simpTreeConverter(Tree *tree, class GeometryEvaluator *geomevaluator) : m_geomeval(geomevaluator) {
+    this->m_Tree = new tree_hnode();
+    this->has_csginfo = false;
+}
 
 simpTreeConverter::~simpTreeConverter() {}
 

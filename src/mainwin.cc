@@ -1217,9 +1217,9 @@ void MainWindow::instantiateRoot()
 			// FIXME: We shouldn't really need to do this explicitly..
 			this->tree.getString(*this->root_node);
 			// // ichao : set graph here and draw it.
-			// streeConverter *sconv = new streeConverter();
 			GeometryEvaluator geomeval(this->tree);
 			simpTreeConverter *sconv = new simpTreeConverter(&tree, &geomeval);
+			// streeConverter *sconv = new streeConverter();
 			tree_hnode* htree = sconv->convert_tree(&tree);
 			std::cout << "htree size : " << htree->size() << std::endl;
 			// std::cout << sconv->with_csginfo() << std::endl;
@@ -3414,7 +3414,9 @@ void MainWindow::example_selectedSlot(int example_id) {
 	// pair_viewer->setSTree(layout_tree, 1);
 
 	// [TODO] : dig out why the hinge case fails.....
-	simpTreeConverter *conv = new simpTreeConverter;
+	GeometryEvaluator geomeval(*exp_trees[fixed_example_id]);
+	simpTreeConverter *conv = new simpTreeConverter(exp_trees[fixed_example_id], &geomeval);
+	// simpTreeConverter *conv = new simpTreeConverter;
 	tree_hnode* htree = conv->convert_tree(exp_trees[fixed_example_id]);	
 	QString exp_filename0 = QString("%1/manual_transfer/two_rect_cover.scad").arg(this->data_basepath);
 	// QString exp_filename0 = QString("%1/manual_transfer/two_rect_hinge.scad").arg(this->data_basepath);
