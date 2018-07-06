@@ -206,6 +206,7 @@ void simpTreeConverter::applyToChildren(State &state, const AbstractNode &node) 
                 n->centroid = trans_center;
                 n->transform = trans;
                 // n->centroid = center;
+                // todo
             }
         }
     }
