@@ -577,3 +577,10 @@ void QGLView::enable_func_info_viz(Eigen::Vector3d _centroid, Eigen::Vector3d _a
   this->axis = _axis;
   this->func_axis_color = Color4f(cl.red(), cl.green(), cl.blue(), 255);
 }
+
+void QGLView::enable_ano_func_info_viz(Eigen::Vector3d _centroid, Eigen::Vector3d _axis, QColor cl) {
+  this->show_ano_func_info = true;
+  this->ano_centroid = _centroid;
+  this->ano_axis = _axis;
+  this->ano_func_axis_color = Color4f(cl.red(), cl.green(), cl.blue(), 255);
+}

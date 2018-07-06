@@ -15,6 +15,7 @@
 #include "csgops.h"
 #include "cgaladvnode.h"
 #include "GeometryEvaluator.h"
+#include "polyset.h"
 typedef stree<hnode*> tree_hnode;
 
 class simpTreeConverter : public NodeVisitor {
@@ -36,7 +37,6 @@ private:
     typedef std::vector<hnode*> childNodeList;
     std::map<int, childNodeList> visitedchildren;
     void handleVisitedChildren(const State &state, const AbstractNode &node, hnode* hier_node);
-    shared_ptr<CSGLeaf> convert_to_leaf(shared_ptr<CSGNode> input);
     tree_hnode *m_Tree;
     void add_children(tree_hnode::iterator parent_node, childNodeList childs);
     int search_valid_parent(int id);
@@ -54,4 +54,10 @@ private:
     // record things for parenting..
     std::map<int, int> parent_db;
     GeometryEvaluator *m_geomeval;
+
+    QMap<int, std::vector<int> > visitedchildrennode;
+    // std::map<int, std::vector<const Geometry*> > visitedchildren;
+    void addToParent(const State &state, const AbstractNode &node);
+	void applyToChildren(State &state, const AbstractNode &node);
+
 };

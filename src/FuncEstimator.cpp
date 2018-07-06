@@ -24,13 +24,14 @@ QPair<Eigen::Vector3d, Eigen::Vector3d> FuncEstimator::find_cover_axis() {
         while (iterator != m_tree->end()) {
             std::string type = (*iterator)->type;
             if (type == "poly") {
-                if ((*iterator)->geom == nullptr) {
-                    std::cout << "null geom" << std::endl;
-                }
-                PolySet* newps = static_cast<PolySet*>(const_cast<Geometry*>((*iterator)->geom.get()));
-                BoundingBox bbox = newps->getBoundingBox();
-                Eigen::Vector3d center = bbox.center();
-                centroids.append(center);
+                // if ((*iterator)->geom == nullptr) {
+                //     std::cout << "null geom" << std::endl;
+                // }
+                // PolySet* newps = static_cast<PolySet*>(const_cast<Geometry*>((*iterator)->geom.get()));
+                // BoundingBox bbox = newps->getBoundingBox();
+                // Eigen::Vector3d center = bbox.center();
+                // centroids.append(center);
+                centroids.append((*iterator)->centroid);
             }
             ++iterator;
         }
@@ -40,15 +41,22 @@ QPair<Eigen::Vector3d, Eigen::Vector3d> FuncEstimator::find_cover_axis() {
             if (selected_ids.contains(idx)) {
                 std::string type = (*iterator)->type;
                 if (type == "poly") {
-                    PolySet* newps = static_cast<PolySet*>(const_cast<Geometry*>((*iterator)->geom.get()));
-                    BoundingBox bbox = newps->getBoundingBox();
-                    Eigen::Vector3d center = bbox.center();
-                    centroids.append(center);
+                    // PolySet* newps = static_cast<PolySet*>(const_cast<Geometry*>((*iterator)->geom.get()));
+                    // BoundingBox bbox = newps->getBoundingBox();
+                    // Eigen::Vector3d center = bbox.center();
+                    // centroids.append(center);
+                    centroids.append((*iterator)->centroid);
                 }
             }
             ++iterator;
         }
     }
+
+    for (int i = 0; i < centroids.length(); i++) {
+        std::cout << "centroid " << i << ", " << centroids[i][0] << " " << centroids[i][1] << " " << centroids[i][2] << std::endl;
+    }
+
+
     Eigen::MatrixXd centers(centroids.length(), 3);
     for (int i = 0; i < centroids.length(); i++) {
         centers.row(i) = centroids[i].transpose();

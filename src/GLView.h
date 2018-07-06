@@ -65,6 +65,10 @@ public:
 	Eigen::Vector3d centroid;
 	Color4f func_axis_color;
 	bool show_func_info;
+	Eigen::Vector3d ano_axis;
+	Eigen::Vector3d ano_centroid;
+	Color4f ano_func_axis_color;
+	bool show_ano_func_info;
 
 #ifdef ENABLE_OPENCSG
 	GLint shaderinfo[11];
@@ -83,5 +87,5 @@ private:
 	void decodeMarkerValue(double i, double l, int size_div_sm);
 	// ichao added -> put here in order to allow upper class to call it from outside.
 	void showFuncInfo(Eigen::Vector3d centroid, Eigen::Vector3d axis, const Color4f &col);
-	
+	void showAnotherFuncInfo(Eigen::Vector3d centroid, Eigen::Vector3d axis, const Color4f &col);
 };

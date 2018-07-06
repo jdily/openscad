@@ -70,7 +70,7 @@ public:
 	std::vector<Eigen::Vector3d> project_samples(std::vector<Eigen::Vector3d> samples, int index);
 	void clean_stroke();
 	void enable_func_info_viz(Eigen::Vector3d _centroid, Eigen::Vector3d _axis, QColor cl);
-
+	void enable_ano_func_info_viz(Eigen::Vector3d _centroid, Eigen::Vector3d _axis, QColor cl);
 public slots:
 	void ZoomIn(void);
 	void ZoomOut(void);

@@ -131,11 +131,17 @@ tree_hnode* vizTools::make_layout_graphviz(tree_hnode *tree, QString filename, Q
 
     QMap<int, shared_ptr<const Geometry>> tree_geom;
     tree_geom.clear();
+    QMap<int, Eigen::Vector3d> tree_centroid;
+    tree_centroid.clear();
+    QMap<int, Transform3d> tree_trans;
+    tree_trans.clear();
 
     while(iterator!= tree->end()) {
         std::string type = (*iterator)->type;
         int index = (*iterator)->idx;
         tree_geom.insert(index, (*iterator)->geom);
+        tree_centroid.insert(index, (*iterator)->centroid);
+        tree_trans.insert(index, (*iterator)->transform);
         std::cout << index << " " << (*iterator)->type <<  std::endl;
         // TODO : check should it start from 0
         QString indexstr = QString::number(index);
@@ -179,6 +185,8 @@ tree_hnode* vizTools::make_layout_graphviz(tree_hnode *tree, QString filename, Q
     while (iterator != layout_tree->end()) {
         int idx = (*iterator)->idx;
         (*iterator)->geom = tree_geom[idx];
+        (*iterator)->centroid = tree_centroid[idx];
+        (*iterator)->transform = tree_trans[idx];
         ++iterator;
     }
 

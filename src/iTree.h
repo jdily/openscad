@@ -67,6 +67,8 @@ struct hnode {
         pos_x = 0.0;
         pos_y = 0.0;
         geom = nullptr;
+        centroid = Eigen::Vector3d::Zero();
+        transform = Transform3d::Identity();
     }
     std::string type;
     int idx;
@@ -79,6 +81,9 @@ struct hnode {
     shared_ptr<CSGLeaf> csgnode;
     std::string obj_filename;
     shared_ptr<const Geometry> geom;
+    // the centroid of the geomemtry (derived from boundingbox)
+    Eigen::Vector3d centroid;
+    Transform3d transform;
     // check for LFD feature
 };
 

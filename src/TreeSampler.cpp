@@ -107,7 +107,7 @@ QMap<int, std::vector<Eigen::Vector3d>> TreeSampler::get_samples(const AbstractN
 }
 
 void TreeSampler::addToParent(const State &state, const AbstractNode &node) {
-        std::cout << "[addToParent]: add to parent for " << node.index() << " to " << state.parent()->index() << std::endl;
+    std::cout << "[addToParent]: add to parent for " << node.index() << " to " << state.parent()->index() << std::endl;
     if (this->visitedchildren.keys().contains(node.index())) {
         this->visitedchildren.remove(node.index());
     }
@@ -126,6 +126,7 @@ void TreeSampler::addToParent(const State &state, const AbstractNode &node) {
     }
 }
 
+// apply the transformation to the child.
 void TreeSampler::applyToChildren(State &state, const AbstractNode &node) {
     int sample_count = 0;
     std::cout << "[applyToChildren]: apply to children of " << node.index() << std::endl;
