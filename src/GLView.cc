@@ -873,8 +873,8 @@ void GLView::showFuncInfo(Eigen::Vector3d centroid, Eigen::Vector3d axis, const 
 
   glLineWidth(3*this->getDPI());
 	// auto axescolor = ColorMap::getColor(*this->colorscheme, RenderColor::AXES_COLOR);
-	Color4f axiscolor(255, 0, 0, 255);
-  glColor3f(axiscolor[0], axiscolor[1], axiscolor[2]);
+	// Color4f axiscolor(255, 0, 0, 255);
+  glColor3f(this->func_axis_color[0], func_axis_color[1], func_axis_color[2]);
 
   glBegin(GL_LINES);
   glVertex3d(pt0[0], pt0[1], pt0[2]);

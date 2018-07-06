@@ -571,8 +571,9 @@ void QGLView::clean_stroke() {
   updateGL();
 }
 
-void QGLView::enable_func_info_viz(Eigen::Vector3d _centroid, Eigen::Vector3d _axis) {
+void QGLView::enable_func_info_viz(Eigen::Vector3d _centroid, Eigen::Vector3d _axis, QColor cl) {
   this->show_func_info = true;
   this->centroid = _centroid;
   this->axis = _axis;
+  this->func_axis_color = Color4f(cl.red(), cl.green(), cl.blue(), 255);
 }

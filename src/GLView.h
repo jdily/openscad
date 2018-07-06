@@ -63,6 +63,7 @@ public:
 
 	Eigen::Vector3d axis;
 	Eigen::Vector3d centroid;
+	Color4f func_axis_color;
 	bool show_func_info;
 
 #ifdef ENABLE_OPENCSG

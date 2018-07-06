@@ -3511,15 +3511,13 @@ void MainWindow::example_groupSelectedSlot() {
 
 	GeomGroup *g_group = new GeomGroup(selected_list, 0);
 	exp_g_groups.append(g_group);
-	// exp_hids[0].push_back(idx);
-	// 	exp_gid = 0;
-	// exp_g_groups.clear();
-	// exp_g_groups.insert(exp_gid, selected_list);
 	exp_gid += 1;
 	std::cout << "there are " << exp_g_groups.size() << " groups to be transferred." << std::endl;
 
-	// [TODO] trigger the highlight of the tree visualizer?? 
-
+	// [TODO] viz the axis of selected things according to their functionality.
+	FuncEstimator *sug_fest = new FuncEstimator(sugg_tree, exp_g_groups[0]->selected_nids);
+	QPair<Eigen::Vector3d, Eigen::Vector3d> sug_func = sug_fest->find_cover_axis();
+	this->qglviewer_suggest->m_sugViewer0->enable_func_info_viz(sug_func.first, sug_func.second, QColor(0, 0, 255));
 
 }
 
@@ -3538,9 +3536,9 @@ void MainWindow::example_transferGeomSlot() {
 				// find middle axis
 				FuncEstimator *fest = new FuncEstimator(main_tree);
 				QPair<Eigen::Vector3d, Eigen::Vector3d> main_func = fest->find_cover_axis();
-				this->qglviewer_suggest->m_mainViewer->enable_func_info_viz(main_func.first, main_func.second);
-				// FuncEstimator *sug_fest = new FuncEstimator(sugg_tree, exp_g_groups[i]->selected_nids);
-				// QPair<Eigen::Vector3d, Eigen::Vector3d> sug_func = sug_fest->find_cover_axis();
+				this->qglviewer_suggest->m_mainViewer->enable_func_info_viz(main_func.first, main_func.second, QColor(255, 0, 0));
+				FuncEstimator *sug_fest = new FuncEstimator(sugg_tree, exp_g_groups[i]->selected_nids);
+				QPair<Eigen::Vector3d, Eigen::Vector3d> sug_func = sug_fest->find_cover_axis();
 				// // align sug_func to main_func 
 				// // translation for center point.
 				// Eigen::Vector3d translation = sug_func.first-main_func.first;

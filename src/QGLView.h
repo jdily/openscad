@@ -17,6 +17,7 @@
 #include "renderer.h"
 #include <QPainter>
 #include <QGraphicsEllipseItem>
+#include "colormap.h"
 
 class QGLView :
 #ifdef USE_QOPENGLWIDGET
@@ -68,7 +69,7 @@ public:
 	QMap<int, std::vector<Eigen::Vector3d>> project_samples_map(QMap<int, std::vector<Eigen::Vector3d>> sample_map);
 	std::vector<Eigen::Vector3d> project_samples(std::vector<Eigen::Vector3d> samples, int index);
 	void clean_stroke();
-	void enable_func_info_viz(Eigen::Vector3d _centroid, Eigen::Vector3d _axis);
+	void enable_func_info_viz(Eigen::Vector3d _centroid, Eigen::Vector3d _axis, QColor cl);
 
 public slots:
 	void ZoomIn(void);
