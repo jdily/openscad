@@ -309,6 +309,7 @@ public slots:
 	void export_htree_with_csginfo(tree_hnode* tree);
 	void slot_rerender_highlight(int, bool, int);
 	void transfer_slot();
+	void exp_add_new_geom(Transform3d matrix, GeomGroup* group);
 
 
 private:

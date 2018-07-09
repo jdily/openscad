@@ -5,7 +5,7 @@
 
 // different types of transform 
 // GEOM for geometry one
-// CONFIG for transformation as different ocnfiguration.
+// CONFIG for transformation as different configuration.
 enum class usage_type_e {
 	GEOM,
 	CONFIG

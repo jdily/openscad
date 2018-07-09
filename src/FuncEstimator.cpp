@@ -52,10 +52,9 @@ QPair<Eigen::Vector3d, Eigen::Vector3d> FuncEstimator::find_cover_axis() {
         }
     }
 
-    for (int i = 0; i < centroids.length(); i++) {
-        std::cout << "centroid " << i << ", " << centroids[i][0] << " " << centroids[i][1] << " " << centroids[i][2] << std::endl;
-    }
-
+    // for (int i = 0; i < centroids.length(); i++) {
+    //     std::cout << "centroid " << i << ", " << centroids[i][0] << " " << centroids[i][1] << " " << centroids[i][2] << std::endl;
+    // }
 
     Eigen::MatrixXd centers(centroids.length(), 3);
     for (int i = 0; i < centroids.length(); i++) {

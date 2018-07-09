@@ -105,6 +105,7 @@
 #include "TreeSampler.h"
 #include "Selector.h"
 #include "FuncEstimator.h"
+#include "primitives.h"
 
 // #include "GeomGroup.h"
 // #include "LFD.h"
@@ -3540,24 +3541,73 @@ void MainWindow::example_transferGeomSlot() {
 				this->qglviewer_suggest->m_mainViewer->enable_ano_func_info_viz(sug_func.first, sug_func.second, QColor(0, 0, 255));
 				// align sug_func to main_func 
 				// translation for center point.
-				// Eigen::Vector3d translation = sug_func.first-main_func.first;
-				// Eigen::Vector3d cross = sug_func.second.cross(main_func.second);
-				// Eigen::Quaterniond rot;
-				// rot.setFromTwoVectors(sug_func.second, main_func.second);
-				// Eigen::Matrix3d rotationMatrix;
-				// rotationMatrix = rot.toRotationMatrix();
-				// Transform3d matrix = Transform3d::Identity();
-				// matrix.translate(translation);
-				// matrix.rotate(rot);
-
-				// TransformNode tnode(&this->root_inst);
-				// insert this tnode with the rest of the poly node to the root?
+				Eigen::Vector3d translation = sug_func.first-main_func.first;
+				std::cout << translation[0] << " " << translation[1] << " " << translation[2] << " " << std::endl;
 				
+				Eigen::Quaterniond rot;
+				rot.setFromTwoVectors(sug_func.second, main_func.second);
+				Eigen::Matrix3d rotationMatrix;
+				rotationMatrix = rot.toRotationMatrix();
+				Transform3d matrix = Transform3d::Identity();
+				matrix.translate(translation);
+				matrix.rotate(rot);
+
+				// insert this tnode with the rest of the poly node to the root?
+				// add a translation node and a group node???
+				exp_add_new_geom(matrix, exp_g_groups[i]);
 			}
 		} 
 	}
 
 }
+
+void MainWindow::exp_add_new_geom(Transform3d matrix, GeomGroup* group) {
+	TransformNode tnode(&this->root_inst);
+	tnode.matrix = matrix;
+	GroupNode gnode(&this->root_inst);
+	QList<PrimitiveNode*> pnodes;
+
+
+// sugg_tree, exp_g_groups[0]->selected_nids
+	tree_hnode::iterator iter;
+    iter = sugg_tree->begin();
+	while (iter != sugg_tree->end()) {
+		if ((*iter)->type == "poly") {
+			std::cout << (*iter)->idx << " not nullptr" << std::endl;
+				// name -> cube
+			std::cout << (*iter)->node->name() << std::endl;
+			const PrimitiveNode* _pnode = dynamic_cast<const PrimitiveNode *>((*iter)->node);
+			PrimitiveNode *pnode = new PrimitiveNode(&this->root_inst, _pnode->type);
+			pnodes.append(pnode);
+				// toString-> detail of cube -> check how to generate this string
+		}
+		++iter;
+	}
+	// for (auto p : pnodes) {
+	// 	gnode.children.push_back(p);
+	// }
+
+
+	// [TODO] WHY this following line makes error after the entire function is executed?
+	// tnode.children.push_back(&gnode);
+
+
+
+
+	// std::cout << "original root child count : " << root_node->children.size() << std::endl;
+	// root_node->children.push_back(&gnode);
+	// std::cout << "after root child count : " << root_node->children.size() << std::endl;
+	// // compile it again??
+	// std::cout << "re-compile~~~" << std::endl;
+	// compileCSG(true);
+	// std::cout << "finish recompile~~~" << std::endl;
+	// how to check if the tree is updated?
+	// 1. check about the child number of root...
+	// 2. update the viz tree?
+
+
+}
+
 
 void MainWindow::export_htree_with_csginfo(tree_hnode* tree) {
 	std::string _filename = this->fileName.toStdString();
