@@ -3565,7 +3565,7 @@ void MainWindow::exp_add_new_geom(Transform3d matrix, GeomGroup* group) {
 	TransformNode *tnode = new TransformNode(&this->root_inst);
 	tnode->matrix = matrix;
 	// std::cout << tnode.toString() << std::endl;
-	GroupNode gnode(&this->root_inst);
+	GroupNode *gnode = new GroupNode(&this->root_inst);
 	// std::cout << tnode.children.size() << std::endl;
 	// tnode.children.push_back(&gnode);
 	// std::cout << tnode.children.size() << std::endl;
@@ -3599,7 +3599,8 @@ void MainWindow::exp_add_new_geom(Transform3d matrix, GeomGroup* group) {
 	}
 
 	for (int i = 0; i < pnodes.length(); i++) {
-		tnode->children.push_back(pnodes[i]);
+		// tnode->children.push_back(pnodes[i]);
+		gnode->children.push_back(pnodes[i]);
 		// tnode->children.push_back(tnodes[i]);
 		// root_node->children.push_back(pnodes[i]);
 	}
@@ -3609,15 +3610,14 @@ void MainWindow::exp_add_new_geom(Transform3d matrix, GeomGroup* group) {
 	// 	// gnode.children.push_back(p);
 	// }
 // 	std::cout << "group node has " << gnode.children.size() << " childrens" << std::endl;
-	root_node->children.push_back(tnode);
+	// root_node->children.push_back(tnode);
+	root_node->children.push_back(gnode);
 	// root_node->children.push_back(&tnode);
 	this->tree.clear_cache();
 	this->tree.getString(*this->root_node);
 
 	// [TODO] make the transferred geometry highlighted
 	csgReloadRender();
-
-
 }
 
 
