@@ -593,6 +593,68 @@ const Geometry *PrimitiveNode::createGeometry() const
 	return g;
 }
 
+void PrimitiveNode::copyGeom(const PrimitiveNode* pnode) {
+	switch (this->type) {
+	case primitive_type_e::CUBE:
+		this->x = pnode->x;
+		this->y = pnode->y;
+		this->z = pnode->z;
+		this->center = pnode->center;
+		// stream << "(size = [" << this->x << ", " << this->y << ", " << this->z << "], "
+		// 			 <<	"center = " << (center ? "true" : "false") << ")";
+		break;
+	case primitive_type_e::SPHERE:
+		this->fn = pnode->fn;
+		this->fa = pnode->fa;
+		this->fs = pnode->fs;
+		this->r1 = pnode->r1;
+		// stream << "($fn = " << this->fn << ", $fa = " << this->fa
+		// 			 << ", $fs = " << this->fs << ", r = " << this->r1 << ")";
+			break;
+	case primitive_type_e::CYLINDER:
+		this->fn = pnode->fn;
+		this->fa = pnode->fa;
+		this->fs = pnode->fs;
+		this->r1 = pnode->r1;
+		this->r2 = pnode->r2;
+		// stream << "($fn = " << this->fn << ", $fa = " << this->fa
+		// 			 << ", $fs = " << this->fs << ", h = " << this->h << ", r1 = " << this->r1
+		// 			 << ", r2 = " << this->r2 << ", center = " << (center ? "true" : "false") << ")";
+			break;
+	case primitive_type_e::POLYHEDRON:
+		this->points = pnode->points;
+		this->faces = pnode->faces;
+		this->convexity = pnode->convexity;
+		// stream << "(points = " << *this->points
+		// 			 << ", faces = " << *this->faces
+		// 			 << ", convexity = " << this->convexity << ")";
+			break;
+	case primitive_type_e::SQUARE:
+		this->x = pnode->x;
+		this->y = pnode->y;
+		this->center = pnode->center;
+		// stream << "(size = [" << this->x << ", " << this->y << "], "
+		// 			 << "center = " << (center ? "true" : "false") << ")";
+			break;
+	case primitive_type_e::CIRCLE:
+		this->fn = pnode->fn;
+		this->fa = pnode->fa;
+		this->fs = pnode->fs;
+		this->r1 = pnode->r1;
+		// stream << "($fn = " << this->fn << ", $fa = " << this->fa
+		// 			 << ", $fs = " << this->fs << ", r = " << this->r1 << ")";
+		break;
+	case primitive_type_e::POLYGON:
+		this->points = pnode->points;
+		this->paths = pnode->paths;
+		this->convexity = pnode->convexity;
+		// stream << "(points = " << *this->points << ", paths = " << *this->paths << ", convexity = " << this->convexity << ")";
+			break;
+	default:
+		assert(false);
+	}
+}
+
 std::string PrimitiveNode::toString() const
 {
 	std::stringstream stream;

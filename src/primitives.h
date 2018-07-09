@@ -73,6 +73,8 @@ public:
 		}
 	}
 
+	void copyGeom(const PrimitiveNode* pnode);
+
 	bool center;
 	double x, y, z, h, r1, r2;
 	double fn, fs, fa;
