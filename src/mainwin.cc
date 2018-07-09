@@ -3562,13 +3562,20 @@ void MainWindow::example_transferGeomSlot() {
 }
 
 void MainWindow::exp_add_new_geom(Transform3d matrix, GeomGroup* group) {
-	TransformNode tnode(&this->root_inst);
-	tnode.matrix = matrix;
+	TransformNode *tnode = new TransformNode(&this->root_inst);
+	tnode->matrix = matrix;
+	// std::cout << tnode.toString() << std::endl;
 	GroupNode gnode(&this->root_inst);
+	// std::cout << tnode.children.size() << std::endl;
+	// tnode.children.push_back(&gnode);
+	// std::cout << tnode.children.size() << std::endl;
+	// root_node->children.push_back(&tnode);
+	// this->tree.clear_cache();
+	// this->tree.getString(*this->root_node);
+	// csgReloadRender();
 	QList<PrimitiveNode*> pnodes;
+	QList<TransformNode*> tnodes;
 
-
-// sugg_tree, exp_g_groups[0]->selected_nids
 	tree_hnode::iterator iter;
     iter = sugg_tree->begin();
 	while (iter != sugg_tree->end()) {
@@ -3582,32 +3589,34 @@ void MainWindow::exp_add_new_geom(Transform3d matrix, GeomGroup* group) {
 				// we need to copy the content as well..
 				std::cout << pnode->toString() << std::endl;
 				pnodes.append(pnode);
+				// TransformNode _tnode(&this->root_inst);
+				// _tnode.matrix = (*iter)->transform;
+				// _tnode.children.push_back(pnode);
+				// tnodes.append(&_tnode);
 			}
-				// toString-> detail of cube -> check how to generate this string
 		}
 		++iter;
 	}
-	for (auto p : pnodes) {
-		gnode.children.push_back(p);
+
+	for (int i = 0; i < pnodes.length(); i++) {
+		tnode->children.push_back(pnodes[i]);
+		// tnode->children.push_back(tnodes[i]);
+		// root_node->children.push_back(pnodes[i]);
 	}
-	std::cout << "group node has " << gnode.children.size() << " childrens" << std::endl;
 
-
-	// [TODO] WHY this following line makes error after the entire function is executed?
-	// tnode.children.push_back(&gnode);
+	// for (auto p : pnodes) {
+	// 	tnode.children.push_back(p);
+	// 	// gnode.children.push_back(p);
+	// }
+// 	std::cout << "group node has " << gnode.children.size() << " childrens" << std::endl;
+	root_node->children.push_back(tnode);
 	// root_node->children.push_back(&tnode);
-	// std::cout << "original root child count : " << root_node->children.size() << std::endl;
-	root_node->children.push_back(&gnode);
-
-	// std::cout << "re-compile~~~" << std::endl;
-	// std::cout << "original tree node count : " << this->tree.node_count() << std::endl;
-
-	// compileCSG(true);
 	this->tree.clear_cache();
 	this->tree.getString(*this->root_node);
-	// std::cout << "after tree node count : " << this->tree.node_count() << std::endl;
+
+	// [TODO] make the transferred geometry highlighted
 	csgReloadRender();
-	// std::cout << "finish recompile~~~" << std::endl;
+
 
 }
 
