@@ -71,6 +71,7 @@ public:
 	void clean_stroke();
 	void enable_func_info_viz(Eigen::Vector3d _centroid, Eigen::Vector3d _axis, QColor cl);
 	void enable_ano_func_info_viz(Eigen::Vector3d _centroid, Eigen::Vector3d _axis, QColor cl);
+	void enable_transfer_manipulation(Eigen::Vector3d move_to_pos);
 public slots:
 	void ZoomIn(void);
 	void ZoomOut(void);
@@ -118,6 +119,8 @@ private:
 	
 	QMenu *right_menu;
 	// bool show_func_annotation;
+	bool manipulating;
+	QPointF last_local_mouse;
 
 
 	void gen_random_circles();
@@ -139,5 +142,6 @@ signals:
 	void doAnimateUpdate();
 	void exampleSelected(int exp_id);
 	void strokeUpdate(QList<QPolygonF> polys, QPainterPath stroke);
+	void manipulateUpdate(QPointF local_mouse);
 	// void sig_group_selected();
 };

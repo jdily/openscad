@@ -449,7 +449,7 @@ MainWindow::MainWindow(const QString &filename)
 	connect(this->qglviewer_suggest->m_sugViewers[0]->act_trans, SIGNAL(triggered()), this, SLOT(example_transferGeomSlot()));
 
 	connect(this->qglviewer_suggest->m_mainViewer, SIGNAL(strokeUpdate(QList<QPolygonF>, QPainterPath)), this, SLOT(example_strokeUpdatedSlot_main(QList<QPolygonF>, QPainterPath)));
-
+	connect(this->qglviewer_suggest->m_mainViewer, SIGNAL(manipulateUpdate(QPointF)), this, SLOT(rerender_manipulationSlot(QPointF)));
 #ifdef OPENSCAD_UPDATER
 	this->menuBar()->addMenu(AutoUpdater::updater()->updateMenu);
 #endif
@@ -1255,7 +1255,6 @@ void MainWindow::instantiateRoot()
 			
 		}
 	}
-
 	if (!this->root_node) {
 		if (parser_error_pos < 0) {
 			PRINT("ERROR: Compilation failed! (no top level object found)");
@@ -3541,7 +3540,8 @@ void MainWindow::example_transferGeomSlot() {
 				this->qglviewer_suggest->m_mainViewer->enable_ano_func_info_viz(sug_func.first, sug_func.second, QColor(0, 0, 255));
 
 				// Eigen::Vector3d translation = sug_func.first-main_func.first;
-				Eigen::Vector3d translation = main_func.first - sug_func.first;
+				// Eigen::Vector3d translation = main_func.first - sug_func.first;
+				Eigen::Vector3d translation = -sug_func.first;
 				std::cout << translation[0] << " " << translation[1] << " " << translation[2] << " " << std::endl;
 				
 				Eigen::Quaterniond rot;
@@ -3555,24 +3555,23 @@ void MainWindow::example_transferGeomSlot() {
 				// insert this tnode with the rest of the poly node to the root?
 				// add a translation node and a group node???
 				exp_add_new_geom(matrix, exp_g_groups[i]);
+				this->qglviewer_suggest->m_mainViewer->enable_transfer_manipulation(main_func.first);
+
 			}
 		} 
 	}
 
 }
 
+
+
 void MainWindow::exp_add_new_geom(Transform3d matrix, GeomGroup* group) {
 	TransformNode *tnode = new TransformNode(&this->root_inst);
+	tnode->trans_src = src_type_e::EXAMPLE;
 	tnode->matrix = matrix;
 	// std::cout << tnode.toString() << std::endl;
 	GroupNode *gnode = new GroupNode(&this->root_inst);
-	// std::cout << tnode.children.size() << std::endl;
-	// tnode.children.push_back(&gnode);
-	// std::cout << tnode.children.size() << std::endl;
-	// root_node->children.push_back(&tnode);
-	// this->tree.clear_cache();
-	// this->tree.getString(*this->root_node);
-	// csgReloadRender();
+
 	QList<PrimitiveNode*> pnodes;
 	QList<TransformNode*> tnodes;
 
@@ -3616,15 +3615,57 @@ void MainWindow::exp_add_new_geom(Transform3d matrix, GeomGroup* group) {
 
 	
 	std::cout << "before tree node count : " << this->tree.node_count() << std::endl;
-
-	// root_node->children.push_back(gnode);
-	// root_node->children.push_back(&tnode);
 	this->tree.clear_cache();
 	this->tree.getString(*this->root_node);
 
 	std::cout << "after tree node count : " << this->tree.node_count() << std::endl;
-	// [TODO] make the transferred geometry highlighted
+	
 	csgReloadRender();
+
+	// [TODO] make the transferred geometry highlighted
+
+	// [TODO] update the cur viz tree.
+	GeometryEvaluator geomeval(this->tree);
+	simpTreeConverter *sconv = new simpTreeConverter(&tree, &geomeval);
+	tree_hnode* htree = sconv->convert_tree(&tree);
+	std::vector<std::string> tmps;
+	std::string _filename = this->fileName.toStdString();
+	boost::split(tmps, _filename, boost::is_any_of("/"));
+	std::vector<std::string> strs;
+	boost::split(strs, tmps[tmps.size()-1], boost::is_any_of("."));
+	std::cout << strs[0] << std::endl;
+	std::cout << "finish convert" << std::endl;
+
+	tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()), this->data_basepath);
+	main_tree = new tree_hnode(*layout_tree);
+	pair_viewer->setSTree(layout_tree, 0);
+
+}
+
+void MainWindow::rerender_manipulationSlot(QPointF cur_offset) {
+	// need to rerender according to cur_pos;
+	// only update the translation part...
+	// 
+	// find the right transformnode -> translate it...
+	for (AbstractNode* child : this->root_node->children) {
+		if (child->name() == "transform") {
+			// cast to transformation node..
+			TransformNode *tnode = dynamic_cast<TransformNode *>(child);
+			// const PrimitiveNode* _pnode = dynamic_cast<const PrimitiveNode *>((*iter)->node);
+			if (tnode->trans_src == src_type_e::EXAMPLE) {
+				Eigen::Vector3d trans = Eigen::Vector3d::Zero();
+				trans[0] = cur_offset.x();
+				trans[1] = cur_offset.y();
+				std::cout << tnode->toString() << std::endl;
+				tnode->matrix.translate(trans);
+				std::cout << tnode->toString() << std::endl;
+			}
+		}
+	}
+	// [todo] the transform node is updated, we have to check why the re-render dead..
+	// this->tree.clear_cache();
+	// this->tree.getString(*this->root_node);
+	// csgReloadRender();
 }
 
 

@@ -87,7 +87,7 @@ Response NodeDumper::visit(State &state, const AbstractNode &node)
 		dump << node;
 		dump << dumpChildBlock(node);
 		this->cache.insert(node, dump.str());
-		std::cout << "dump abstract node : " << dump.str() << std::endl;
+		// std::cout << "dump abstract node : " << dump.str() << std::endl;
 	}
 
 	handleVisitedChildren(state, node);
@@ -102,7 +102,7 @@ Response NodeDumper::visit(State &state, const RootNode &node)
 	if (isCached(node)) return Response::PruneTraversal;
 
 	// DEBUG
-	std::cout << "dump root node" << std::endl;
+	// std::cout << "dump root node" << std::endl;
 
 	if (state.isPostfix()) {
 		std::stringstream dump;

@@ -303,6 +303,7 @@ public slots:
 	void example_strokeUpdatedSlot_main(QList<QPolygonF> stroke_polys, QPainterPath stroke_path);
 	void example_groupSelectedSlot();
 	void example_transferGeomSlot();
+	void rerender_manipulationSlot(QPointF cur_pos);
 
 	// tmp function for loading
 	void tmp_loadSimilarExample(int example_id, QString exp_filename);

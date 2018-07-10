@@ -10,6 +10,10 @@ enum class usage_type_e {
 	GEOM,
 	CONFIG
 };
+enum class src_type_e {
+	ORIGIN,
+	EXAMPLE
+};
 
 class TransformNode : public AbstractNode
 {
@@ -21,4 +25,5 @@ public:
 
 	Transform3d matrix;
 	usage_type_e use_type;
+	src_type_e trans_src; 
 };

@@ -66,3 +66,4 @@ external/LFD/fftw/*
 *.ecc
 *.fd
 *.OBJ
+libraries/MCAD

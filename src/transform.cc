@@ -58,6 +58,7 @@ AbstractNode *TransformModule::instantiate(const Context *ctx, const ModuleInsta
 	auto node = new TransformNode(inst);
 	// ichao added 
 	node->use_type = usage_type_e::GEOM;
+	node->trans_src = src_type_e::ORIGIN;
 	AssignmentList args;
 
 	switch (this->type) {

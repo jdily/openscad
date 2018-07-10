@@ -97,6 +97,7 @@ void QGLView::init()
   // show_func_annotation = false;
   this->axis = Eigen::Vector3d::Zero();
   this->centroid = Eigen::Vector3d::Zero();
+  manipulating = false;
   
 }
 
@@ -405,7 +406,18 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
   auto this_mouse = event->globalPos();
   double dx = (this_mouse.x() - last_mouse.x()) * 0.7;
   double dy = (this_mouse.y() - last_mouse.y()) * 0.7;
-  if (mouse_drag_active) {
+  auto this_local_mouse = event->localPos();
+  if (manipulating) {
+    QPointF d_mouse = this_local_mouse - last_local_mouse;
+    d_mouse.setX(d_mouse.x()*0.7);
+    d_mouse.setY(d_mouse.y()*0.7);
+    // std::cout << local_mouse.x() << " " << local_mouse.y() << std::endl;
+    // [TODO] we probably need to invoke re-rendering things based on current mouse position..?
+    emit manipulateUpdate(d_mouse);
+  }
+
+
+  if (mouse_drag_active && !manipulating) {
     // std::cout << "mouse drag active " << std::endl;
     if (event->buttons() & Qt::LeftButton
 #ifdef Q_OS_MAC
@@ -482,6 +494,7 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
     emit doAnimateUpdate();
   } 
   last_mouse = this_mouse;
+  last_local_mouse = this_local_mouse;
 }
 
 void QGLView::mouseReleaseEvent(QMouseEvent*)
@@ -583,4 +596,42 @@ void QGLView::enable_ano_func_info_viz(Eigen::Vector3d _centroid, Eigen::Vector3
   this->ano_centroid = _centroid;
   this->ano_axis = _axis;
   this->ano_func_axis_color = Color4f(cl.red(), cl.green(), cl.blue(), 255);
+}
+
+void QGLView::enable_transfer_manipulation(Eigen::Vector3d move_to_pos) {
+  std::cout << "enable transfer manipulation.." << std::endl;
+  this->manipulating = true;
+  this->mouse_drag_active = false;
+  QCursor c = cursor();
+
+  // use the current projection to infer the right position
+  setupCamera();
+	int viewport[4];
+	GLdouble modelview[16];
+	GLdouble projection[16];
+
+	glGetIntegerv( GL_VIEWPORT, viewport);
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+	glGetDoublev(GL_PROJECTION_MATRIX, projection);
+
+	double x = move_to_pos[0] * this->getDPI();
+	double y = viewport[3] - move_to_pos[1] * this->getDPI();
+	double z = move_to_pos[2];
+	// glGetError(); // clear error state so we don't pick up previous errors
+	// glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
+	// auto glError = glGetError();
+	// if (glError != GL_NO_ERROR) {
+	// 	return;
+	// }
+
+	// if (z == 1) return; // outside object
+	GLdouble px, py, pz;
+	auto success = gluUnProject(x, y, z, modelview, projection, viewport, &px, &py, &pz);
+
+  // c.setPos(mapToGlobal(QPoint(px, py)));
+  // [TODO] deal with the right mouse position.
+  c.setPos(mapToGlobal(QPoint(cur_width/2, cur_height/2)));
+  std::cout << move_to_pos[0] << " " << move_to_pos[1] << " " << move_to_pos[2] << std::endl;
+  // c.setPos(mapToGlobal(QPoint(move_to_pos[0], move_to_pos[1])));
+  setCursor(c);
 }

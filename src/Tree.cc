@@ -31,9 +31,9 @@ const std::string &Tree::getString(const AbstractNode &node) const
 		this->nodecache.clear();
 		this->nodeidcache.clear();
 		NodeDumper dumper(this->nodecache, false);
-		std::cout << "before traverse" << std::endl;
+		// std::cout << "before traverse" << std::endl;
 		dumper.traverse(*this->root_node);
-		std::cout << "after traverse" << std::endl;
+		// std::cout << "after traverse" << std::endl;
 		assert(this->nodecache.contains(*this->root_node) &&
 					 "NodeDumper failed to create a cache");
 	} else {
