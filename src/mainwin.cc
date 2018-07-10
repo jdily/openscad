@@ -3539,9 +3539,9 @@ void MainWindow::example_transferGeomSlot() {
 				FuncEstimator *sug_fest = new FuncEstimator(sugg_tree, exp_g_groups[i]->selected_nids);
 				QPair<Eigen::Vector3d, Eigen::Vector3d> sug_func = sug_fest->find_cover_axis();
 				this->qglviewer_suggest->m_mainViewer->enable_ano_func_info_viz(sug_func.first, sug_func.second, QColor(0, 0, 255));
-				// align sug_func to main_func 
-				// translation for center point.
-				Eigen::Vector3d translation = sug_func.first-main_func.first;
+
+				// Eigen::Vector3d translation = sug_func.first-main_func.first;
+				Eigen::Vector3d translation = main_func.first - sug_func.first;
 				std::cout << translation[0] << " " << translation[1] << " " << translation[2] << " " << std::endl;
 				
 				Eigen::Quaterniond rot;
@@ -3589,10 +3589,10 @@ void MainWindow::exp_add_new_geom(Transform3d matrix, GeomGroup* group) {
 				// we need to copy the content as well..
 				std::cout << pnode->toString() << std::endl;
 				pnodes.append(pnode);
-				// TransformNode _tnode(&this->root_inst);
-				// _tnode.matrix = (*iter)->transform;
-				// _tnode.children.push_back(pnode);
-				// tnodes.append(&_tnode);
+				TransformNode *_tnode = new TransformNode(&this->root_inst);
+				_tnode->matrix = (*iter)->transform;
+				_tnode->children.push_back(pnode);
+				tnodes.append(_tnode);
 			}
 		}
 		++iter;
@@ -3600,8 +3600,9 @@ void MainWindow::exp_add_new_geom(Transform3d matrix, GeomGroup* group) {
 
 	for (int i = 0; i < pnodes.length(); i++) {
 		// tnode->children.push_back(pnodes[i]);
-		gnode->children.push_back(pnodes[i]);
-		// tnode->children.push_back(tnodes[i]);
+		// gnode->children.push_back(pnodes[i]);
+		gnode->children.push_back(tnodes[i]);
+		// tnode->children.push_back(tnodes[i]);  
 		// root_node->children.push_back(pnodes[i]);
 	}
 
@@ -3610,12 +3611,18 @@ void MainWindow::exp_add_new_geom(Transform3d matrix, GeomGroup* group) {
 	// 	// gnode.children.push_back(p);
 	// }
 // 	std::cout << "group node has " << gnode.children.size() << " childrens" << std::endl;
-	// root_node->children.push_back(tnode);
-	root_node->children.push_back(gnode);
+	tnode->children.push_back(gnode);
+	root_node->children.push_back(tnode);
+
+	
+	std::cout << "before tree node count : " << this->tree.node_count() << std::endl;
+
+	// root_node->children.push_back(gnode);
 	// root_node->children.push_back(&tnode);
 	this->tree.clear_cache();
 	this->tree.getString(*this->root_node);
 
+	std::cout << "after tree node count : " << this->tree.node_count() << std::endl;
 	// [TODO] make the transferred geometry highlighted
 	csgReloadRender();
 }
