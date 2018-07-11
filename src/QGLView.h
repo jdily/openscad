@@ -101,6 +101,9 @@ private:
 	void mouseReleaseEvent(QMouseEvent *event) override;
 	void mouseDoubleClickEvent(QMouseEvent *event) override;
 
+	Eigen::Vector3d unproj(QPointF cur_pt);
+
+
 	QPainter *painter;
 	QPointF last_point;
 	bool stroking;
@@ -121,7 +124,7 @@ private:
 	// bool show_func_annotation;
 	bool manipulating;
 	QPointF last_local_mouse;
-
+	Eigen::Vector3d last_unproj_mouse;
 
 	void gen_random_circles();
 	void check_covered();
@@ -142,6 +145,6 @@ signals:
 	void doAnimateUpdate();
 	void exampleSelected(int exp_id);
 	void strokeUpdate(QList<QPolygonF> polys, QPainterPath stroke);
-	void manipulateUpdate(QPointF local_mouse);
+	void manipulateUpdate(Eigen::Vector3d mani_point);
 	// void sig_group_selected();
 };

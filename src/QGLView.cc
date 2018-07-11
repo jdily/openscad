@@ -98,7 +98,7 @@ void QGLView::init()
   this->axis = Eigen::Vector3d::Zero();
   this->centroid = Eigen::Vector3d::Zero();
   manipulating = false;
-  
+
 }
 
 void QGLView::resetView()
@@ -210,6 +210,8 @@ void QGLView::resizeGL(int w, int h)
   std::cout << "resize : " << w << " " << h << std::endl;
   cur_width = w;
   cur_height = h;
+  last_local_mouse = QPointF(cur_width/2, cur_height/2);
+  std::cout << "last_local_mouse = " << last_local_mouse.x() << " " << last_local_mouse.y() << std::endl;
   GLView::resizeGL(w,h);
 }
 
@@ -387,6 +389,7 @@ void QGLView::mousePressEvent(QMouseEvent *event)
 {
   mouse_drag_active = true;
   last_mouse = event->globalPos();
+  
   if(event->button() == Qt::RightButton) {
     if (event->modifiers() == Qt::ControlModifier) {
       QString mes = QString("right mouse button is pressed at viewer %1").arg(viewer_id);
@@ -401,6 +404,25 @@ void QGLView::mousePressEvent(QMouseEvent *event)
   }
 }
 
+Eigen::Vector3d QGLView::unproj(QPointF cur_pt) {
+    setupCamera();
+    int viewport[4];
+    GLdouble modelview[16];
+    GLdouble projection[16];
+    glGetIntegerv( GL_VIEWPORT, viewport);
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+    glGetDoublev(GL_PROJECTION_MATRIX, projection);
+	  double x = cur_pt.x() * this->getDPI();
+	  double y = viewport[3] - cur_pt.y() * this->getDPI();
+	  GLdouble z;
+	  glGetError(); // clear error state so we don't pick up previous errors
+	  glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
+    GLdouble px, py, pz;
+	  auto success = gluUnProject(x, y, z, modelview, projection, viewport, &px, &py, &pz);
+    Eigen::Vector3d out_pos(px, py, pz);
+    return out_pos;
+}
+
 void QGLView::mouseMoveEvent(QMouseEvent *event)
 {
   auto this_mouse = event->globalPos();
@@ -408,12 +430,37 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
   double dy = (this_mouse.y() - last_mouse.y()) * 0.7;
   auto this_local_mouse = event->localPos();
   if (manipulating) {
+    std::cout << "this local mouse : " << this_local_mouse.x() << " " << this_local_mouse.y() << std::endl;
+    std::cout << "last local mouse : " << last_local_mouse.x() << " " << last_local_mouse.y() << std::endl;
     QPointF d_mouse = this_local_mouse - last_local_mouse;
-    d_mouse.setX(d_mouse.x()*0.7);
-    d_mouse.setY(d_mouse.y()*0.7);
-    // std::cout << local_mouse.x() << " " << local_mouse.y() << std::endl;
-    // [TODO] we probably need to invoke re-rendering things based on current mouse position..?
-    emit manipulateUpdate(d_mouse);
+
+    // [TODO] -> unproject "this_local_mouse" to the 3D coordinate as Eigen::Vector3d
+    // emit the manipulateUpdate using it
+    // update the translation difference in 3d space..
+    // use the current projection to infer the right position
+    // setupCamera();
+    // int viewport[4];
+    // GLdouble modelview[16];
+    // GLdouble projection[16];
+    // glGetIntegerv( GL_VIEWPORT, viewport);
+    // glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+    // glGetDoublev(GL_PROJECTION_MATRIX, projection);
+	  // double x = this_local_mouse.x() * this->getDPI();
+	  // double y = viewport[3] - this_local_mouse.y() * this->getDPI();
+	  // GLdouble z;
+	  // glGetError(); // clear error state so we don't pick up previous errors
+	  // glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
+    // GLdouble px, py, pz;
+	  // auto success = gluUnProject(x, y, z, modelview, projection, viewport, &px, &py, &pz);
+    // Eigen::Vector3d move_to_pos(px, py, pz);
+    Eigen::Vector3d move_to_pos = unproj(this_local_mouse);
+    Eigen::Vector3d offset = move_to_pos - last_unproj_mouse;
+    // if (success == GL_TRUE) {
+    //   cam.object_trans -= Vector3d(px, py, pz);
+    //   updateGL();
+    //   emit doAnimateUpdate();
+	  // }
+    emit manipulateUpdate(offset);
   }
 
 
@@ -634,4 +681,6 @@ void QGLView::enable_transfer_manipulation(Eigen::Vector3d move_to_pos) {
   std::cout << move_to_pos[0] << " " << move_to_pos[1] << " " << move_to_pos[2] << std::endl;
   // c.setPos(mapToGlobal(QPoint(move_to_pos[0], move_to_pos[1])));
   setCursor(c);
+  last_local_mouse = QPointF(cur_width/2, cur_height/2);
+  last_unproj_mouse = unproj(last_local_mouse);
 }

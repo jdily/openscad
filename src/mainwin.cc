@@ -110,6 +110,12 @@
 // #include "GeomGroup.h"
 // #include "LFD.h"
 
+//the following are UBUNTU/LINUX ONLY terminal color codes.
+#define COLOR_RESET   "\033[0m"
+#define COLOR_RED     "\033[31m"      /* Red */
+
+
+
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 #include <QTextDocument>
 #define QT_HTML_ESCAPE(qstring) Qt::escape(qstring)
@@ -449,7 +455,7 @@ MainWindow::MainWindow(const QString &filename)
 	connect(this->qglviewer_suggest->m_sugViewers[0]->act_trans, SIGNAL(triggered()), this, SLOT(example_transferGeomSlot()));
 
 	connect(this->qglviewer_suggest->m_mainViewer, SIGNAL(strokeUpdate(QList<QPolygonF>, QPainterPath)), this, SLOT(example_strokeUpdatedSlot_main(QList<QPolygonF>, QPainterPath)));
-	connect(this->qglviewer_suggest->m_mainViewer, SIGNAL(manipulateUpdate(QPointF)), this, SLOT(rerender_manipulationSlot(QPointF)));
+	connect(this->qglviewer_suggest->m_mainViewer, SIGNAL(manipulateUpdate(Eigen::Vector3d)), this, SLOT(rerender_manipulationSlot(Eigen::Vector3d)));
 #ifdef OPENSCAD_UPDATER
 	this->menuBar()->addMenu(AutoUpdater::updater()->updateMenu);
 #endif
@@ -1334,8 +1340,8 @@ void MainWindow::example_compileCSG(int example_id, bool procevents) {
 			this->processEvents();
 		}
 	}
-	PRINTB("root products size : %d...", this->exp_root_products[example_id]->size());
-	PRINTB("root produces : %s", this->exp_root_products[example_id]->dump());
+	// PRINTB("root products size : %d...", this->exp_root_products[example_id]->size());
+	// PRINTB("root produces : %s", this->exp_root_products[example_id]->dump());
 
 	const std::vector<shared_ptr<CSGNode> > &highlight_terms = csgrenderer.getHighlightNodes();
 	PRINTB("Highlight term size for example 0: %d...", highlight_terms.size());
@@ -2141,6 +2147,7 @@ void MainWindow::csgReloadRender()
 {
 	std::cout << "reload render" << std::endl;
 	if (this->root_node) compileCSG(true);
+	std::cout << "finish compile CSG" << std::endl;
 	// Go to non-CGAL view mode
 	std::cout << "view action thrown together : " << viewActionThrownTogether->isChecked() << std::endl;
 	if (viewActionThrownTogether->isChecked()) {
@@ -2686,8 +2693,11 @@ void MainWindow::viewModePreview()
 		viewModeActionsUncheck();
 		viewActionPreview->setChecked(true);
 		this->qglviewer_suggest->m_mainViewer->setRenderer(this->opencsgRenderer ? (Renderer *)this->opencsgRenderer : (Renderer *)this->thrownTogetherRenderer);
+		std::cout << "finish set renderer" << std::endl;
 		this->qglviewer_suggest->m_mainViewer->updateColorScheme();
+		std::cout << "finish update color scheme" << std::endl;
 		this->qglviewer_suggest->m_mainViewer->updateGL();
+		std::cout << "finish update GL" << std::endl;
 	} else {
 		viewModeThrownTogether();
 	}
@@ -3551,12 +3561,10 @@ void MainWindow::example_transferGeomSlot() {
 				Transform3d matrix = Transform3d::Identity();
 				matrix.translate(translation);
 				matrix.rotate(rot);
-
 				// insert this tnode with the rest of the poly node to the root?
 				// add a translation node and a group node???
 				exp_add_new_geom(matrix, exp_g_groups[i]);
 				this->qglviewer_suggest->m_mainViewer->enable_transfer_manipulation(main_func.first);
-
 			}
 		} 
 	}
@@ -3612,8 +3620,6 @@ void MainWindow::exp_add_new_geom(Transform3d matrix, GeomGroup* group) {
 // 	std::cout << "group node has " << gnode.children.size() << " childrens" << std::endl;
 	tnode->children.push_back(gnode);
 	root_node->children.push_back(tnode);
-
-	
 	std::cout << "before tree node count : " << this->tree.node_count() << std::endl;
 	this->tree.clear_cache();
 	this->tree.getString(*this->root_node);
@@ -3642,7 +3648,7 @@ void MainWindow::exp_add_new_geom(Transform3d matrix, GeomGroup* group) {
 
 }
 
-void MainWindow::rerender_manipulationSlot(QPointF cur_offset) {
+void MainWindow::rerender_manipulationSlot(Eigen::Vector3d unproj_offset) {
 	// need to rerender according to cur_pos;
 	// only update the translation part...
 	// 
@@ -3650,21 +3656,21 @@ void MainWindow::rerender_manipulationSlot(QPointF cur_offset) {
 	for (AbstractNode* child : this->root_node->children) {
 		if (child->name() == "transform") {
 			// cast to transformation node..
-			TransformNode *tnode = dynamic_cast<TransformNode *>(child);
+			TransformNode *tnode = dynamic_cast<TransformNode*>(child);
 			// const PrimitiveNode* _pnode = dynamic_cast<const PrimitiveNode *>((*iter)->node);
 			if (tnode->trans_src == src_type_e::EXAMPLE) {
 				Eigen::Vector3d trans = Eigen::Vector3d::Zero();
-				trans[0] = cur_offset.x();
-				trans[1] = cur_offset.y();
-				std::cout << tnode->toString() << std::endl;
+				trans[0] = unproj_offset[0];
+				trans[1] = unproj_offset[1];
+				std::cout << COLOR_RED << tnode->toString() << COLOR_RESET << std::endl;
 				tnode->matrix.translate(trans);
-				std::cout << tnode->toString() << std::endl;
+				std::cout << COLOR_RED << tnode->toString() << COLOR_RESET << std::endl;
 			}
 		}
 	}
 	// [todo] the transform node is updated, we have to check why the re-render dead..
-	// this->tree.clear_cache();
-	// this->tree.getString(*this->root_node);
+	this->tree.clear_cache();
+	this->tree.getString(*this->root_node);
 	// csgReloadRender();
 }
 

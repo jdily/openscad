@@ -56,7 +56,7 @@ shared_ptr<class CSGNode> CSGTreeEvaluator::buildCSGTree_w_hb(const AbstractNode
 		std::cout << hids[i] << std::endl;
 		this->stored_term[hids[i]]->setHighlight(true);
 	}
-	check_stored_term();
+	// check_stored_term();
 	// for (int i = 0; i < this->stored_term.size(); i++) {
 	// 	if (std::find(hids.begin(), hids.end(), i) == hids.end()) {
 	// 		this->stored_term[i]->setBackground(true);
@@ -72,18 +72,18 @@ shared_ptr<class CSGNode> CSGTreeEvaluator::buildCSGTree_w_hb(const AbstractNode
 	// 		t.reset();
 	// 	}
 	// }
-	std::cout << "number of highlight : " << this->highlightNodes.size() << std::endl;
-	std::cout << "number of background : " << this->backgroundNodes.size() << std::endl;
+	// std::cout << "number of highlight : " << this->highlightNodes.size() << std::endl;
+	// std::cout << "number of background : " << this->backgroundNodes.size() << std::endl;
 	return this->rootNode = t;
 }
 
 void CSGTreeEvaluator::check_stored_term() {
 	// go through all keys
-	std::cout << "check stored term" << std::endl;
-	std::cout << "stored size : " << stored_term.size() << std::endl;
+	// std::cout << "check stored term" << std::endl;
+	// std::cout << "stored size : " << stored_term.size() << std::endl;
 
-	std::cout << "number of highlight : " << this->highlightNodes.size() << std::endl;
-	std::cout << "number of background : " << this->backgroundNodes.size() << std::endl;
+	// std::cout << "number of highlight : " << this->highlightNodes.size() << std::endl;
+	// std::cout << "number of background : " << this->backgroundNodes.size() << std::endl;
 	// for (int i = 1; i < (int)this->stored_term.size()+1; i++) {
 	// 	// std::cout << this->stored_term[i]->getFlags() << std::endl;
 	// 	if (this->stored_term[i]->isHighlight()) {
