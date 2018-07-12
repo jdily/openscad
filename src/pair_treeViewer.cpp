@@ -9,80 +9,80 @@ pair_treeViewer::pair_treeViewer(QWidget *parent) : QWidget(parent) {
     viewer1->setName(QString("viewer1"));
     viewer0->setID(0);
     viewer1->setID(1);
-    // layout->addWidget(viewer0.get());
-    // layout->addWidget(viewer1.get());
-    // this->setLayout(layout);
+    layout->addWidget(viewer0.get());
+    layout->addWidget(viewer1.get());
+    this->setLayout(layout);
 
     // change to grid layout
-    grid_layout->addWidget(viewer0.get(), 0, 0, 1, 1);
-    grid_layout->addWidget(viewer1.get(), 0, 1, 1, 1);
+    // grid_layout->addWidget(viewer0.get(), 0, 0, 1, 1);
+    // grid_layout->addWidget(viewer1.get(), 0, 1, 1, 1);
 
-    corr_list = new QTableWidget(this);
-    corr_list->setColumnCount(2);
-    QStringList colHeaders;
-    colHeaders.push_back(QString("src"));
-    colHeaders.push_back(QString("example"));
-    corr_list->setHorizontalHeaderLabels(colHeaders);
-    corr_list->horizontalHeader()->setStretchLastSection(true);
-    cor_button = new QPushButton("Correspondence", this);
-    connect(cor_button, SIGNAL(clicked()), this, SLOT(est_correspondences()));
-    corr_layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
-    corr_layout->addWidget(corr_list);
-    corr_layout->addWidget(cor_button);
-    corr_groupbox = new QGroupBox(tr("Correspondences"));
-    corr_groupbox->setLayout(corr_layout);
-    grid_layout->addWidget(corr_groupbox, 1, 0, 1, 1);
+    // corr_list = new QTableWidget(this);
+    // corr_list->setColumnCount(2);
+    // QStringList colHeaders;
+    // colHeaders.push_back(QString("src"));
+    // colHeaders.push_back(QString("example"));
+    // corr_list->setHorizontalHeaderLabels(colHeaders);
+    // corr_list->horizontalHeader()->setStretchLastSection(true);
+    // cor_button = new QPushButton("Correspondence", this);
+    // connect(cor_button, SIGNAL(clicked()), this, SLOT(est_correspondences()));
+    // corr_layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
+    // corr_layout->addWidget(corr_list);
+    // corr_layout->addWidget(cor_button);
+    // corr_groupbox = new QGroupBox(tr("Correspondences"));
+    // corr_groupbox->setLayout(corr_layout);
+    // grid_layout->addWidget(corr_groupbox, 1, 0, 1, 1);
 
-    relation_list = new QTableWidget(this);
-    relation_list->setColumnCount(3);
-    colHeaders.clear();
-    colHeaders.push_back(QString("first"));
-    colHeaders.push_back(QString("second"));
-    colHeaders.push_back(QString("relationship"));
-    relation_list->setHorizontalHeaderLabels(colHeaders);
-    relation_list->horizontalHeader()->setStretchLastSection(true);
-    // info_groupbox = new QGroupBox(tr(""))
-    // QString str = tablist->horizontalHeaderItem(1)->text();
-    // std::cout << "test column header : " << str.toStdString() << std::endl;
-    // grid_layout->addWidget(corr_list, 1, 0, 1, 1);
-    // TODO : add buttons..
-    // but_group = new QButtonGroup(this);
-    trans_button = new QPushButton("Transfer", this);
-    relation_button = new QPushButton("Relation", this);
-    connect(relation_button, SIGNAL(clicked()), this, SLOT(est_relations()));
+    // relation_list = new QTableWidget(this);
+    // relation_list->setColumnCount(3);
+    // colHeaders.clear();
+    // colHeaders.push_back(QString("first"));
+    // colHeaders.push_back(QString("second"));
+    // colHeaders.push_back(QString("relationship"));
+    // relation_list->setHorizontalHeaderLabels(colHeaders);
+    // relation_list->horizontalHeader()->setStretchLastSection(true);
+    // // info_groupbox = new QGroupBox(tr(""))
+    // // QString str = tablist->horizontalHeaderItem(1)->text();
+    // // std::cout << "test column header : " << str.toStdString() << std::endl;
+    // // grid_layout->addWidget(corr_list, 1, 0, 1, 1);
+    // // TODO : add buttons..
+    // // but_group = new QButtonGroup(this);
+    // trans_button = new QPushButton("Transfer", this);
+    // relation_button = new QPushButton("Relation", this);
+    // connect(relation_button, SIGNAL(clicked()), this, SLOT(est_relations()));
 
-    rela_drop = new QComboBox(this);
-    QString s = "cover";
-    rela_drop->addItem(s);
-    s = "hinge";
-    rela_drop->addItem(s);
-    s = "sliding";
-    rela_drop->addItem(s);
-    s = "lock";
-    rela_drop->addItem(s);
+    // rela_drop = new QComboBox(this);
+    // QString s = "cover";
+    // rela_drop->addItem(s);
+    // s = "hinge";
+    // rela_drop->addItem(s);
+    // s = "sliding";
+    // rela_drop->addItem(s);
+    // s = "lock";
+    // rela_drop->addItem(s);
 
 
-    but_layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
-    but_layout->addWidget(relation_list);
-    // but_layout->addWidget(cor_button);
-    but_layout->addWidget(trans_button);
-    but_layout->addWidget(rela_drop);
-    but_layout->addWidget(relation_button);
+    // but_layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
+    // but_layout->addWidget(relation_list);
+    // // but_layout->addWidget(cor_button);
+    // but_layout->addWidget(trans_button);
+    // but_layout->addWidget(rela_drop);
+    // but_layout->addWidget(relation_button);
     
-    but_groupbox = new QGroupBox(tr("Relationships"));
-    but_groupbox->setLayout(but_layout);
+    // but_groupbox = new QGroupBox(tr("Relationships"));
+    // but_groupbox->setLayout(but_layout);
     
-    grid_layout->addWidget(but_groupbox, 1, 1, 1, 1);
-    // grid_layout->addWidget(cor_button, 1, 1, 1, 1);
-    // grid_layout->addWidget(trans_button, 1, 1, 1, 1);
-    this->setLayout(grid_layout);
+    // grid_layout->addWidget(but_groupbox, 1, 1, 1, 1);
+    // // grid_layout->addWidget(cor_button, 1, 1, 1, 1);
+    // // grid_layout->addWidget(trans_button, 1, 1, 1, 1);
+    // this->setLayout(grid_layout);
 
-    menu = new QMenu(this);
-    act_est_cor = new QAction(tr("&Make correspondences."), this);
-    menu->addAction(act_est_cor);
+    // menu = new QMenu(this);
+    // act_est_cor = new QAction(tr("&Make correspondences."), this);
+    // menu->addAction(act_est_cor);
 
 
-    connect(act_est_cor, SIGNAL(triggered()), this, SLOT(est_correspondences()));
+    // connect(act_est_cor, SIGNAL(triggered()), this, SLOT(est_correspondences()));
 }
 
 pair_treeViewer::~pair_treeViewer() {}
