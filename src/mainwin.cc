@@ -3657,7 +3657,7 @@ void MainWindow::rerender_manipulationSlot(Eigen::Vector3d unproj_offset) {
 		if (child->name() == "transform") {
 			// cast to transformation node..
 			TransformNode *tnode = dynamic_cast<TransformNode*>(child);
-			// const PrimitiveNode* _pnode = dynamic_cast<const PrimitiveNode *>((*iter)->node);
+			// const PrimitiveNode* _pnode = dynamic_cast<const PrimitiveNode*>((*iter)->node);
 			if (tnode->trans_src == src_type_e::EXAMPLE) {
 				Eigen::Vector3d trans = Eigen::Vector3d::Zero();
 				trans[0] = unproj_offset[0];

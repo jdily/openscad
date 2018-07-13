@@ -344,19 +344,22 @@ std::vector<Eigen::Vector3d> QGLView::project_samples(std::vector<Eigen::Vector3
 }
 
 void QGLView::mouseDoubleClickEvent(QMouseEvent *event) {
-
+  std::cout << "mouse double click event" << std::endl;
 	setupCamera();
 
 	int viewport[4];
 	GLdouble modelview[16];
 	GLdouble projection[16];
 
-	glGetIntegerv( GL_VIEWPORT, viewport);
+	glGetIntegerv(GL_VIEWPORT, viewport);
 	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
 	glGetDoublev(GL_PROJECTION_MATRIX, projection);
 
+  std::cout << "DPI : " << this->getDPI() << std::endl;
+
 	double x = event->pos().x() * this->getDPI();
-	double y = viewport[3] - event->pos().y() * this->getDPI();
+	// double y = viewport[3] - event->pos().y() * this->getDPI();
+  double y = event->pos().y() * this->getDPI();
 	GLfloat z = 0;
 
 	glGetError(); // clear error state so we don't pick up previous errors
@@ -365,12 +368,21 @@ void QGLView::mouseDoubleClickEvent(QMouseEvent *event) {
 	if (glError != GL_NO_ERROR) {
 		return;
 	}
+  // std::cout << x << " " << y << " " << z << std::endl;
+  // auto emouse = event->localPos();  
+  // std::cout << emouse.x() << " " << emouse.y() << std::endl;
+  // std::cout << event->pos().x() << " " << event->pos().y() << std::endl;
 
 	if (z == 1) return; // outside object
 
 	GLdouble px, py, pz;
 
 	auto success = gluUnProject(x, y, z, modelview, projection, viewport, &px, &py, &pz);
+
+  std::cout << "Double Click" << std::endl;
+  std::cout << x << " " << y << " " << z << std::endl;
+  std::cout << px << " " << py << " " << pz << std::endl;
+
 
 	if (success == GL_TRUE) {
 		cam.object_trans -= Vector3d(px, py, pz);
@@ -391,6 +403,11 @@ void QGLView::mousePressEvent(QMouseEvent *event)
   last_mouse = event->globalPos();
   
   if(event->button() == Qt::RightButton) {
+    // test 
+    auto this_local_mouse = event->localPos();
+    std::cout << this_local_mouse.x() << " " << this_local_mouse.y() << std::endl;
+    Eigen::Vector3d unproj_pt = unproj(this_local_mouse);
+    std::cout << unproj_pt[0] << " " << unproj_pt[1] << " " << unproj_pt[2] << std::endl;
     if (event->modifiers() == Qt::ControlModifier) {
       QString mes = QString("right mouse button is pressed at viewer %1").arg(viewer_id);
       std::cout << mes.toStdString() << std::endl;
@@ -429,10 +446,11 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
   double dx = (this_mouse.x() - last_mouse.x()) * 0.7;
   double dy = (this_mouse.y() - last_mouse.y()) * 0.7;
   auto this_local_mouse = event->localPos();
+  Eigen::Vector3d move_to_pos = Eigen::Vector3d::Zero();
   if (manipulating) {
-    std::cout << "this local mouse : " << this_local_mouse.x() << " " << this_local_mouse.y() << std::endl;
-    std::cout << "last local mouse : " << last_local_mouse.x() << " " << last_local_mouse.y() << std::endl;
-    QPointF d_mouse = this_local_mouse - last_local_mouse;
+    // std::cout << "this local mouse : " << this_local_mouse.x() << " " << this_local_mouse.y() << std::endl;
+    // std::cout << "last local mouse : " << last_local_mouse.x() << " " << last_local_mouse.y() << std::endl;
+    // QPointF d_mouse = this_local_mouse - last_local_mouse;
 
     // [TODO] -> unproject "this_local_mouse" to the 3D coordinate as Eigen::Vector3d
     // emit the manipulateUpdate using it
@@ -453,7 +471,10 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
     // GLdouble px, py, pz;
 	  // auto success = gluUnProject(x, y, z, modelview, projection, viewport, &px, &py, &pz);
     // Eigen::Vector3d move_to_pos(px, py, pz);
-    Eigen::Vector3d move_to_pos = unproj(this_local_mouse);
+    move_to_pos = unproj(this_local_mouse);
+    std::cout << "move_to_pos : " << move_to_pos[0] << " " << move_to_pos[1] << " " << move_to_pos[2] << std::endl;
+    std::cout << "last_unproj_mouse : " << last_unproj_mouse[0] << " " << last_unproj_mouse[1] << " " << last_unproj_mouse[2] << std::endl;
+
     Eigen::Vector3d offset = move_to_pos - last_unproj_mouse;
     // if (success == GL_TRUE) {
     //   cam.object_trans -= Vector3d(px, py, pz);
@@ -541,7 +562,8 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
     emit doAnimateUpdate();
   } 
   last_mouse = this_mouse;
-  last_local_mouse = this_local_mouse;
+  // last_local_mouse = this_local_mouse;
+  last_unproj_mouse = move_to_pos;
 }
 
 void QGLView::mouseReleaseEvent(QMouseEvent*)
