@@ -1459,7 +1459,7 @@ void MainWindow::compileCSG(bool procevents)
 	progress_report_fin();
 	updateStatusBar(nullptr);
 
-	PRINT("Compiling design (CSG Products normalization)...");
+	// PRINT("Compiling design (CSG Products normalization)...");
 	this->processEvents();
 
 	size_t normalizelimit = 2 * Preferences::inst()->getValue("advanced/openCSGLimit").toUInt();
@@ -1476,14 +1476,14 @@ void MainWindow::compileCSG(bool procevents)
 			this->processEvents();
 		}
 	}
-	PRINTB("root products size : %d...", this->root_products->size());
-	PRINTB("root produces : %s", this->root_products->dump());
+	// PRINTB("root products size : %d...", this->root_products->size());
+	// PRINTB("root produces : %s", this->root_products->dump());
 
 	const std::vector<shared_ptr<CSGNode> > &highlight_terms = csgrenderer.getHighlightNodes();
-	PRINTB("Highlight term size : %d...", highlight_terms.size());
+	// PRINTB("Highlight term size : %d...", highlight_terms.size());
 	// std::cout << "highlight term size : " << highlight_terms.size() << std::endl;
 	if (highlight_terms.size() > 0) {
-		PRINTB("Compiling highlights (%d CSG Trees)...", highlight_terms.size());
+		// PRINTB("Compiling highlights (%d CSG Trees)...", highlight_terms.size());
 		this->processEvents();
 		this->highlights_products.reset(new CSGProducts());
 		for (unsigned int i = 0; i < highlight_terms.size(); i++) {
@@ -1499,9 +1499,9 @@ void MainWindow::compileCSG(bool procevents)
 
 
 	const auto &background_terms = csgrenderer.getBackgroundNodes();
-	PRINTB("Background term size : %d...", background_terms.size());
+	// PRINTB("Background term size : %d...", background_terms.size());
 	if (background_terms.size() > 0) {
-		PRINTB("Compiling background (%d CSG Trees)...", background_terms.size());
+		// PRINTB("Compiling background (%d CSG Trees)...", background_terms.size());
 		this->processEvents();
 		this->background_products.reset(new CSGProducts());
 		for (unsigned int i = 0; i < background_terms.size(); i++) {
@@ -1520,6 +1520,7 @@ void MainWindow::compileCSG(bool procevents)
 		PRINT("WARNING: OpenCSG rendering has been disabled.");
 	}
 #ifdef ENABLE_OPENCSGauto fileInfo = QFileInfo(this->fileName);
+// #ifdef ENABLE_OPENCSG
 	else {
 		PRINTB("Normalized CSG tree has %d elements",
 					 (this->root_products ? this->root_products->size() : 0));
@@ -3651,23 +3652,25 @@ void MainWindow::exp_add_new_geom(Transform3d matrix, GeomGroup* group) {
 void MainWindow::rerender_manipulationSlot(Eigen::Vector3d unproj_offset) {
 	// need to rerender according to cur_pos;
 	// only update the translation part...
+	std::cout << "rerender_manipulationSlot" << std::endl;
 	// 
 	// find the right transformnode -> translate it...
-	for (AbstractNode* child : this->root_node->children) {
-		if (child->name() == "transform") {
-			// cast to transformation node..
-			TransformNode *tnode = dynamic_cast<TransformNode*>(child);
-			// const PrimitiveNode* _pnode = dynamic_cast<const PrimitiveNode*>((*iter)->node);
-			if (tnode->trans_src == src_type_e::EXAMPLE) {
-				Eigen::Vector3d trans = Eigen::Vector3d::Zero();
-				trans[0] = unproj_offset[0];
-				trans[1] = unproj_offset[1];
-				std::cout << COLOR_RED << tnode->toString() << COLOR_RESET << std::endl;
-				// tnode->matrix.translate(trans);
-				std::cout << COLOR_RED << tnode->toString() << COLOR_RESET << std::endl;
-			}
-		}
-	}
+	// [DEBUG] -> test keep re render the original things.
+	// for (AbstractNode* child : this->root_node->children) {
+	// 	if (child->name() == "transform") {
+	// 		// cast to transformation node..
+	// 		TransformNode *tnode = dynamic_cast<TransformNode*>(child);
+	// 		// const PrimitiveNode* _pnode = dynamic_cast<const PrimitiveNode*>((*iter)->node);
+	// 		if (tnode->trans_src == src_type_e::EXAMPLE) {
+	// 			Eigen::Vector3d trans = Eigen::Vector3d::Zero();
+	// 			trans[0] = unproj_offset[0];
+	// 			trans[1] = unproj_offset[1];
+	// 			std::cout << COLOR_RED << tnode->toString() << COLOR_RESET << std::endl;
+	// 			// tnode->matrix.translate(trans);
+	// 			std::cout << COLOR_RED << tnode->toString() << COLOR_RESET << std::endl;
+	// 		}
+	// 	}
+	// }
 	// [todo] the transform node is updated, we have to check why the re-render dead..
 	this->tree.clear_cache();
 	this->tree.getString(*this->root_node);

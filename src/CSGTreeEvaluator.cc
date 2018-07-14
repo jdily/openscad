@@ -63,7 +63,7 @@ shared_ptr<class CSGNode> CSGTreeEvaluator::buildCSGTree_w_hb(const AbstractNode
 	// 	}
 	// }
 	shared_ptr<CSGNode> t(this->stored_term[node.index()]);
-	std::cout << "t flag : " << t->getFlags() << std::endl;
+	// std::cout << "t flag : " << t->getFlags() << std::endl;
 	// if (t) {
 	// 	if (t->isHighlight()) this->highlightNodes.push_back(t);
 	// 	// TODO : check if this helps...
