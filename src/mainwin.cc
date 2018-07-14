@@ -3663,7 +3663,7 @@ void MainWindow::rerender_manipulationSlot(Eigen::Vector3d unproj_offset) {
 				trans[0] = unproj_offset[0];
 				trans[1] = unproj_offset[1];
 				std::cout << COLOR_RED << tnode->toString() << COLOR_RESET << std::endl;
-				tnode->matrix.translate(trans);
+				// tnode->matrix.translate(trans);
 				std::cout << COLOR_RED << tnode->toString() << COLOR_RESET << std::endl;
 			}
 		}
@@ -3671,7 +3671,7 @@ void MainWindow::rerender_manipulationSlot(Eigen::Vector3d unproj_offset) {
 	// [todo] the transform node is updated, we have to check why the re-render dead..
 	this->tree.clear_cache();
 	this->tree.getString(*this->root_node);
-	// csgReloadRender();
+	csgReloadRender();
 }
 
 

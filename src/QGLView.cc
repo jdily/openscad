@@ -43,7 +43,7 @@
 #include "OpenCSGWarningDialog.h"
 #include "QSettingsCached.h"
 
-
+#include <QMatrix4x4>
 #include <stdio.h>
 #include <sstream>
 
@@ -210,7 +210,7 @@ void QGLView::resizeGL(int w, int h)
   std::cout << "resize : " << w << " " << h << std::endl;
   cur_width = w;
   cur_height = h;
-  last_local_mouse = QPointF(cur_width/2, cur_height/2);
+  last_local_mouse = QPoint(cur_width/2, cur_height/2);
   std::cout << "last_local_mouse = " << last_local_mouse.x() << " " << last_local_mouse.y() << std::endl;
   GLView::resizeGL(w,h);
 }
@@ -319,7 +319,6 @@ std::vector<Eigen::Vector3d> QGLView::project_samples(std::vector<Eigen::Vector3
 	glGetIntegerv(GL_VIEWPORT, viewport);
 	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
 	glGetDoublev(GL_PROJECTION_MATRIX, projection);
-  
   viewport[2] = cur_width;
   viewport[3] = cur_height;
   std::cout << "index : " << index << std::endl;
@@ -343,6 +342,42 @@ std::vector<Eigen::Vector3d> QGLView::project_samples(std::vector<Eigen::Vector3
   return out;
 }
 
+Eigen::Vector3d QGLView::unproj(QPoint cur_pt) {
+    setupCamera();
+    int viewport[4];
+    GLdouble modelview[16];
+    GLdouble projection[16];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+    glGetDoublev(GL_PROJECTION_MATRIX, projection);
+	  double x = cur_pt.x() * this->getDPI();
+	  double y = viewport[3] - cur_pt.y() * this->getDPI();
+	  GLdouble z = 0.0;
+	  glGetError(); // clear error state so we don't pick up previous errors
+	  glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
+    
+  	auto glError = glGetError();
+	  if (glError != GL_NO_ERROR) {
+      Eigen::Vector3d out(0.0, 0.0, 0.0);
+		  return out;
+	  }
+    if (z == 1) {
+      Eigen::Vector3d out(0.0, 0.0, 0.0);
+		  return out;
+    }
+    GLdouble px, py, pz;
+	  auto success = gluUnProject(x, y, z, modelview, projection, viewport, &px, &py, &pz);
+    
+    std::cout << "Unproject click" << std::endl;
+    std::cout << viewport[0] << " " << viewport[1] << " " << viewport[2] << " " << viewport[3] << std::endl;
+
+    std::cout << x << " " << y << " " << z << std::endl;
+    std::cout << px << " " << py << " " << pz << std::endl;
+    
+    Eigen::Vector3d out_pos(px, py, pz);
+    return out_pos;
+}
+
 void QGLView::mouseDoubleClickEvent(QMouseEvent *event) {
   std::cout << "mouse double click event" << std::endl;
 	setupCamera();
@@ -355,11 +390,9 @@ void QGLView::mouseDoubleClickEvent(QMouseEvent *event) {
 	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
 	glGetDoublev(GL_PROJECTION_MATRIX, projection);
 
-  std::cout << "DPI : " << this->getDPI() << std::endl;
-
 	double x = event->pos().x() * this->getDPI();
-	// double y = viewport[3] - event->pos().y() * this->getDPI();
-  double y = event->pos().y() * this->getDPI();
+	double y = viewport[3] - event->pos().y() * this->getDPI();
+  // double y = event->pos().y() * this->getDPI();
 	GLfloat z = 0;
 
 	glGetError(); // clear error state so we don't pick up previous errors
@@ -380,21 +413,42 @@ void QGLView::mouseDoubleClickEvent(QMouseEvent *event) {
 	auto success = gluUnProject(x, y, z, modelview, projection, viewport, &px, &py, &pz);
 
   std::cout << "Double Click" << std::endl;
+  std::cout << viewport[0] << " " << viewport[1] << " " << viewport[2] << " " << viewport[3] << std::endl;
   std::cout << x << " " << y << " " << z << std::endl;
   std::cout << px << " " << py << " " << pz << std::endl;
 
-
-	if (success == GL_TRUE) {
-		cam.object_trans -= Vector3d(px, py, pz);
-		updateGL();
-		emit doAnimateUpdate();
-	}
+  // tmp disable for testing..
+	// if (success == GL_TRUE) {
+	// 	cam.object_trans -= Vector3d(px, py, pz);
+	// 	updateGL();
+	// 	emit doAnimateUpdate();
+	// }
 }
 
 void QGLView::normalizeAngle(GLdouble& angle)
 {
   while(angle < 0) angle += 360;
   while(angle > 360) angle -= 360;
+}
+
+
+Eigen::Vector3d QGLView::get_world_coord(QPointF cur_pt) {
+    setupCamera();
+    int viewport[4];
+    GLdouble modelview[16];
+    GLdouble projection[16];
+    glGetIntegerv( GL_VIEWPORT, viewport);
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+    glGetDoublev(GL_PROJECTION_MATRIX, projection);
+
+
+    float *proj_arr = new float[16];
+    std::copy(projection, projection+16, proj_arr);
+    QMatrix4x4 proj_mat(proj_arr);
+    float *model_arr = new float[16];
+    std::copy(modelview, modelview+16, model_arr);
+    
+
 }
 
 void QGLView::mousePressEvent(QMouseEvent *event)
@@ -404,10 +458,48 @@ void QGLView::mousePressEvent(QMouseEvent *event)
   
   if(event->button() == Qt::RightButton) {
     // test 
-    auto this_local_mouse = event->localPos();
-    std::cout << this_local_mouse.x() << " " << this_local_mouse.y() << std::endl;
-    Eigen::Vector3d unproj_pt = unproj(this_local_mouse);
-    std::cout << unproj_pt[0] << " " << unproj_pt[1] << " " << unproj_pt[2] << std::endl;
+    // QPoint this_local_mouse = event->pos();
+    // // std::cout << this_local_mouse.x() << " " << this_local_mouse.y() << std::endl;
+    // Eigen::Vector3d unproj_pt = unproj(event->pos());
+    // std::cout << unproj_pt[0] << " " << unproj_pt[1] << " " << unproj_pt[2] << std::endl;
+    // setupCamera();
+    // int viewport[4];
+    // GLdouble modelview[16];
+    // GLdouble projection[16];
+
+    // glGetIntegerv(GL_VIEWPORT, viewport);
+    // glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+    // glGetDoublev(GL_PROJECTION_MATRIX, projection);
+
+    // double x = event->pos().x() * this->getDPI();
+    // double y = viewport[3] - event->pos().y() * this->getDPI();
+    // // double y = event->pos().y() * this->getDPI();
+    // GLfloat z = 0;
+
+    // glGetError(); // clear error state so we don't pick up previous errors
+    // glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
+    // auto glError = glGetError();
+    // if (glError != GL_NO_ERROR) {
+    //   return;
+    // }
+    // // std::cout << x << " " << y << " " << z << std::endl;
+    // // auto emouse = event->localPos();  
+    // // std::cout << emouse.x() << " " << emouse.y() << std::endl;
+    // // std::cout << event->pos().x() << " " << event->pos().y() << std::endl;
+
+    // if (z == 1) return; // outside object
+
+    // GLdouble px, py, pz;
+
+    // auto success = gluUnProject(x, y, z, modelview, projection, viewport, &px, &py, &pz);
+
+    // std::cout << "Press event" << std::endl;
+    // std::cout << viewport[0] << " " << viewport[1] << " " << viewport[2] << " " << viewport[3] << std::endl;
+    // std::cout << x << " " << y << " " << z << std::endl;
+    // std::cout << px << " " << py << " " << pz << std::endl;
+
+
+
     if (event->modifiers() == Qt::ControlModifier) {
       QString mes = QString("right mouse button is pressed at viewer %1").arg(viewer_id);
       std::cout << mes.toStdString() << std::endl;
@@ -421,57 +513,41 @@ void QGLView::mousePressEvent(QMouseEvent *event)
   }
 }
 
-Eigen::Vector3d QGLView::unproj(QPointF cur_pt) {
-    setupCamera();
-    int viewport[4];
-    GLdouble modelview[16];
-    GLdouble projection[16];
-    glGetIntegerv( GL_VIEWPORT, viewport);
-    glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
-    glGetDoublev(GL_PROJECTION_MATRIX, projection);
-	  double x = cur_pt.x() * this->getDPI();
-	  double y = viewport[3] - cur_pt.y() * this->getDPI();
-	  GLdouble z;
-	  glGetError(); // clear error state so we don't pick up previous errors
-	  glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
-    GLdouble px, py, pz;
-	  auto success = gluUnProject(x, y, z, modelview, projection, viewport, &px, &py, &pz);
-    Eigen::Vector3d out_pos(px, py, pz);
-    return out_pos;
-}
+
 
 void QGLView::mouseMoveEvent(QMouseEvent *event)
 {
   auto this_mouse = event->globalPos();
   double dx = (this_mouse.x() - last_mouse.x()) * 0.7;
   double dy = (this_mouse.y() - last_mouse.y()) * 0.7;
-  auto this_local_mouse = event->localPos();
+  // auto this_local_mouse = event->localPos();
+  auto this_local_mouse = event->pos();
   Eigen::Vector3d move_to_pos = Eigen::Vector3d::Zero();
   if (manipulating) {
-    // std::cout << "this local mouse : " << this_local_mouse.x() << " " << this_local_mouse.y() << std::endl;
-    // std::cout << "last local mouse : " << last_local_mouse.x() << " " << last_local_mouse.y() << std::endl;
-    // QPointF d_mouse = this_local_mouse - last_local_mouse;
+    setupCamera();
+    int viewport[4];
+    GLdouble modelview[16];
+    GLdouble projection[16];
 
-    // [TODO] -> unproject "this_local_mouse" to the 3D coordinate as Eigen::Vector3d
-    // emit the manipulateUpdate using it
-    // update the translation difference in 3d space..
-    // use the current projection to infer the right position
-    // setupCamera();
-    // int viewport[4];
-    // GLdouble modelview[16];
-    // GLdouble projection[16];
-    // glGetIntegerv( GL_VIEWPORT, viewport);
-    // glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
-    // glGetDoublev(GL_PROJECTION_MATRIX, projection);
-	  // double x = this_local_mouse.x() * this->getDPI();
-	  // double y = viewport[3] - this_local_mouse.y() * this->getDPI();
-	  // GLdouble z;
-	  // glGetError(); // clear error state so we don't pick up previous errors
-	  // glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
-    // GLdouble px, py, pz;
-	  // auto success = gluUnProject(x, y, z, modelview, projection, viewport, &px, &py, &pz);
-    // Eigen::Vector3d move_to_pos(px, py, pz);
-    move_to_pos = unproj(this_local_mouse);
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+    glGetDoublev(GL_PROJECTION_MATRIX, projection);
+    double x = event->pos().x() * this->getDPI();
+    double y = viewport[3] - event->pos().y() * this->getDPI();
+    GLfloat z = 0;
+    glGetError(); // clear error state so we don't pick up previous errors
+    glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
+    auto glError = glGetError();
+    if (glError != GL_NO_ERROR) {
+      return;
+    }
+    if (z == 1) return; // outside object
+
+    GLdouble px, py, pz;
+    auto success = gluUnProject(x, y, z, modelview, projection, viewport, &px, &py, &pz);
+    move_to_pos = Eigen::Vector3d(px, py, pz);
+    // unproj(this_local_mouse);
+
     std::cout << "move_to_pos : " << move_to_pos[0] << " " << move_to_pos[1] << " " << move_to_pos[2] << std::endl;
     std::cout << "last_unproj_mouse : " << last_unproj_mouse[0] << " " << last_unproj_mouse[1] << " " << last_unproj_mouse[2] << std::endl;
 
@@ -672,37 +748,34 @@ void QGLView::enable_transfer_manipulation(Eigen::Vector3d move_to_pos) {
   this->manipulating = true;
   this->mouse_drag_active = false;
   QCursor c = cursor();
-
-  // use the current projection to infer the right position
-  setupCamera();
-	int viewport[4];
-	GLdouble modelview[16];
-	GLdouble projection[16];
-
-	glGetIntegerv( GL_VIEWPORT, viewport);
-	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
-	glGetDoublev(GL_PROJECTION_MATRIX, projection);
-
-	double x = move_to_pos[0] * this->getDPI();
-	double y = viewport[3] - move_to_pos[1] * this->getDPI();
-	double z = move_to_pos[2];
-	// glGetError(); // clear error state so we don't pick up previous errors
-	// glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
-	// auto glError = glGetError();
-	// if (glError != GL_NO_ERROR) {
-	// 	return;
-	// }
-
-	// if (z == 1) return; // outside object
-	GLdouble px, py, pz;
-	auto success = gluUnProject(x, y, z, modelview, projection, viewport, &px, &py, &pz);
-
   // c.setPos(mapToGlobal(QPoint(px, py)));
   // [TODO] deal with the right mouse position.
   c.setPos(mapToGlobal(QPoint(cur_width/2, cur_height/2)));
-  std::cout << move_to_pos[0] << " " << move_to_pos[1] << " " << move_to_pos[2] << std::endl;
+  // std::cout << move_to_pos[0] << " " << move_to_pos[1] << " " << move_to_pos[2] << std::endl;
   // c.setPos(mapToGlobal(QPoint(move_to_pos[0], move_to_pos[1])));
   setCursor(c);
-  last_local_mouse = QPointF(cur_width/2, cur_height/2);
-  last_unproj_mouse = unproj(last_local_mouse);
+  last_local_mouse = QPoint(cur_width/2, cur_height/2);
+
+  setupCamera();
+  int viewport[4];
+  GLdouble modelview[16];
+  GLdouble projection[16];
+
+  glGetIntegerv(GL_VIEWPORT, viewport);
+  glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+  glGetDoublev(GL_PROJECTION_MATRIX, projection);
+  double x = last_local_mouse.x() * this->getDPI();
+  double y = viewport[3] - last_local_mouse.y() * this->getDPI();
+  GLfloat z = 0;
+  glGetError(); // clear error state so we don't pick up previous errors
+  glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
+  auto glError = glGetError();
+  if (glError != GL_NO_ERROR) {
+    return;
+  }
+  if (z == 1) return; // outside object
+  GLdouble px, py, pz;
+  auto success = gluUnProject(x, y, z, modelview, projection, viewport, &px, &py, &pz);
+  last_unproj_mouse = Eigen::Vector3d(px, py, pz);  
+  // last_unproj_mouse = unproj(last_local_mouse);
 }

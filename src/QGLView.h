@@ -101,8 +101,8 @@ private:
 	void mouseReleaseEvent(QMouseEvent *event) override;
 	void mouseDoubleClickEvent(QMouseEvent *event) override;
 
-	Eigen::Vector3d unproj(QPointF cur_pt);
-
+	Eigen::Vector3d unproj(QPoint cur_pt);
+	Eigen::Vector3d get_world_coord(QPointF cur_pt);
 
 	QPainter *painter;
 	QPointF last_point;
@@ -123,7 +123,7 @@ private:
 	QMenu *right_menu;
 	// bool show_func_annotation;
 	bool manipulating;
-	QPointF last_local_mouse;
+	QPoint last_local_mouse;
 	Eigen::Vector3d last_unproj_mouse;
 
 	void gen_random_circles();
