@@ -3675,6 +3675,7 @@ void MainWindow::rerender_manipulationSlot(Eigen::Vector3d unproj_offset) {
 	this->tree.clear_cache();
 	this->tree.getString(*this->root_node);
 	csgReloadRender();
+	// csgRender();
 }
 
 
