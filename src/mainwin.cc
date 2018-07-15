@@ -822,7 +822,8 @@ void MainWindow::report_func(const class AbstractNode*, void *vp, int mark)
 	}
 
 	// FIXME: Check if cancel was requested by e.g. Application quit
-	if (thisp->progresswidget->wasCanceled()) throw ProgressCancelException();
+	// [ICHAO CHECK] weird behavior of this wasCanceled.
+	// if (thisp->progresswidget->wasCanceled()) throw ProgressCancelException();
 }
 
 /*!
@@ -1162,8 +1163,11 @@ void MainWindow::compileDone(bool didchange)
 void MainWindow::compileEnded()
 {
 	clearCurrentOutput();
+	std::cout << COLOR_RED << "after clearCurrentOutput" << COLOR_RESET << std::endl;
 	GuiLocker::unlock();
+	std::cout << COLOR_RED << "after unlock" << COLOR_RESET << std::endl;
 	if (designActionAutoReload->isChecked()) autoReloadTimer->start();
+	std::cout << COLOR_RED << "after autoReloadTimer" << COLOR_RESET << std::endl;
 }
 
 void MainWindow::instantiateRoot()
@@ -1409,6 +1413,7 @@ void MainWindow::example_compileCSG(int example_id, bool procevents) {
 	Generates CSG tree for OpenCSG evaluation.
 	Assumes that the design has been parsed and evaluated (this->root_node is set)
 */
+// [todo] check here..
 void MainWindow::compileCSG(bool procevents)
 {
 	assert(this->root_node);
@@ -1433,9 +1438,12 @@ void MainWindow::compileCSG(bool procevents)
 	if (cur_samples.isEmpty()) {
 		TreeSampler *sampler = new TreeSampler(&tree, &geomevaluator);
 		cur_samples = sampler->get_samples(*root_node, this->qglviewer_suggest->m_mainViewer, false);
+	} else {
+		std::cout << "we don't need to resample" << std::endl;
+
 	}
-	
 	progress_report_prep(this->root_node, report_func, this);
+	std::cout << COLOR_RED << "after report prep" << COLOR_RESET << std::endl;
 	try {
 #ifdef ENABLE_OPENCSG
 		this->processEvents();
@@ -1457,11 +1465,12 @@ void MainWindow::compileCSG(bool procevents)
 		PRINT("CSG generation cancelled.");
 	}
 	progress_report_fin();
+	std::cout << COLOR_RED << "after progress_report_fin" << COLOR_RESET << std::endl;
 	updateStatusBar(nullptr);
 
 	// PRINT("Compiling design (CSG Products normalization)...");
 	this->processEvents();
-
+	std::cout << COLOR_RED << "after processEvents" << COLOR_RESET << std::endl;
 	size_t normalizelimit = 2 * Preferences::inst()->getValue("advanced/openCSGLimit").toUInt();
 	CSGTreeNormalizer normalizer(normalizelimit);
 	if (this->csgRoot) {
@@ -1476,6 +1485,7 @@ void MainWindow::compileCSG(bool procevents)
 			this->processEvents();
 		}
 	}
+	std::cout << COLOR_RED << "after normalizer" << COLOR_RESET << std::endl;
 	// PRINTB("root products size : %d...", this->root_products->size());
 	// PRINTB("root produces : %s", this->root_products->dump());
 
@@ -1496,7 +1506,7 @@ void MainWindow::compileCSG(bool procevents)
 		this->highlights_products.reset();
 	}
 	// PRINTB("Highlight term size : %d...", this->highlights_products->size());
-
+	std::cout << COLOR_RED << "after HL" << COLOR_RESET << std::endl;
 
 	const auto &background_terms = csgrenderer.getBackgroundNodes();
 	// PRINTB("Background term size : %d...", background_terms.size());
@@ -1512,6 +1522,7 @@ void MainWindow::compileCSG(bool procevents)
 	else {
 		this->background_products.reset();
 	}
+	std::cout << COLOR_RED << "after BG" << COLOR_RESET << std::endl;
 
 	if (this->root_products &&
 			(this->root_products->size() >
@@ -2162,6 +2173,12 @@ void MainWindow::csgReloadRender()
 		viewModeThrownTogether();
 #endif
 	}
+	compileEnded();
+}
+
+void MainWindow::interactive_csgReloadRender() {
+	if (this->root_node) compileCSG(true);
+	std::cout << COLOR_RED << "after compileCSG" << COLOR_RESET << std::endl;
 	compileEnded();
 }
 
@@ -3656,24 +3673,29 @@ void MainWindow::rerender_manipulationSlot(Eigen::Vector3d unproj_offset) {
 	// 
 	// find the right transformnode -> translate it...
 	// [DEBUG] -> test keep re render the original things.
-	// for (AbstractNode* child : this->root_node->children) {
-	// 	if (child->name() == "transform") {
-	// 		// cast to transformation node..
-	// 		TransformNode *tnode = dynamic_cast<TransformNode*>(child);
-	// 		// const PrimitiveNode* _pnode = dynamic_cast<const PrimitiveNode*>((*iter)->node);
-	// 		if (tnode->trans_src == src_type_e::EXAMPLE) {
-	// 			Eigen::Vector3d trans = Eigen::Vector3d::Zero();
-	// 			trans[0] = unproj_offset[0];
-	// 			trans[1] = unproj_offset[1];
-	// 			std::cout << COLOR_RED << tnode->toString() << COLOR_RESET << std::endl;
-	// 			// tnode->matrix.translate(trans);
-	// 			std::cout << COLOR_RED << tnode->toString() << COLOR_RESET << std::endl;
-	// 		}
-	// 	}
-	// }
+	for (AbstractNode* child : this->root_node->children) {
+		if (child->name() == "transform") {
+			// cast to transformation node..
+			TransformNode *tnode = dynamic_cast<TransformNode*>(child);
+			// const PrimitiveNode* _pnode = dynamic_cast<const PrimitiveNode*>((*iter)->node);
+			if (tnode->trans_src == src_type_e::EXAMPLE) {
+				Eigen::Vector3d trans = Eigen::Vector3d::Zero();
+				trans[0] = unproj_offset[0];
+				trans[1] = unproj_offset[1];
+				std::cout << COLOR_RED << tnode->toString() << COLOR_RESET << std::endl;
+				tnode->matrix.translate(trans);
+				std::cout << COLOR_RED << tnode->toString() << COLOR_RESET << std::endl;
+			}
+		}
+	}
 	// [todo] the transform node is updated, we have to check why the re-render dead..
 	this->tree.clear_cache();
+	std::cout << COLOR_RED << this->tree.node_count() << COLOR_RESET << std::endl;
+	// if (this->root_node != nullptr) {
 	this->tree.getString(*this->root_node);
+		// interactive_csgReloadRender();
+		// std::cout << COLOR_RED << "finish everything check here." << COLOR_RESET << std::endl;
+	// }
 	csgReloadRender();
 	// csgRender();
 }

@@ -22,6 +22,11 @@
 #include <cstddef>
 #include <Tree.h>
 
+
+//the following are UBUNTU/LINUX ONLY terminal color codes.
+#define COLOR_RESET_2   "\033[0m"
+#define COLOR_RED_2     "\033[31m"      /* Red */
+
 /*!
 	\class CSGTreeEvaluator
 
@@ -50,7 +55,8 @@ shared_ptr<CSGNode> CSGTreeEvaluator::buildCSGTree(const AbstractNode &node)
 // The purpose is to visualize the relationship between tree nodes and the geometries...
 shared_ptr<class CSGNode> CSGTreeEvaluator::buildCSGTree_w_hb(const AbstractNode &node, std::vector<int> hids) {
 	this->traverse(node);
-	check_stored_term();
+	std::cout << COLOR_RED_2 << "after REtraverse" << COLOR_RESET_2 << std::endl;
+	// check_stored_term();
 	// this->stored_term[1]->setHighlight(false);
 	for (int i = 0; i < (int)hids.size(); i++) {
 		std::cout << hids[i] << std::endl;

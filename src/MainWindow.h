@@ -203,6 +203,8 @@ private slots:
 	void actionRenderPreview(bool rebuildParameterWidget=true);
 	void csgRender();
 	void csgReloadRender();
+	void interactive_csgReloadRender();
+
 
 	// ichao added
 	void example_csgRender(int example_id);
