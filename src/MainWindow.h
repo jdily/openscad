@@ -211,6 +211,8 @@ private slots:
 	void example_csgReloadRender(int example_id);
 	void example_compileCSG(int example_id, bool procevents);
 	
+	void fast_compileCSG(bool procevents);
+	void fast_csgReloadRender();
 
 
 #ifdef ENABLE_CGAL
@@ -322,7 +324,7 @@ private:
 	static bool reorderMode;
 	static const int tabStopWidth;
 
-	shared_ptr<class CSGNode> csgRoot;		   // Result of the CSGTreeEvaluator
+	shared_ptr<class CSGNode> csgRoot;		  // Result of the CSGTreeEvaluator
 	shared_ptr<CSGNode> normalizedRoot;		  // Normalized CSG tree
  	shared_ptr<class CSGProducts> root_products;
 	shared_ptr<CSGProducts> highlights_products;

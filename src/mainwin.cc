@@ -1413,6 +1413,30 @@ void MainWindow::example_compileCSG(int example_id, bool procevents) {
 	Generates CSG tree for OpenCSG evaluation.
 	Assumes that the design has been parsed and evaluated (this->root_node is set)
 */
+
+
+void MainWindow::fast_compileCSG(bool procevents) {
+	assert(this->root_node);
+	PRINT("Fast compiling design (CSG Products generation)...");
+	this->processEvents();
+	// Main CSG evaluation
+	this->progresswidget = new ProgressWidget(this);
+	connect(this->progresswidget, SIGNAL(requestShow()), this, SLOT(showProgress()));
+
+	// can we just update the input to the renderer? e.g. this->root_products,
+	//														  this->highlights_products,
+	//														  this->background_products
+
+	// [TODO] I think we don't need to evaluate the entire tree into csgRoot
+	// but to find which element we have to update.
+	// but how?
+
+
+	std::cout << "csg root dump : " << this->csgRoot->dump() << std::endl;
+	std::cout << "size of this root_products:" << this->root_products->products.size() << std::endl;
+	std::cout << this->root_products->dump() << std::endl;
+}
+
 // [todo] check here..
 void MainWindow::compileCSG(bool procevents)
 {
@@ -1439,11 +1463,10 @@ void MainWindow::compileCSG(bool procevents)
 		TreeSampler *sampler = new TreeSampler(&tree, &geomevaluator);
 		cur_samples = sampler->get_samples(*root_node, this->qglviewer_suggest->m_mainViewer, false);
 	} else {
-		std::cout << "we don't need to resample" << std::endl;
-
+		// std::cout << "we don't need to resample" << std::endl;
 	}
 	progress_report_prep(this->root_node, report_func, this);
-	std::cout << COLOR_RED << "after report prep" << COLOR_RESET << std::endl;
+	// std::cout << COLOR_RED << "after report prep" << COLOR_RESET << std::endl;
 	try {
 #ifdef ENABLE_OPENCSG
 		this->processEvents();
@@ -1465,12 +1488,12 @@ void MainWindow::compileCSG(bool procevents)
 		PRINT("CSG generation cancelled.");
 	}
 	progress_report_fin();
-	std::cout << COLOR_RED << "after progress_report_fin" << COLOR_RESET << std::endl;
+	// std::cout << COLOR_RED << "after progress_report_fin" << COLOR_RESET << std::endl;
 	updateStatusBar(nullptr);
 
 	// PRINT("Compiling design (CSG Products normalization)...");
 	this->processEvents();
-	std::cout << COLOR_RED << "after processEvents" << COLOR_RESET << std::endl;
+	// std::cout << COLOR_RED << "after processEvents" << COLOR_RESET << std::endl;
 	size_t normalizelimit = 2 * Preferences::inst()->getValue("advanced/openCSGLimit").toUInt();
 	CSGTreeNormalizer normalizer(normalizelimit);
 	if (this->csgRoot) {
@@ -1485,7 +1508,7 @@ void MainWindow::compileCSG(bool procevents)
 			this->processEvents();
 		}
 	}
-	std::cout << COLOR_RED << "after normalizer" << COLOR_RESET << std::endl;
+	// std::cout << COLOR_RED << "after normalizer" << COLOR_RESET << std::endl;
 	// PRINTB("root products size : %d...", this->root_products->size());
 	// PRINTB("root produces : %s", this->root_products->dump());
 
@@ -1506,7 +1529,7 @@ void MainWindow::compileCSG(bool procevents)
 		this->highlights_products.reset();
 	}
 	// PRINTB("Highlight term size : %d...", this->highlights_products->size());
-	std::cout << COLOR_RED << "after HL" << COLOR_RESET << std::endl;
+	// std::cout << COLOR_RED << "after HL" << COLOR_RESET << std::endl;
 
 	const auto &background_terms = csgrenderer.getBackgroundNodes();
 	// PRINTB("Background term size : %d...", background_terms.size());
@@ -1522,7 +1545,7 @@ void MainWindow::compileCSG(bool procevents)
 	else {
 		this->background_products.reset();
 	}
-	std::cout << COLOR_RED << "after BG" << COLOR_RESET << std::endl;
+	// std::cout << COLOR_RED << "after BG" << COLOR_RESET << std::endl;
 
 	if (this->root_products &&
 			(this->root_products->size() >
@@ -2152,6 +2175,26 @@ void MainWindow::example_csgReloadRender(int example_id) {
 #endif
 	}
 	compileEnded();
+}
+
+void MainWindow::fast_csgReloadRender() {
+	std::cout << "fast reload render" << std::endl;
+	if (this->root_node) fast_compileCSG(true);
+// 	std::cout << "finish compile CSG" << std::endl;
+// 	// Go to non-CGAL view mode
+// 	std::cout << "view action thrown together : " << viewActionThrownTogether->isChecked() << std::endl;
+// 	if (viewActionThrownTogether->isChecked()) {
+// 		viewModeThrownTogether();
+// 	}
+// 	else {
+// #ifdef ENABLE_OPENCSG
+// 		std::cout << "original before view  mode preview" << std::endl;
+// 		viewModePreview();
+// #else
+// 		viewModeThrownTogether();
+// #endif
+// 	}
+	// compileEnded();
 }
 
 // TODO : check when to call csgReloadRender and when is the initialize and 
@@ -3670,7 +3713,7 @@ void MainWindow::rerender_manipulationSlot(Eigen::Vector3d unproj_offset) {
 	// need to rerender according to cur_pos;
 	// only update the translation part...
 	std::cout << "rerender_manipulationSlot" << std::endl;
-	// 
+
 	// find the right transformnode -> translate it...
 	// [DEBUG] -> test keep re render the original things.
 	for (AbstractNode* child : this->root_node->children) {
@@ -3696,8 +3739,9 @@ void MainWindow::rerender_manipulationSlot(Eigen::Vector3d unproj_offset) {
 		// interactive_csgReloadRender();
 		// std::cout << COLOR_RED << "finish everything check here." << COLOR_RESET << std::endl;
 	// }
-	csgReloadRender();
-	// csgRender();
+	fast_csgReloadRender();
+	// csgReloadRender();
+	// actionRenderPreview();
 }
 
 

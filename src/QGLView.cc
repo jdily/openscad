@@ -512,7 +512,9 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
 	  // }
 
     // [TODO] should we add some check here, so that we don't invoke this signal everytime we move.
+    // if (offset[0] >= 1.0 || offset[1] >=1.0) {
     emit manipulateUpdate(offset);
+    // }
   }
 
 

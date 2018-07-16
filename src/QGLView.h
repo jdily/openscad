@@ -126,6 +126,7 @@ private:
 	QPoint last_local_mouse;
 	Eigen::Vector3d last_unproj_mouse;
 
+
 	void gen_random_circles();
 	void check_covered();
 
