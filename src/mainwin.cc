@@ -1429,7 +1429,7 @@ void MainWindow::fast_compileCSG(bool procevents) {
 
 	// [TODO] I think we don't need to evaluate the entire tree into csgRoot
 	// but to find which element we have to update.
-	// but how?
+	// but how? -> PROBABLY Update the stored_term??
 
 
 	std::cout << "csg root dump : " << this->csgRoot->dump() << std::endl;
