@@ -367,13 +367,11 @@ Eigen::Vector3d QGLView::unproj(QPoint cur_pt) {
     }
     GLdouble px, py, pz;
 	  auto success = gluUnProject(x, y, z, modelview, projection, viewport, &px, &py, &pz);
-    
-    std::cout << "Unproject click" << std::endl;
-    std::cout << viewport[0] << " " << viewport[1] << " " << viewport[2] << " " << viewport[3] << std::endl;
+    // std::cout << "Unproject click" << std::endl;
+    // std::cout << viewport[0] << " " << viewport[1] << " " << viewport[2] << " " << viewport[3] << std::endl;
 
-    std::cout << x << " " << y << " " << z << std::endl;
-    std::cout << px << " " << py << " " << pz << std::endl;
-    
+    // std::cout << x << " " << y << " " << z << std::endl;
+    // std::cout << px << " " << py << " " << pz << std::endl;
     Eigen::Vector3d out_pos(px, py, pz);
     return out_pos;
 }
@@ -412,10 +410,10 @@ void QGLView::mouseDoubleClickEvent(QMouseEvent *event) {
 
 	auto success = gluUnProject(x, y, z, modelview, projection, viewport, &px, &py, &pz);
 
-  std::cout << "Double Click" << std::endl;
-  std::cout << viewport[0] << " " << viewport[1] << " " << viewport[2] << " " << viewport[3] << std::endl;
-  std::cout << x << " " << y << " " << z << std::endl;
-  std::cout << px << " " << py << " " << pz << std::endl;
+  // std::cout << "Double Click" << std::endl;
+  // std::cout << viewport[0] << " " << viewport[1] << " " << viewport[2] << " " << viewport[3] << std::endl;
+  // std::cout << x << " " << y << " " << z << std::endl;
+  // std::cout << px << " " << py << " " << pz << std::endl;
 
   // tmp disable for testing..
 	// if (success == GL_TRUE) {
@@ -457,49 +455,6 @@ void QGLView::mousePressEvent(QMouseEvent *event)
   last_mouse = event->globalPos();
   
   if(event->button() == Qt::RightButton) {
-    // test 
-    // QPoint this_local_mouse = event->pos();
-    // // std::cout << this_local_mouse.x() << " " << this_local_mouse.y() << std::endl;
-    // Eigen::Vector3d unproj_pt = unproj(event->pos());
-    // std::cout << unproj_pt[0] << " " << unproj_pt[1] << " " << unproj_pt[2] << std::endl;
-    // setupCamera();
-    // int viewport[4];
-    // GLdouble modelview[16];
-    // GLdouble projection[16];
-
-    // glGetIntegerv(GL_VIEWPORT, viewport);
-    // glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
-    // glGetDoublev(GL_PROJECTION_MATRIX, projection);
-
-    // double x = event->pos().x() * this->getDPI();
-    // double y = viewport[3] - event->pos().y() * this->getDPI();
-    // // double y = event->pos().y() * this->getDPI();
-    // GLfloat z = 0;
-
-    // glGetError(); // clear error state so we don't pick up previous errors
-    // glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
-    // auto glError = glGetError();
-    // if (glError != GL_NO_ERROR) {
-    //   return;
-    // }
-    // // std::cout << x << " " << y << " " << z << std::endl;
-    // // auto emouse = event->localPos();  
-    // // std::cout << emouse.x() << " " << emouse.y() << std::endl;
-    // // std::cout << event->pos().x() << " " << event->pos().y() << std::endl;
-
-    // if (z == 1) return; // outside object
-
-    // GLdouble px, py, pz;
-
-    // auto success = gluUnProject(x, y, z, modelview, projection, viewport, &px, &py, &pz);
-
-    // std::cout << "Press event" << std::endl;
-    // std::cout << viewport[0] << " " << viewport[1] << " " << viewport[2] << " " << viewport[3] << std::endl;
-    // std::cout << x << " " << y << " " << z << std::endl;
-    // std::cout << px << " " << py << " " << pz << std::endl;
-
-
-
     if (event->modifiers() == Qt::ControlModifier) {
       QString mes = QString("right mouse button is pressed at viewer %1").arg(viewer_id);
       std::cout << mes.toStdString() << std::endl;
@@ -512,8 +467,6 @@ void QGLView::mousePressEvent(QMouseEvent *event)
     }
   }
 }
-
-
 
 void QGLView::mouseMoveEvent(QMouseEvent *event)
 {
@@ -557,6 +510,8 @@ void QGLView::mouseMoveEvent(QMouseEvent *event)
     //   updateGL();
     //   emit doAnimateUpdate();
 	  // }
+
+    // [TODO] should we add some check here, so that we don't invoke this signal everytime we move.
     emit manipulateUpdate(offset);
   }
 
