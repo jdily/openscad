@@ -1431,8 +1431,8 @@ void MainWindow::fast_compileCSG(bool procevents, std::vector<int> eval_ids, Tra
 	// but how? -> PROBABLY Update the stored_term??	
 	// access the cur_csgrenderer stored_item...
 	std::cout << "fast compileCSG" << std::endl;
-	this->cur_csgrenderer->check_stored_term();
-	// this->csgRoot = cur_csgrenderer->update_transform(*root_node, eval_ids, update_trans);
+	// this->cur_csgrenderer->check_stored_term();
+	this->csgRoot = cur_csgrenderer->update_transform(*root_node, eval_ids, update_trans);
 // 	size_t normalizelimit = 2 * Preferences::inst()->getValue("advanced/openCSGLimit").toUInt();
 // 	CSGTreeNormalizer normalizer(normalizelimit);
 // 	if (this->csgRoot) {
