@@ -8,6 +8,7 @@
 #include "NodeVisitor.h"
 #include "memory.h"
 #include "csgnode.h"
+// #include <QList>
 
 class CSGTreeEvaluator : public NodeVisitor
 {
@@ -16,6 +17,7 @@ public:
 		: tree(tree), geomevaluator(geomevaluator) {
 	}
   	~CSGTreeEvaluator() {}
+	CSGTreeEvaluator(const CSGTreeEvaluator &evaluator);
 
   	Response visit(State &state, const class AbstractNode &node) override;
  	Response visit(State &state, const class AbstractIntersectionNode &node) override;
@@ -40,6 +42,9 @@ public:
 	std::map<int, shared_ptr<CSGLeaf>> get_stored_leaf_term() {
 		return this->stored_leaf_term;
 	}
+	shared_ptr<class CSGNode> update_transform(const AbstractNode &node, std::vector<int> ids, Transform3d update_trans);
+	// ichao added : check the stored term after
+	void check_stored_term();
 private:
   	void addToParent(const State &state, const AbstractNode &node);
 	void applyToChildren(State &state, const AbstractNode &node, OpenSCADOperator op);
@@ -54,8 +59,7 @@ private:
 	std::map<int, ChildList> visitedchildren;
 
 
-	// ichao added : check the stored term after
-	void check_stored_term();
+
 
 protected:
 	const Tree &tree;

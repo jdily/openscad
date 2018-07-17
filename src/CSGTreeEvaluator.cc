@@ -34,6 +34,13 @@
 	with OpenCSG.
 */
 
+CSGTreeEvaluator::CSGTreeEvaluator(const CSGTreeEvaluator &obj) : tree(obj.tree), geomevaluator(obj.geomevaluator) {
+	// cout << "Copy constructor allocating ptr." << endl;
+	// this->tree = obj.tree;
+	// this->geomevaluator = obj.geomevaluator;
+	this->stored_term = obj.stored_term;
+}
+
 shared_ptr<CSGNode> CSGTreeEvaluator::buildCSGTree(const AbstractNode &node)
 {
 	std::cout << "CSGTreeEvaluator buildCSGTree" << std::endl;
@@ -51,11 +58,29 @@ shared_ptr<CSGNode> CSGTreeEvaluator::buildCSGTree(const AbstractNode &node)
 	return this->rootNode = t;
 }
 
+// [TODO] -> don't know if the node is needed.
+shared_ptr<class CSGNode> CSGTreeEvaluator::update_transform(const AbstractNode &node, std::vector<int> ids, Transform3d update_trans) {
+	for (int i = 0; i < ids.size(); i++) {
+		// cast them to leaf
+		shared_ptr<CSGLeaf> ori = dynamic_pointer_cast<CSGLeaf>(this->stored_term[ids[i]]);
+		Transform3d new_trans = ori->matrix * update_trans;
+		shared_ptr<CSGLeaf> update_leaf(new CSGLeaf(ori->geom, new_trans, ori->color, ori->label));
+		this->stored_term[ids[i]] = update_leaf;
+	}
+
+	check_stored_term();
+
+
+
+	shared_ptr<CSGNode> t(this->stored_term[node.index()]);
+	return this->rootNode = t;
+}
+
 // build the CSG tree with manually assigned highlight geometries..
 // The purpose is to visualize the relationship between tree nodes and the geometries...
 shared_ptr<class CSGNode> CSGTreeEvaluator::buildCSGTree_w_hb(const AbstractNode &node, std::vector<int> hids) {
 	this->traverse(node);
-	// check_stored_term();
+	check_stored_term();
 	// this->stored_term[1]->setHighlight(false);
 	for (int i = 0; i < (int)hids.size(); i++) {
 		std::cout << hids[i] << std::endl;
@@ -77,15 +102,13 @@ shared_ptr<class CSGNode> CSGTreeEvaluator::buildCSGTree_w_hb(const AbstractNode
 	// 		t.reset();
 	// 	}
 	// }
-	// std::cout << "number of highlight : " << this->highlightNodes.size() << std::endl;
-	// std::cout << "number of background : " << this->backgroundNodes.size() << std::endl;
 	return this->rootNode = t;
 }
 
 void CSGTreeEvaluator::check_stored_term() {
 	// go through all keys
-	// std::cout << "check stored term" << std::endl;
-	// std::cout << "stored size : " << stored_term.size() << std::endl;
+	std::cout << "check stored term" << std::endl;
+	std::cout << "stored size : " << stored_term.size() << std::endl;
 
 	// std::cout << "number of highlight : " << this->highlightNodes.size() << std::endl;
 	// std::cout << "number of background : " << this->backgroundNodes.size() << std::endl;
@@ -312,9 +335,6 @@ Response CSGTreeEvaluator::visit(State &state, const AbstractPolyNode &node)
 			node.progress_report();
 		}
 		this->stored_term[node.index()] = t1;
-		// ichao added
-		// this->stored_leaf_term[node.index()] = dynamic_pointer_cast<CSGLeaf>(t1);	
-		// std::cout << "stored term size : " << this->stored_term.size() << std::endl;
 		addToParent(state, node);
 	}
 	return Response::ContinueTraversal;

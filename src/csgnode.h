@@ -71,6 +71,7 @@ public:
 
 	std::string label;
 	shared_ptr<const Geometry> geom;
+	// [TODO] can we update the matrix only? or have to re-evaluate the geom here?
 	Transform3d matrix;
 	Color4f color;
 

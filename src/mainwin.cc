@@ -1414,14 +1414,13 @@ void MainWindow::example_compileCSG(int example_id, bool procevents) {
 	Assumes that the design has been parsed and evaluated (this->root_node is set)
 */
 
-
-void MainWindow::fast_compileCSG(bool procevents, QList<int> eval_ids) {
+void MainWindow::fast_compileCSG(bool procevents, std::vector<int> eval_ids, Transform3d update_trans) {
 	assert(this->root_node);
 	PRINT("Fast compiling design (CSG Products generation)...");
 	this->processEvents();
 	// Main CSG evaluation
 	this->progresswidget = new ProgressWidget(this);
-	connect(this->progresswidget, SIGNAL(requestShow()), this, SLOT(showProgress()));
+	// connect(this->progresswidget, SIGNAL(requestShow()), this, SLOT(showProgress()));
 
 	// can we just update the input to the renderer? e.g. this->root_products,
 	//														  this->highlights_products,
@@ -1431,11 +1430,85 @@ void MainWindow::fast_compileCSG(bool procevents, QList<int> eval_ids) {
 	// but to find which element we have to update.
 	// but how? -> PROBABLY Update the stored_term??	
 	// access the cur_csgrenderer stored_item...
+	std::cout << "fast compileCSG" << std::endl;
+	this->cur_csgrenderer->check_stored_term();
+	// this->csgRoot = cur_csgrenderer->update_transform(*root_node, eval_ids, update_trans);
+// 	size_t normalizelimit = 2 * Preferences::inst()->getValue("advanced/openCSGLimit").toUInt();
+// 	CSGTreeNormalizer normalizer(normalizelimit);
+// 	if (this->csgRoot) {
+// 		this->normalizedRoot = normalizer.normalize(this->csgRoot);
+// 		if (this->normalizedRoot) {
+// 			this->root_products.reset(new CSGProducts());
+// 			this->root_products->import(this->normalizedRoot);
+// 		}
+// 		else {
+// 			this->root_products.reset();
+// 			PRINT("WARNING: CSG normalization resulted in an empty tree");
+// 			this->processEvents();
+// 		}
+// 	}
 
+// 	const std::vector<shared_ptr<CSGNode> > &highlight_terms = cur_csgrenderer->getHighlightNodes();
+// 	// PRINTB("Highlight term size : %d...", highlight_terms.size());
+// 	// std::cout << "highlight term size : " << highlight_terms.size() << std::endl;
+// 	if (highlight_terms.size() > 0) {
+// 		// PRINTB("Compiling highlights (%d CSG Trees)...", highlight_terms.size());
+// 		this->processEvents();
+// 		this->highlights_products.reset(new CSGProducts());
+// 		for (unsigned int i = 0; i < highlight_terms.size(); i++) {
+// 			auto nterm = normalizer.normalize(highlight_terms[i]);
+// 			this->highlights_products->import(nterm);
+// 		}
+// 	}
+// 	else {
+// 		std::cout << "reset highlight products" << std::endl;
+// 		this->highlights_products.reset();
+// 	}
+// 	// PRINTB("Highlight term size : %d...", this->highlights_products->size());
+// 	// std::cout << COLOR_RED << "after HL" << COLOR_RESET << std::endl;
 
-	std::cout << "csg root dump : " << this->csgRoot->dump() << std::endl;
-	std::cout << "size of this root_products:" << this->root_products->products.size() << std::endl;
-	std::cout << this->root_products->dump() << std::endl;
+// 	const auto &background_terms = cur_csgrenderer->getBackgroundNodes();
+// 	// PRINTB("Background term size : %d...", background_terms.size());
+// 	if (background_terms.size() > 0) {
+// 		// PRINTB("Compiling background (%d CSG Trees)...", background_terms.size());
+// 		this->processEvents();
+// 		this->background_products.reset(new CSGProducts());
+// 		for (unsigned int i = 0; i < background_terms.size(); i++) {
+// 			auto nterm = normalizer.normalize(background_terms[i]);
+// 			this->background_products->import(nterm);
+// 		}
+// 	}
+// 	else {
+// 		this->background_products.reset();
+// 	}
+// 	// std::cout << COLOR_RED << "after BG" << COLOR_RESET << std::endl;
+
+// 	if (this->root_products &&
+// 			(this->root_products->size() >
+// 			 Preferences::inst()->getValue("advanced/openCSGLimit").toUInt())) {
+// 		PRINTB("WARNING: Normalized tree has %d elements!", this->root_products->size());
+// 		PRINT("WARNING: OpenCSG rendering has been disabled.");
+// 	}
+// #ifdef ENABLE_OPENCSGauto fileInfo = QFileInfo(this->fileName);
+// // #ifdef ENABLE_OPENCSG
+// 	else {
+// 		PRINTB("Normalized CSG tree has %d elements",
+// 					 (this->root_products ? this->root_products->size() : 0));
+// 		std::cout << "Q,.............Q " << std::endl;
+// 		this->opencsgRenderer = new OpenCSGRenderer(this->root_products,
+// 													this->highlights_products,
+// 													this->background_products,
+// 													this->qglviewer_suggest->m_mainViewer->shaderinfo);
+// 	}
+// #endif
+// 	PRINT("Thrown together >>>>>>>>>>");
+// 	this->thrownTogetherRenderer = new ThrownTogetherRenderer(this->root_products,
+// 															  this->highlights_products,
+// 															  this->background_products);
+// 	PRINT("Compile and preview finished.");
+// 	int s = this->renderingTime.elapsed() / 1000;
+// 	PRINTB("Total rendering time: %d hours, %d minutes, %d seconds", (s / (60*60)) % ((s / 60) % 60) % (s % 60));
+// 	this->processEvents();
 }
 
 // [todo] check here..
@@ -1455,9 +1528,8 @@ void MainWindow::compileCSG(bool procevents)
 #endif
 #ifdef ENABLE_OPENCSG
 		CSGTreeEvaluator csgrenderer(this->tree, &geomevaluator);
-		cur_csgrenderer = &csgrenderer;
-		// CSGVisitor csgvisitor(this->tree, &geomevaluator);
-		// csgvisitor.buildCSGTree(*root_node);
+		
+
 #endif
 	// ichao added -> do the polyset sampling on the geometry here
 	// cur_proj_samples = sampler->get_samples(*root_node, this->qglviewer_suggest->m_mainViewer, true);
@@ -1468,16 +1540,15 @@ void MainWindow::compileCSG(bool procevents)
 		// std::cout << "we don't need to resample" << std::endl;
 	}
 	progress_report_prep(this->root_node, report_func, this);
-	// std::cout << COLOR_RED << "after report prep" << COLOR_RESET << std::endl;
+	
 	try {
 #ifdef ENABLE_OPENCSG
 		this->processEvents();
-		// ichao : set graph here and draw it.
-		// qtreeViewer->setTree(&this->tree);	
-		// this->csgRoot = csgrenderer.buildCSGTree(*root_node);
-		// hids.push_back(5);
-		// main_hids.push(3);
 		this->csgRoot = csgrenderer.buildCSGTree_w_hb(*root_node, main_hids);
+		std::cout << "copy cur_csgrenderer" << std::endl;
+		this->cur_csgrenderer = new CSGTreeEvaluator(csgrenderer);
+		// this->cur_csgrenderer = &csgrenderer;
+		this->cur_csgrenderer->check_stored_term();
 		std::cout << "csg root dump : " << this->csgRoot->dump() << std::endl;
 #endif
 		GeometryCache::instance()->print();
@@ -2179,25 +2250,26 @@ void MainWindow::example_csgReloadRender(int example_id) {
 	compileEnded();
 }
 
-void MainWindow::fast_csgReloadRender() {
+void MainWindow::fast_csgReloadRender(std::vector<int> ids, Transform3d trans) {
 	std::cout << "fast reload render" << std::endl;
-	QList<int> ids;
-	if (this->root_node) fast_compileCSG(true, ids);
-// 	std::cout << "finish compile CSG" << std::endl;
-// 	// Go to non-CGAL view mode
-// 	std::cout << "view action thrown together : " << viewActionThrownTogether->isChecked() << std::endl;
-// 	if (viewActionThrownTogether->isChecked()) {
-// 		viewModeThrownTogether();
-// 	}
-// 	else {
-// #ifdef ENABLE_OPENCSG
-// 		std::cout << "original before view  mode preview" << std::endl;
-// 		viewModePreview();
-// #else
-// 		viewModeThrownTogether();
-// #endif
-// 	}
-	// compileEnded();
+	// std::vector<int> ids;
+	// Transform3d trans;
+	if (this->root_node) fast_compileCSG(true, ids, trans);
+	std::cout << "finish compile CSG" << std::endl;
+	// Go to non-CGAL view mode
+	std::cout << "view action thrown together : " << viewActionThrownTogether->isChecked() << std::endl;
+	if (viewActionThrownTogether->isChecked()) {
+		viewModeThrownTogether();
+	}
+	else {
+#ifdef ENABLE_OPENCSG
+		std::cout << "original before view  mode preview" << std::endl;
+		viewModePreview();
+#else
+		viewModeThrownTogether();
+#endif
+	}
+	compileEnded();
 }
 
 // TODO : check when to call csgReloadRender and when is the initialize and 
@@ -3742,7 +3814,11 @@ void MainWindow::rerender_manipulationSlot(Eigen::Vector3d unproj_offset) {
 		// interactive_csgReloadRender();
 		// std::cout << COLOR_RED << "finish everything check here." << COLOR_RESET << std::endl;
 	// }
-	fast_csgReloadRender();
+	
+	this->cur_csgrenderer->check_stored_term();
+	std::vector<int> nids;
+	Transform3d trans;
+	fast_csgReloadRender(nids, trans);
 	// csgReloadRender();
 	// actionRenderPreview();
 }
