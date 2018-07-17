@@ -211,7 +211,7 @@ private slots:
 	void example_csgReloadRender(int example_id);
 	void example_compileCSG(int example_id, bool procevents);
 	
-	void fast_compileCSG(bool procevents);
+	void fast_compileCSG(bool procevents, QList<int> eval_ids);
 	void fast_csgReloadRender();
 
 
@@ -352,6 +352,9 @@ private:
 
 	tree_hnode* main_tree;
 	tree_hnode* sugg_tree;
+
+	CSGTreeEvaluator *cur_csgrenderer;
+
 
 	char const * afterCompileSlot;
 	bool procevents;

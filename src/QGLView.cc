@@ -704,20 +704,22 @@ void QGLView::enable_transfer_manipulation(Eigen::Vector3d move_to_pos) {
   std::cout << "enable transfer manipulation.." << std::endl;
   this->manipulating = true;
   this->mouse_drag_active = false;
-  QCursor c = cursor();
-  // c.setPos(mapToGlobal(QPoint(px, py)));
-  // [TODO] deal with the right mouse position.
-  c.setPos(mapToGlobal(QPoint(cur_width/2, cur_height/2)));
+  QCursor c = QCursor(Qt::OpenHandCursor);
+  // [TODO] it didn't set the right position on my Windows machine with Xming
+  std::cout << "width : " << cur_width << " height : " << cur_height << std::endl;
+  this->cursor().setPos(mapToGlobal(QPoint(cur_width/2, cur_height/2))); 
+  // c.setPos(mapToGlobal(QPoint(cur_width/2, cur_height/2)));
   // std::cout << move_to_pos[0] << " " << move_to_pos[1] << " " << move_to_pos[2] << std::endl;
   // c.setPos(mapToGlobal(QPoint(move_to_pos[0], move_to_pos[1])));
-  setCursor(c);
+  // this->setCursor(c);
+  std::cout << c.pos().x() << " " << c.pos().y() << std::endl;
   last_local_mouse = QPoint(cur_width/2, cur_height/2);
 
+  // get the unprojected things.
   setupCamera();
   int viewport[4];
   GLdouble modelview[16];
   GLdouble projection[16];
-
   glGetIntegerv(GL_VIEWPORT, viewport);
   glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
   glGetDoublev(GL_PROJECTION_MATRIX, projection);
@@ -734,5 +736,4 @@ void QGLView::enable_transfer_manipulation(Eigen::Vector3d move_to_pos) {
   GLdouble px, py, pz;
   auto success = gluUnProject(x, y, z, modelview, projection, viewport, &px, &py, &pz);
   last_unproj_mouse = Eigen::Vector3d(px, py, pz);  
-  // last_unproj_mouse = unproj(last_local_mouse);
 }

@@ -1415,7 +1415,7 @@ void MainWindow::example_compileCSG(int example_id, bool procevents) {
 */
 
 
-void MainWindow::fast_compileCSG(bool procevents) {
+void MainWindow::fast_compileCSG(bool procevents, QList<int> eval_ids) {
 	assert(this->root_node);
 	PRINT("Fast compiling design (CSG Products generation)...");
 	this->processEvents();
@@ -1429,7 +1429,8 @@ void MainWindow::fast_compileCSG(bool procevents) {
 
 	// [TODO] I think we don't need to evaluate the entire tree into csgRoot
 	// but to find which element we have to update.
-	// but how? -> PROBABLY Update the stored_term??
+	// but how? -> PROBABLY Update the stored_term??	
+	// access the cur_csgrenderer stored_item...
 
 
 	std::cout << "csg root dump : " << this->csgRoot->dump() << std::endl;
@@ -1454,6 +1455,7 @@ void MainWindow::compileCSG(bool procevents)
 #endif
 #ifdef ENABLE_OPENCSG
 		CSGTreeEvaluator csgrenderer(this->tree, &geomevaluator);
+		cur_csgrenderer = &csgrenderer;
 		// CSGVisitor csgvisitor(this->tree, &geomevaluator);
 		// csgvisitor.buildCSGTree(*root_node);
 #endif
@@ -2179,7 +2181,8 @@ void MainWindow::example_csgReloadRender(int example_id) {
 
 void MainWindow::fast_csgReloadRender() {
 	std::cout << "fast reload render" << std::endl;
-	if (this->root_node) fast_compileCSG(true);
+	QList<int> ids;
+	if (this->root_node) fast_compileCSG(true, ids);
 // 	std::cout << "finish compile CSG" << std::endl;
 // 	// Go to non-CGAL view mode
 // 	std::cout << "view action thrown together : " << viewActionThrownTogether->isChecked() << std::endl;
