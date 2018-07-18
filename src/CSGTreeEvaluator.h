@@ -33,6 +33,8 @@ public:
 	const shared_ptr<CSGNode> &getRootNode() const {
 		return this->rootNode;
 	}
+	shared_ptr<class CSGNode> buildCSGTree_sub(const AbstractNode &node, Transform3d update_trans);
+	
 	const std::vector<shared_ptr<CSGNode>> &getHighlightNodes() const {
 		return this->highlightNodes;
 	}

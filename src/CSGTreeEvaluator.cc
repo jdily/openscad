@@ -60,8 +60,10 @@ shared_ptr<CSGNode> CSGTreeEvaluator::buildCSGTree(const AbstractNode &node)
 
 // [TODO] -> don't know if the node is needed.
 shared_ptr<class CSGNode> CSGTreeEvaluator::update_transform(const AbstractNode &node, std::vector<int> ids, Transform3d update_trans) {
+	std::cout << "update the positions of " << ids.size() << " nodes. " << std::endl;
 	for (int i = 0; i < ids.size(); i++) {
 		// cast them to leaf
+		std::cout << ids[i] << std::endl;
 		shared_ptr<CSGLeaf> ori = dynamic_pointer_cast<CSGLeaf>(this->stored_term[ids[i]]);
 		Transform3d new_trans = ori->matrix * update_trans;
 		shared_ptr<CSGLeaf> update_leaf(new CSGLeaf(ori->geom, new_trans, ori->color, ori->label));
@@ -70,38 +72,35 @@ shared_ptr<class CSGNode> CSGTreeEvaluator::update_transform(const AbstractNode 
 
 	check_stored_term();
 
-
-
 	shared_ptr<CSGNode> t(this->stored_term[node.index()]);
 	return this->rootNode = t;
 }
+
+shared_ptr<class CSGNode> CSGTreeEvaluator::buildCSGTree_sub(const AbstractNode &node, Transform3d update_trans) {
+	this->traverse(node);
+	// check_stored_term();
+	// this->stored_term[1]->setHighlight(false);
+	// for (int i = 0; i < (int)hids.size(); i++) {
+	// 	// std::cout << hids[i] << std::endl;
+	// 	this->stored_term[hids[i]]->setHighlight(true);
+	// }
+	shared_ptr<CSGNode> t(this->stored_term[node.index()]);
+	return this->rootNode = t;
+}
+
 
 // build the CSG tree with manually assigned highlight geometries..
 // The purpose is to visualize the relationship between tree nodes and the geometries...
 shared_ptr<class CSGNode> CSGTreeEvaluator::buildCSGTree_w_hb(const AbstractNode &node, std::vector<int> hids) {
 	this->traverse(node);
-	check_stored_term();
+	// check_stored_term();
 	// this->stored_term[1]->setHighlight(false);
+	#pragma omp parallel for 
 	for (int i = 0; i < (int)hids.size(); i++) {
-		std::cout << hids[i] << std::endl;
+		// std::cout << hids[i] << std::endl;
 		this->stored_term[hids[i]]->setHighlight(true);
 	}
-	// check_stored_term();
-	// for (int i = 0; i < this->stored_term.size(); i++) {
-	// 	if (std::find(hids.begin(), hids.end(), i) == hids.end()) {
-	// 		this->stored_term[i]->setBackground(true);
-	// 	}
-	// }
 	shared_ptr<CSGNode> t(this->stored_term[node.index()]);
-	// std::cout << "t flag : " << t->getFlags() << std::endl;
-	// if (t) {
-	// 	if (t->isHighlight()) this->highlightNodes.push_back(t);
-	// 	// TODO : check if this helps...
-	// 	if (t->isBackground()) {
-	// 		this->backgroundNodes.push_back(t);
-	// 		t.reset();
-	// 	}
-	// }
 	return this->rootNode = t;
 }
 
@@ -109,28 +108,9 @@ void CSGTreeEvaluator::check_stored_term() {
 	// go through all keys
 	std::cout << "check stored term" << std::endl;
 	std::cout << "stored size : " << stored_term.size() << std::endl;
-
-	// std::cout << "number of highlight : " << this->highlightNodes.size() << std::endl;
-	// std::cout << "number of background : " << this->backgroundNodes.size() << std::endl;
-	// for (int i = 1; i < (int)this->stored_term.size()+1; i++) {
-	// 	// std::cout << this->stored_term[i]->getFlags() << std::endl;
-	// 	if (this->stored_term[i]->isHighlight()) {
-	// 		std::cout << i << " is highlighted " << std::endl;
-	// 	} else if (this->stored_term[i]->isBackground()){
-	// 		std::cout << i << " is background " << std::endl;
-	// 	} else {
-	// 		std::cout << i << " is none " << std::endl;
-	// 	}
-	// }
-
-	// manual change one of them as highlight
-	// this->stored_term[6]->setHighlight(true);
-
-	// std::vector<int> v;
-	// for(std::map<int,shared_ptr<CSGNode>>::iterator it = stored_term.begin(); it != stored_term.end(); ++it) {
-  	// 	v.push_back(it->first);
-  	// 	std::cout << it->first << "  " << it->second->dump() << std::endl;
-	// }
+	for(std::map<int,shared_ptr<CSGNode>>::iterator it = stored_term.begin(); it != stored_term.end(); ++it) {
+		std::cout << it->first << " " << it->second->dump() << std::endl;
+	}
 }
 
 
@@ -151,6 +131,7 @@ void CSGTreeEvaluator::applyBackgroundAndHighlight(State & /*state*/, const Abst
 void CSGTreeEvaluator::applyToChildren(State & state, const AbstractNode &node, OpenSCADOperator op)
 {
 	shared_ptr<CSGNode> t1;
+	#pragma omp parallel for 
 	for(const auto &chnode : this->visitedchildren[node.index()]) {
 		shared_ptr<CSGNode> t2(this->stored_term[chnode->index()]);
 		// ichao : check if we can retain all these stored_term
@@ -353,8 +334,6 @@ Response CSGTreeEvaluator::visit(State &state, const CsgOpNode &node)
 
 Response CSGTreeEvaluator::visit(State &state, const TransformNode &node)
 {
-	// ichao : check the transformation status
-	// std::cout << "visit transformation node" << std::endl;
 	if (state.isPrefix()) {
 		if (matrix_contains_infinity(node.matrix) || matrix_contains_nan(node.matrix)) {
 			PRINT("WARNING: Transformation matrix contains Not-a-Number and/or Infinity - removing object.");

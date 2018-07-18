@@ -212,7 +212,8 @@ private slots:
 	void example_compileCSG(int example_id, bool procevents);
 	
 	void fast_compileCSG(bool procevents, std::vector<int> eval_ids, Transform3d update_trans);
-	void fast_csgReloadRender(std::vector<int> eval_ids, Transform3d update_trans);
+	void fast_csgReloadRender();
+	void unnorm_compileCSG(bool procevents);
 
 
 #ifdef ENABLE_CGAL
