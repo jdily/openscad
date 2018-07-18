@@ -308,6 +308,7 @@ public slots:
 	void example_strokeUpdatedSlot_main(QList<QPolygonF> stroke_polys, QPainterPath stroke_path);
 	void example_groupSelectedSlot();
 	void example_transferGeomSlot();
+	void example_noSnapTranGeomSlot();
 	void rerender_manipulationSlot(Eigen::Vector3d unproj_move);
 
 	// tmp function for loading

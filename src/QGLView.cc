@@ -167,10 +167,10 @@ void QGLView::display_opencsg_warning_dialog()
     message += _("Warning: You may experience OpenCSG rendering errors.\n\n");
   }
   else {
-    message += _("Warning: Missing OpenGL capabilities for OpenCSG - OpenCSG has been disabled.\n\n");
+    message += _("Warning: Missing Openmanipulating for OpenCSG - OpenCSG has been disabled.\n\n");
     dialog->enableOpenCSGBox->hide();
   }
-  message += _("It is highly recommended to use OpenSCAD on a system with "
+  message += _("It is highly recommendemanipulatingAD on a system with "
 							 "OpenGL 2.0 or later.\n"
 							 "Your renderer information is as follows:\n");
   QString rendererinfo(_("GLEW version %1\n%2 (%3)\nOpenGL version %4\n"));

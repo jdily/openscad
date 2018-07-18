@@ -452,7 +452,7 @@ MainWindow::MainWindow(const QString &filename)
 	// connect(this->qglviewer_suggest->m_sugViewers[2], SIGNAL(exampleSelected(int)), this, SLOT(example_selectedSlot(int)));
 	connect(this->qglviewer_suggest->m_sugViewers[0], SIGNAL(strokeUpdate(QList<QPolygonF>, QPainterPath)), this, SLOT(example_strokeUpdatedSlot_sugg(QList<QPolygonF>, QPainterPath)));
 	connect(this->qglviewer_suggest->m_sugViewers[0]->act_group_geom, SIGNAL(triggered()), this, SLOT(example_groupSelectedSlot()));
-	connect(this->qglviewer_suggest->m_sugViewers[0]->act_trans, SIGNAL(triggered()), this, SLOT(example_transferGeomSlot()));
+	connect(this->qglviewer_suggest->m_sugViewers[0]->act_trans, SIGNAL(triggered()), this, SLOT(example_noSnapTranGeomSlot()));
 
 	connect(this->qglviewer_suggest->m_mainViewer, SIGNAL(strokeUpdate(QList<QPolygonF>, QPainterPath)), this, SLOT(example_strokeUpdatedSlot_main(QList<QPolygonF>, QPainterPath)));
 	connect(this->qglviewer_suggest->m_mainViewer, SIGNAL(manipulateUpdate(Eigen::Vector3d)), this, SLOT(rerender_manipulationSlot(Eigen::Vector3d)));
@@ -3792,6 +3792,13 @@ void MainWindow::example_groupSelectedSlot() {
 	this->qglviewer_suggest->m_sugViewer0->enable_func_info_viz(sug_func.first, sug_func.second, QColor(0, 0, 255));
 }
 
+void MainWindow::example_noSnapTranGeomSlot() {
+	std::cout << "example_noSnapTranGeomSlot" << std::endl;
+
+
+}
+
+// this is the dev version toward interactive snap
 void MainWindow::example_transferGeomSlot() {
 	// first focus on gind = 0;
 	std::cout << "example_transferGeomSlot" << std::endl;
@@ -3816,7 +3823,6 @@ void MainWindow::example_transferGeomSlot() {
 				// Eigen::Vector3d translation = main_func.first - sug_func.first;
 				Eigen::Vector3d translation = -sug_func.first;
 				std::cout << translation[0] << " " << translation[1] << " " << translation[2] << " " << std::endl;
-				
 				Eigen::Quaterniond rot;
 				rot.setFromTwoVectors(sug_func.second, main_func.second);
 				Eigen::Matrix3d rotationMatrix;
