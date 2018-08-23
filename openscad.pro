@@ -386,7 +386,8 @@ HEADERS += src/version_check.h \
            src/TreeSampler.h \
            src/Selector.h \ 
            src/GeomGroup.h \ 
-           src/FuncEstimator.h
+           src/FuncEstimator.h \ 
+           src/MyDMEditor.h
            # src/NodeModifier.h
 
 SOURCES += \
@@ -553,7 +554,8 @@ SOURCES += \
            src/TreeSampler.cpp \ 
            src/Selector.cpp \
            src/GeomGroup.cpp \ 
-           src/FuncEstimator.cpp
+           src/FuncEstimator.cpp \ 
+           src/MyDMEditor.cpp
            # src/NodeModifier.cpp
 
 # CGAL

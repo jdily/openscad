@@ -130,7 +130,7 @@ if(NOT HEADLESS)
 
   find_package(Qt5QScintilla 2.8.0 REQUIRED QUIET)
   message(STATUS "QScintilla: ${QT5QSCINTILLA_VERSION_STRING}")
-  add_definitions(-DUSE_SCINTILLA_EDITOR)
+  #add_definitions(-DUSE_SCINTILLA_EDITOR)
   add_definitions(-DENABLE_MDI)
   
 #  add_definitions(${Qt5Widgets_DEFINITIONS})

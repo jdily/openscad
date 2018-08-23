@@ -106,9 +106,11 @@
 #include "Selector.h"
 #include "FuncEstimator.h"
 #include "primitives.h"
+#include "MyDMEditor.h"
 #include <ctime>
 // #include "GeomGroup.h"
 // #include "LFD.h"
+#include <typeinfo>
 
 //the following are UBUNTU/LINUX ONLY terminal color codes.
 #define COLOR_RESET   "\033[0m"
@@ -196,14 +198,16 @@ MainWindow::MainWindow(const QString &filename)
 	QSettingsCached settings;
 	editortype = settings.value("editor/editortype").toString();
 	useScintilla = (editortype != "Simple Editor");
-
+	std::cout << "Use Scintilla : " << useScintilla << std::endl;
+	useScintilla = 0;
 #ifdef USE_SCINTILLA_EDITOR
 	if (useScintilla) {
 		 editor = new ScintillaEditor(editorDockContents);
 	}
 	else
 #endif
-		editor = new LegacyEditor(editorDockContents);
+		// editor = new LegacyEditor(editorDockContents);
+		editor = new MyDMEditor(editorDockContents);
 
 	Preferences::create(editor->colorSchemes());
 
