@@ -17,9 +17,17 @@ MyDMEditor::MyDMEditor(QWidget *parent) : EditorInterface(parent)
 	this->textedit->setTabStopWidth(30);
 
 	this->highlighter = new Highlighter(this->textedit->document());
+	std::cout << "use dm editor" << std::endl;
 
 	connect(this->textedit, SIGNAL(textChanged()), this, SIGNAL(contentsChanged()));
 	connect(this->textedit->document(), SIGNAL(modificationChanged(bool)), this, SIGNAL(modificationChanged(bool)));
+
+	createSliderAct = new QAction(tr("Create Slider"), this);
+	connect(this->createSliderAct, SIGNAL(triggered()), this, SLOT(createSlider()));
+}
+
+void MyDMEditor::createSlider() {
+	std::cout << "create slider " << std::endl;
 }
 
 void MyDMEditor::indentSelection()
@@ -32,7 +40,6 @@ void MyDMEditor::indentSelection()
 	if (txt.endsWith(QString(QChar(8233)) + QString("\t")))
 		txt.chop(1);
 	txt = QString("\t") + txt;
-
 	cursor.insertText(txt);
 	int p2 = cursor.position();
 	cursor.setPosition(p1, QTextCursor::MoveAnchor);
@@ -208,6 +215,7 @@ void MyDMEditor::cut()
 
 void MyDMEditor::copy()
 {
+	std::cout << "copy" << std::endl;
 	this->textedit->copy();
 }
 
@@ -307,4 +315,11 @@ QStringList MyDMEditor::colorSchemes()
 	    << "Off";
 	
 	return colorSchemes;
+}
+
+void MyDMEditor::mousePressEvent(QMouseEvent *event) {
+	std::cout << "press mouse" << std::endl;
+	QMenu *menu = this->textedit->createStandardContextMenu();
+	menu->addAction(createSliderAct);
+	menu->popup(mapToGlobal(event->pos()));
 }

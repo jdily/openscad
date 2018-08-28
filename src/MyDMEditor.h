@@ -1,6 +1,6 @@
 #pragma once 
 #include "editor.h"
-
+#include <QMenu>
 class MyDMEditor : public EditorInterface
 {
 	Q_OBJECT
@@ -18,6 +18,8 @@ public:
 	bool findString(const QString & exp, bool findBackwards) const;
 	QStringList colorSchemes() override;
     bool canUndo() override;
+
+	QAction *createSliderAct;
 
 public slots:
 	void zoomIn() override;
@@ -40,8 +42,12 @@ public slots:
 	void copy() override;
 	void paste() override;
 	void initFont(const QString&, uint) override;
+	void createSlider();
 private:
 	class QTextEdit *textedit;
 	class Highlighter *highlighter;
 	QSize initialSizeHint;
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+
 };

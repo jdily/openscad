@@ -184,7 +184,7 @@ void treeViewer::setSTree(tree_hnode* htree) {
 
 void treeViewer::resizeEvent(QResizeEvent *event) {
     // QRectF bounds = m_pScene->itemsBoundingRect();
-    std::cout << "resize event invoked." << std::endl;
+    // std::cout << "resize event invoked." << std::endl;
 
 }
 

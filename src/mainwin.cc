@@ -459,7 +459,7 @@ MainWindow::MainWindow(const QString &filename)
 	connect(this->qglviewer_suggest->m_sugViewers[0]->act_trans, SIGNAL(triggered()), this, SLOT(example_noSnapTranGeomSlot()));
 
 	connect(this->qglviewer_suggest->m_mainViewer, SIGNAL(strokeUpdate(QList<QPolygonF>, QPainterPath)), this, SLOT(example_strokeUpdatedSlot_main(QList<QPolygonF>, QPainterPath)));
-	connect(this->qglviewer_suggest->m_mainViewer, SIGNAL(manipulateUpdate(Eigen::Vector3d)), this, SLOT(rerender_manipulationSlot(Eigen::Vector3d)));
+	// connect(this->qglviewer_suggest->m_mainViewer, SIGNAL(manipulateUpdate(Eigen::Vector3d)), this, SLOT(rerender_manipulationSlot(Eigen::Vector3d)));
 #ifdef OPENSCAD_UPDATER
 	this->menuBar()->addMenu(AutoUpdater::updater()->updateMenu);
 #endif
@@ -1436,7 +1436,7 @@ void MainWindow::fast_compileCSG(bool procevents, std::vector<int> eval_ids, Tra
 	// access the cur_csgrenderer stored_item...
 	std::cout << "fast compileCSG" << std::endl;
 	// this->cur_csgrenderer->check_stored_term();
-	this->csgRoot = cur_csgrenderer->update_transform(*root_node, eval_ids, update_trans);
+	// this->csgRoot = cur_csgrenderer->update_transform(*root_node, eval_ids, update_trans);
 
 	// this->root_products.reset(new CSGProducts());
 	// this->root_products->import(this->csgRoot);
@@ -1671,8 +1671,8 @@ void MainWindow::compileCSG(bool procevents)
 		std::cout << "copy cur_csgrenderer" << std::endl;
 		this->cur_csgrenderer = new CSGTreeEvaluator(csgrenderer);
 		// this->cur_csgrenderer = &csgrenderer;
-		this->cur_csgrenderer->check_stored_term();
-		std::cout << "csg root dump : " << this->csgRoot->dump() << std::endl;
+		// this->cur_csgrenderer->check_stored_term();
+		// std::cout << "csg root dump : " << this->csgRoot->dump() << std::endl;
 #endif
 		GeometryCache::instance()->print();
 #ifdef ENABLE_CGAL
