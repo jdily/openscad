@@ -28,6 +28,23 @@ MyDMEditor::MyDMEditor(QWidget *parent) : EditorInterface(parent)
 
 void MyDMEditor::createSlider() {
 	std::cout << "create slider " << std::endl;
+
+	QWidget *popup = new QWidget(this);
+	QSlider *slider = new QSlider(Qt::Horizontal, popup);
+	slider->setRange(0, 100);
+	QLabel *label = new QLabel(popup);
+    label->setAlignment(Qt::AlignCenter);
+    label->setNum(100);
+    label->setMinimumWidth(label->sizeHint().width());
+	QBoxLayout *popupLayout = new QHBoxLayout(popup);
+    popupLayout->setMargin(2);
+    popupLayout->addWidget(slider);
+    popupLayout->addWidget(label);
+	QWidgetAction *action = new QWidgetAction(this);
+    action->setDefaultWidget(popup);
+    QMenu *menu = new QMenu(this);
+    menu->addAction(action);
+	menu->popup(*slider_pos);
 }
 
 void MyDMEditor::indentSelection()
@@ -321,5 +338,6 @@ void MyDMEditor::mousePressEvent(QMouseEvent *event) {
 	std::cout << "press mouse" << std::endl;
 	QMenu *menu = this->textedit->createStandardContextMenu();
 	menu->addAction(createSliderAct);
+	slider_pos = new QPoint(mapToGlobal(event->pos()));
 	menu->popup(mapToGlobal(event->pos()));
 }

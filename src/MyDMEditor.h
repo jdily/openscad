@@ -1,6 +1,9 @@
 #pragma once 
 #include "editor.h"
 #include <QMenu>
+#include <QSlider>
+#include <QWidgetAction>
+
 class MyDMEditor : public EditorInterface
 {
 	Q_OBJECT
@@ -20,6 +23,7 @@ public:
     bool canUndo() override;
 
 	QAction *createSliderAct;
+	QPoint *slider_pos;
 
 public slots:
 	void zoomIn() override;
