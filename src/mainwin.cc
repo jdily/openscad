@@ -2278,7 +2278,7 @@ void MainWindow::compileTopLevelDocument(bool rebuildParameterWidget)
 
 	if (Feature::ExperimentalCustomizer.is_enabled()) {
 		if (this->root_module!=nullptr) {
-			//add parameters as annotation in AST
+			// add parameters as annotation in AST
 			CommentParser::collectParameters(fulltext.c_str(),this->root_module);
 		}
 		this->parameterWidget->setParameters(this->root_module,rebuildParameterWidget);

@@ -44,7 +44,11 @@ void MyDMEditor::createSlider() {
     action->setDefaultWidget(popup);
     QMenu *menu = new QMenu(this);
     menu->addAction(action);
+	// probably need a bit offset so that it will not occlude the selected variables.
 	menu->popup(*slider_pos);
+	// QCursor c = cursor();
+	// c.setPos(*slider_pos);
+	// setCursor(c);
 }
 
 void MyDMEditor::indentSelection()
@@ -309,6 +313,7 @@ void MyDMEditor::initFont(const QString& family, uint size)
 
 QString MyDMEditor::selectedText()
 {
+	// std::cout << textedit->textCursor().selectedText().toStdString() << std::endl;
 	return textedit->textCursor().selectedText();
 }
 
@@ -336,6 +341,7 @@ QStringList MyDMEditor::colorSchemes()
 
 void MyDMEditor::mousePressEvent(QMouseEvent *event) {
 	std::cout << "press mouse" << std::endl;
+	std::cout << selectedText().toStdString() << std::endl;
 	QMenu *menu = this->textedit->createStandardContextMenu();
 	menu->addAction(createSliderAct);
 	slider_pos = new QPoint(mapToGlobal(event->pos()));
