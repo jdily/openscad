@@ -24,10 +24,39 @@ MyDMEditor::MyDMEditor(QWidget *parent) : EditorInterface(parent)
 
 	createSliderAct = new QAction(tr("Create Slider"), this);
 	connect(this->createSliderAct, SIGNAL(triggered()), this, SLOT(createSlider()));
+
+	mani_start_val = 0.0;
+	selected_line_no = 0;
+}
+
+// use selected_line_no and selected_var
+void MyDMEditor::check_selection() {
+	QRegExp num_re("-?[0-9]+([.][0-9]+)?");
+	if (num_re.exactMatch(selected_var)) {
+		std::cout << "it's a number" << std::endl;
+		mani_start_val = selected_var.toFloat();
+	} else {
+		std::cout << "its' not a number" << std::endl;
+		// we have to find the val of the variable name
+		// let's perform a simple heuristic here for testing.
+		// 1. find all the lines in the document
+		// QTextDocument* doc = this->textedit->document();
+		QRegExp var_re("-?[0-9]+([.][0-9]+)?");
+		QString plainTextEditContents = this->textedit->toPlainText();
+		QStringList lines = plainTextEditContents.split("\n");
+		for (int i = 0; i < lines.length(); i++) {
+
+		}
+
+	}
 }
 
 void MyDMEditor::createSlider() {
 	std::cout << "create slider " << std::endl;
+
+	// first find out whether what is the value to adjust
+	// whether it's directly a value, a variable, or multiple variable...
+	check_selection();
 
 	QWidget *popup = new QWidget(this);
 	QSlider *slider = new QSlider(Qt::Horizontal, popup);
@@ -46,6 +75,10 @@ void MyDMEditor::createSlider() {
     menu->addAction(action);
 	// probably need a bit offset so that it will not occlude the selected variables.
 	menu->popup(*slider_pos);
+
+
+
+
 	// QCursor c = cursor();
 	// c.setPos(*slider_pos);
 	// setCursor(c);
@@ -341,7 +374,12 @@ QStringList MyDMEditor::colorSchemes()
 
 void MyDMEditor::mousePressEvent(QMouseEvent *event) {
 	std::cout << "press mouse" << std::endl;
-	std::cout << selectedText().toStdString() << std::endl;
+	// std::cout << selectedText().toStdString() << std::endl;
+
+	// QTextCursor cur_cursor = this->textedit->textCursor();
+	selected_line_no = this->textedit->textCursor().blockNumber();
+	selected_var = selectedText();
+
 	QMenu *menu = this->textedit->createStandardContextMenu();
 	menu->addAction(createSliderAct);
 	slider_pos = new QPoint(mapToGlobal(event->pos()));

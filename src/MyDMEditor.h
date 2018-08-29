@@ -22,8 +22,16 @@ public:
 	QStringList colorSchemes() override;
     bool canUndo() override;
 
+	void check_selection();
+
+
 	QAction *createSliderAct;
 	QPoint *slider_pos;
+	int selected_line_no;
+	QString selected_var;
+	float mani_start_val;
+
+
 
 public slots:
 	void zoomIn() override;
