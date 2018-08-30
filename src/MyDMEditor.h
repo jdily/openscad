@@ -2,6 +2,7 @@
 #include "editor.h"
 #include <QMenu>
 #include <QSlider>
+#include <QDoubleSpinBox>
 #include <QWidgetAction>
 
 class MyDMEditor : public EditorInterface
@@ -27,10 +28,18 @@ public:
 
 	QAction *createSliderAct;
 	QPoint *slider_pos;
+	// need to know where the position is
 	int selected_line_no;
-	QString selected_var;
-	float mani_start_val;
+	int selected_col_no;
+	int selected_start;
+	int selected_end;
+	int selected_anchor;
+	int selected_position;
 
+	QString selected_var;
+	float mani_val;
+	int mani_line_no;
+	bool mani_variable;
 
 
 public slots:
@@ -55,6 +64,8 @@ public slots:
 	void paste() override;
 	void initFont(const QString&, uint) override;
 	void createSlider();
+
+	void update_mani_val(double new_val);
 private:
 	class QTextEdit *textedit;
 	class Highlighter *highlighter;

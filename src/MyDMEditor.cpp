@@ -25,8 +25,10 @@ MyDMEditor::MyDMEditor(QWidget *parent) : EditorInterface(parent)
 	createSliderAct = new QAction(tr("Create Slider"), this);
 	connect(this->createSliderAct, SIGNAL(triggered()), this, SLOT(createSlider()));
 
-	mani_start_val = 0.0;
+	mani_val = 0.0;
+	mani_line_no = 0;
 	selected_line_no = 0;
+	mani_variable = false;
 }
 
 // use selected_line_no and selected_var
@@ -34,37 +36,110 @@ void MyDMEditor::check_selection() {
 	QRegExp num_re("-?[0-9]+([.][0-9]+)?");
 	if (num_re.exactMatch(selected_var)) {
 		std::cout << "it's a number" << std::endl;
-		mani_start_val = selected_var.toFloat();
+		mani_val = selected_var.toFloat();
+		mani_line_no = selected_line_no;
+		mani_variable = false;
 	} else {
 		std::cout << "its' not a number" << std::endl;
+		mani_variable = true;
 		// we have to find the val of the variable name
 		// let's perform a simple heuristic here for testing.
 		// 1. find all the lines in the document
 		// QTextDocument* doc = this->textedit->document();
-		QRegExp var_re("-?[0-9]+([.][0-9]+)?");
+		
+		QString var_exp = QString("\\b(%1)\\b=-?[0-9]+([.][0-9]+)?").arg(selected_var);
+		QRegExp var_re(var_exp);
 		QString plainTextEditContents = this->textedit->toPlainText();
 		QStringList lines = plainTextEditContents.split("\n");
 		QString desire = QString("%1=").arg(selected_var);
 		QList<int> line_nos;
-		for (int i = 0; i < lines.length(); i++) {
-			if (lines[i].contains(desire)) {
-				line_nos.append(i);
-			}
-		}
-		// 2. find the closest line number
-		int min_diff = 100000, diff = 0, closest_line_no = -1;
-		for (int &line_no : line_nos) {
-			diff = abs(line_no - selected_line_no);
-			if (diff < min_diff) {
-				min_diff = diff;
-				closest_line_no = line_no;
-			}
-		}
-		std::cout << selected_line_no << ", closest line number : " << closest_line_no << std::endl;
-		// 3. parse the declaration and find the declare value..
-		QStringList split_line = lines[closest_line_no].split("=");
-		float dec_val = split_line[1].toFloat();
 
+		for (int i = 0; i < lines.length(); i++) {
+			if (i > selected_line_no) {
+				break;
+			}
+			int pos = var_re.indexIn(lines[i]);
+			if (pos != -1) {
+				QStringList slist = var_re.capturedTexts();
+				QStringList cap_list = slist[0].split("=");
+				mani_val = cap_list[1].toFloat();
+				mani_line_no = i;
+				// float dec_val = cap_list[1].toFloat();
+				// std::cout << "dec_val : " << dec_val << std::endl; 
+			}
+		}
+
+
+
+
+		// for (int i = 0; i < lines.length(); i++) {
+		// 	if (lines[i].contains(desire)) {
+		// 		line_nos.append(i);
+		// 	}
+		// }
+		// // 2. find the closest line number
+		// int min_diff = 100000, diff = 0, closest_line_no = -1;
+		// for (int &line_no : line_nos) {
+		// 	diff = abs(line_no - selected_line_no);
+		// 	if (diff < min_diff) {
+		// 		min_diff = diff;
+		// 		closest_line_no = line_no;
+		// 	}
+		// }
+		// std::cout << selected_line_no << ", closest line number : " << closest_line_no << std::endl;
+		// // 3. parse the declaration and find the declare value..
+		// QStringList split_line = lines[closest_line_no].split("=");
+		// for (int i = 0; i < split_line.length(); i++) {
+		// 	std::cout << split_line[i].toStdString() << std::endl;
+		// }
+		// float dec_val = split_line[1].toFloat();
+		// std::cout << "dec val : " << dec_val << std::endl;
+
+	}
+}
+
+void MyDMEditor::update_mani_val(double new_val) {
+	if (mani_variable == false) {
+		// directly update the number
+		// QTextCursor cursor = this->textedit->textCursor();
+		// cursor.setPosition(selected_start, QTextCursor::MoveAnchor);
+		// cursor.setPosition(selected_end, QTextCursor::KeepAnchor);
+		// cursor.removeSelectedText();
+		// this->textedit->setTextCursor(cursor);
+		if (this->textedit->textCursor().hasSelection()) {
+			std::cout << "has selection" << std::endl;
+		} else {
+			std::cout << "no selection at all" << std::endl;
+		}
+		// this->textedit->textCursor().removeSelectedText();
+		// this->textedit->textCursor().removeSelectedText();
+		QString new_val_str = QString("%1").arg(new_val);
+		int str_len = new_val_str.length();
+		// this->textedit->
+		this->textedit->insertPlainText(new_val_str);
+		for (int k = 0; k < str_len; k++) {
+			this->textedit->moveCursor(QTextCursor::MoveOperation::Left,QTextCursor::MoveMode::KeepAnchor);        
+		}
+		// int newPosition, newAnchor;
+		// if(selected_anchor < selected_position){
+		// 	newAnchor = selected_anchor;
+		// 	newPosition= this->textedit->textCursor().position();
+		// } else {
+		// 	newAnchor = this->textedit->textCursor().position();
+		// 	newPosition= selected_position;
+		// }
+		// this->textedit->textCursor().setPosition(newAnchor, QTextCursor::MoveAnchor);
+		// this->textedit->textCursor().setPosition(newPosition, QTextCursor::KeepAnchor);
+
+		// reset the insert part as selection....
+		// this->textedit->textCursor().setPosition(selected_start, QTextCursor::MoveAnchor);
+		// this->textedit->textCursor().setPosition(selected_end, QTextCursor::KeepAnchor);
+		// if (this->textedit->textCursor().hasSelection()) {
+		// 	std::cout << "has selection" << std::endl;
+		// } else {
+		// 	std::cout << "no selection at all" << std::endl;
+		// }
+	} else {
 
 	}
 }
@@ -75,27 +150,37 @@ void MyDMEditor::createSlider() {
 	// first find out whether what is the value to adjust
 	// whether it's directly a value, a variable, or multiple variable...
 	check_selection();
-
+	// after check, we know the 
+	// 1. start value of the manipulation
+	// 2. where to modify the document.....
 	QWidget *popup = new QWidget(this);
-	QSlider *slider = new QSlider(Qt::Horizontal, popup);
-	slider->setRange(0, 100);
-	QLabel *label = new QLabel(popup);
-    label->setAlignment(Qt::AlignCenter);
-    label->setNum(100);
-    label->setMinimumWidth(label->sizeHint().width());
+
+	QDoubleSpinBox *spinbox = new QDoubleSpinBox(popup);
+	spinbox->setValue(mani_val);
+	float min_val = (mani_val-2.0 > 0.0)? mani_val-1.0:0.0;
+	float max_val = mani_val+2.0;
+	spinbox->setRange(min_val, max_val);
+	spinbox->setSingleStep(0.05);
+	connect(spinbox, SIGNAL(valueChanged(double)), this, SLOT(update_mani_val(double)));
+
+	// QSlider *slider = new QSlider(Qt::Horizontal, popup);
+	// slider->setRange(mani_val)
+	// slider->setRange(0, 100);
+	// QLabel *label = new QLabel(popup);
+    // label->setAlignment(Qt::AlignCenter);
+    // label->setNum(100);
+    // label->setMinimumWidth(label->sizeHint().width());
 	QBoxLayout *popupLayout = new QHBoxLayout(popup);
     popupLayout->setMargin(2);
-    popupLayout->addWidget(slider);
-    popupLayout->addWidget(label);
+    // popupLayout->addWidget(slider);
+	popupLayout->addWidget(spinbox);
+    // popupLayout->addWidget(label);
 	QWidgetAction *action = new QWidgetAction(this);
     action->setDefaultWidget(popup);
     QMenu *menu = new QMenu(this);
     menu->addAction(action);
 	// probably need a bit offset so that it will not occlude the selected variables.
 	menu->popup(*slider_pos);
-
-
-
 
 	// QCursor c = cursor();
 	// c.setPos(*slider_pos);
@@ -396,6 +481,12 @@ void MyDMEditor::mousePressEvent(QMouseEvent *event) {
 
 	// QTextCursor cur_cursor = this->textedit->textCursor();
 	selected_line_no = this->textedit->textCursor().blockNumber();
+	selected_col_no = this->textedit->textCursor().columnNumber();
+	selected_start = this->textedit->textCursor().selectionStart();
+	selected_end = this->textedit->textCursor().selectionEnd();
+	std::cout << "start : end -> " << selected_start << " : " << selected_end << std::endl;
+	selected_anchor = this->textedit->textCursor().anchor();
+	selected_position = this->textedit->textCursor().position();
 	selected_var = selectedText();
 
 	QMenu *menu = this->textedit->createStandardContextMenu();
