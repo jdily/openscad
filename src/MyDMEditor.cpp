@@ -44,9 +44,27 @@ void MyDMEditor::check_selection() {
 		QRegExp var_re("-?[0-9]+([.][0-9]+)?");
 		QString plainTextEditContents = this->textedit->toPlainText();
 		QStringList lines = plainTextEditContents.split("\n");
+		QString desire = QString("%1=").arg(selected_var);
+		QList<int> line_nos;
 		for (int i = 0; i < lines.length(); i++) {
-
+			if (lines[i].contains(desire)) {
+				line_nos.append(i);
+			}
 		}
+		// 2. find the closest line number
+		int min_diff = 100000, diff = 0, closest_line_no = -1;
+		for (int &line_no : line_nos) {
+			diff = abs(line_no - selected_line_no);
+			if (diff < min_diff) {
+				min_diff = diff;
+				closest_line_no = line_no;
+			}
+		}
+		std::cout << selected_line_no << ", closest line number : " << closest_line_no << std::endl;
+		// 3. parse the declaration and find the declare value..
+		QStringList split_line = lines[closest_line_no].split("=");
+		float dec_val = split_line[1].toFloat();
+
 
 	}
 }
