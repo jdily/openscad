@@ -46,12 +46,12 @@ void MyDMEditor::check_selection() {
 		// let's perform a simple heuristic here for testing.
 		// 1. find all the lines in the document
 		// QTextDocument* doc = this->textedit->document();
-		
 		QString var_exp = QString("\\b(%1)\\b=-?[0-9]+([.][0-9]+)?").arg(selected_var);
 		QRegExp var_re(var_exp);
 		QString plainTextEditContents = this->textedit->toPlainText();
 		QStringList lines = plainTextEditContents.split("\n");
 		QString desire = QString("%1=").arg(selected_var);
+		var_prefix_len = desire.length();
 		QList<int> line_nos;
 
 		for (int i = 0; i < lines.length(); i++) {
@@ -61,14 +61,16 @@ void MyDMEditor::check_selection() {
 			int pos = var_re.indexIn(lines[i]);
 			if (pos != -1) {
 				QStringList slist = var_re.capturedTexts();
+				int str_index = lines[i].indexOf(slist[0]);
+				var_str_start = str_index + var_prefix_len;
+				var_str_end = str_index + slist[0].length();
 				QStringList cap_list = slist[0].split("=");
+				mani_val_str = cap_list[1];
 				mani_val = cap_list[1].toFloat();
 				mani_line_no = i;
-				// float dec_val = cap_list[1].toFloat();
-				// std::cout << "dec_val : " << dec_val << std::endl; 
 			}
 		}
-
+		
 
 
 
@@ -111,36 +113,33 @@ void MyDMEditor::update_mani_val(double new_val) {
 		} else {
 			std::cout << "no selection at all" << std::endl;
 		}
-		// this->textedit->textCursor().removeSelectedText();
-		// this->textedit->textCursor().removeSelectedText();
 		QString new_val_str = QString("%1").arg(new_val);
 		int str_len = new_val_str.length();
 		// this->textedit->
 		this->textedit->insertPlainText(new_val_str);
 		for (int k = 0; k < str_len; k++) {
 			this->textedit->moveCursor(QTextCursor::MoveOperation::Left,QTextCursor::MoveMode::KeepAnchor);        
-		}
-		// int newPosition, newAnchor;
-		// if(selected_anchor < selected_position){
-		// 	newAnchor = selected_anchor;
-		// 	newPosition= this->textedit->textCursor().position();
-		// } else {
-		// 	newAnchor = this->textedit->textCursor().position();
-		// 	newPosition= selected_position;
-		// }
-		// this->textedit->textCursor().setPosition(newAnchor, QTextCursor::MoveAnchor);
-		// this->textedit->textCursor().setPosition(newPosition, QTextCursor::KeepAnchor);
+		}	
 
-		// reset the insert part as selection....
-		// this->textedit->textCursor().setPosition(selected_start, QTextCursor::MoveAnchor);
-		// this->textedit->textCursor().setPosition(selected_end, QTextCursor::KeepAnchor);
-		// if (this->textedit->textCursor().hasSelection()) {
-		// 	std::cout << "has selection" << std::endl;
-		// } else {
-		// 	std::cout << "no selection at all" << std::endl;
-		// }
 	} else {
-
+		// move the cursor to "mani_line_no"
+		QTextCursor text_cursor(this->textedit->document()->findBlockByLineNumber(mani_line_no));
+		this->textedit->setTextCursor(text_cursor);
+		// for (int i = 0; i < var_str_start)
+		// text_cursor.setPosition(var_str_start, QTextCursor::MoveAnchor);
+		for (int i = 0; i < var_str_start; i++) {
+			this->textedit->moveCursor(QTextCursor::MoveOperation::Right,QTextCursor::MoveMode::MoveAnchor);
+		}
+		std::cout << mani_val_str.toStdString() << " " << mani_val_str.length() << std::endl;
+		// this->textedit->textCursor().movePosition(QTextCursor::MoveOperation::Right,QTextCursor::MoveMode::KeepAnchor, mani_val_str.length());
+		for (int i = 0; i < mani_val_str.length(); i++) {
+			this->textedit->moveCursor(QTextCursor::MoveOperation::Right,QTextCursor::MoveMode::KeepAnchor);
+		}
+		// TODO : already selected -> let's change it.
+		// QString new_val_str = QString("%1").arg(new_val);
+		// int str_len = new_val_str.length();
+		// // this->textedit->
+		// this->textedit->insertPlainText(new_val_str);
 	}
 }
 

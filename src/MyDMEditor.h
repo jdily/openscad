@@ -35,11 +35,16 @@ public:
 	int selected_end;
 	int selected_anchor;
 	int selected_position;
+	int var_prefix_len;
+	int var_str_start;
+	int var_str_end;
+	int var_val_str;
 
 	QString selected_var;
 	float mani_val;
 	int mani_line_no;
 	bool mani_variable;
+	QString mani_val_str;
 
 
 public slots:
