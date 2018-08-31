@@ -135,7 +135,7 @@ void MyDMEditor::update_mani_val(double new_val) {
 		for (int i = 0; i < mani_val_str.length(); i++) {
 			this->textedit->moveCursor(QTextCursor::MoveOperation::Right,QTextCursor::MoveMode::KeepAnchor);
 		}
-		// TODO : already selected -> let's change it.
+		// TODO : already selected -> let's change it. -> check commit
 		// QString new_val_str = QString("%1").arg(new_val);
 		// int str_len = new_val_str.length();
 		// // this->textedit->
