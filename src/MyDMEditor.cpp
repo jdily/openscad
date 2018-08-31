@@ -118,7 +118,7 @@ void MyDMEditor::update_mani_val(double new_val) {
 		// this->textedit->
 		this->textedit->insertPlainText(new_val_str);
 		for (int k = 0; k < str_len; k++) {
-			this->textedit->moveCursor(QTextCursor::MoveOperation::Left,QTextCursor::MoveMode::KeepAnchor);        
+			this->textedit->moveCursor(QTextCursor::MoveOperation::Left, QTextCursor::MoveMode::KeepAnchor);        
 		}	
 
 	} else {
@@ -128,18 +128,24 @@ void MyDMEditor::update_mani_val(double new_val) {
 		// for (int i = 0; i < var_str_start)
 		// text_cursor.setPosition(var_str_start, QTextCursor::MoveAnchor);
 		for (int i = 0; i < var_str_start; i++) {
-			this->textedit->moveCursor(QTextCursor::MoveOperation::Right,QTextCursor::MoveMode::MoveAnchor);
+			this->textedit->moveCursor(QTextCursor::MoveOperation::Right, QTextCursor::MoveMode::MoveAnchor);
 		}
 		std::cout << mani_val_str.toStdString() << " " << mani_val_str.length() << std::endl;
 		// this->textedit->textCursor().movePosition(QTextCursor::MoveOperation::Right,QTextCursor::MoveMode::KeepAnchor, mani_val_str.length());
 		for (int i = 0; i < mani_val_str.length(); i++) {
-			this->textedit->moveCursor(QTextCursor::MoveOperation::Right,QTextCursor::MoveMode::KeepAnchor);
+			this->textedit->moveCursor(QTextCursor::MoveOperation::Right, QTextCursor::MoveMode::KeepAnchor);
 		}
-		// TODO : already selected -> let's change it. -> check commit
-		// QString new_val_str = QString("%1").arg(new_val);
-		// int str_len = new_val_str.length();
-		// // this->textedit->
-		// this->textedit->insertPlainText(new_val_str);
+		// TODO : already selected -> let's change it.
+		QString new_val_str = QString("%1").arg(new_val);
+		int str_len = new_val_str.length();
+		mani_val_str = new_val_str;
+		
+		std::cout << "str len : " << str_len << std::endl;
+		this->textedit->insertPlainText(new_val_str);
+		// for (int k = 0; k < 4; k++) {
+		for (int k = 0; k < str_len; k++) {
+			this->textedit->moveCursor(QTextCursor::MoveOperation::Left, QTextCursor::MoveMode::KeepAnchor);
+		}
 	}
 }
 
@@ -161,14 +167,6 @@ void MyDMEditor::createSlider() {
 	spinbox->setRange(min_val, max_val);
 	spinbox->setSingleStep(0.05);
 	connect(spinbox, SIGNAL(valueChanged(double)), this, SLOT(update_mani_val(double)));
-
-	// QSlider *slider = new QSlider(Qt::Horizontal, popup);
-	// slider->setRange(mani_val)
-	// slider->setRange(0, 100);
-	// QLabel *label = new QLabel(popup);
-    // label->setAlignment(Qt::AlignCenter);
-    // label->setNum(100);
-    // label->setMinimumWidth(label->sizeHint().width());
 	QBoxLayout *popupLayout = new QHBoxLayout(popup);
     popupLayout->setMargin(2);
     // popupLayout->addWidget(slider);
@@ -180,10 +178,6 @@ void MyDMEditor::createSlider() {
     menu->addAction(action);
 	// probably need a bit offset so that it will not occlude the selected variables.
 	menu->popup(*slider_pos);
-
-	// QCursor c = cursor();
-	// c.setPos(*slider_pos);
-	// setCursor(c);
 }
 
 void MyDMEditor::indentSelection()
