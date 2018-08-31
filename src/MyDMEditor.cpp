@@ -102,12 +102,6 @@ void MyDMEditor::check_selection() {
 
 void MyDMEditor::update_mani_val(double new_val) {
 	if (mani_variable == false) {
-		// directly update the number
-		// QTextCursor cursor = this->textedit->textCursor();
-		// cursor.setPosition(selected_start, QTextCursor::MoveAnchor);
-		// cursor.setPosition(selected_end, QTextCursor::KeepAnchor);
-		// cursor.removeSelectedText();
-		// this->textedit->setTextCursor(cursor);
 		if (this->textedit->textCursor().hasSelection()) {
 			std::cout << "has selection" << std::endl;
 		} else {
@@ -135,7 +129,6 @@ void MyDMEditor::update_mani_val(double new_val) {
 		for (int i = 0; i < mani_val_str.length(); i++) {
 			this->textedit->moveCursor(QTextCursor::MoveOperation::Right, QTextCursor::MoveMode::KeepAnchor);
 		}
-		// TODO : already selected -> let's change it.
 		QString new_val_str = QString("%1").arg(new_val);
 		int str_len = new_val_str.length();
 		mani_val_str = new_val_str;
