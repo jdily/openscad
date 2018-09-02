@@ -67,3 +67,5 @@ external/LFD/fftw/*
 *.fd
 *.OBJ
 libraries/MCAD
+
+\.vscode/settings\.json
