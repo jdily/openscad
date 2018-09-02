@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "ostream": "cpp",
+        "*.ipp": "cpp",
+        "string_view": "cpp"
+    }
+}
