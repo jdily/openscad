@@ -76,6 +76,7 @@ public:
 	void copyGeom(const PrimitiveNode* pnode);
 
 	bool center;
+	// cube : x, y, z -> lengthes of different sides.
 	double x, y, z, h, r1, r2;
 	double fn, fs, fa;
 	primitive_type_e type;
