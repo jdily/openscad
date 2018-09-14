@@ -13,6 +13,16 @@
 // 4. make the jacobian from the constraints
 
 typedef stree<hnode*> tree_hnode;
+
+
+struct Vars {
+public:
+    int _solver_id;
+};
+
+// we need to also record the original point of each primitive
+// how to get it??
+
 class DMSolver {
 public:
     DMSolver();
