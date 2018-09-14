@@ -19,8 +19,9 @@ public:
     DMSolver(tree_hnode* tree);
     ~DMSolver();
     void set_tree(tree_hnode* tree);
+    void gather_vars(); 
 private:
     tree_hnode* shape_tree;
     Eigen::VectorXd sigma_0;
-    
+    int param_count;
 };
