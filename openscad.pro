@@ -388,7 +388,8 @@ HEADERS += src/version_check.h \
            src/GeomGroup.h \ 
            src/FuncEstimator.h \ 
            src/MyDMEditor.h \ 
-           src/DMSolver.h
+           src/DMSolver.h \ 
+           src/Constraints.h
            # src/NodeModifier.h
 
 SOURCES += \
@@ -557,7 +558,8 @@ SOURCES += \
            src/GeomGroup.cpp \ 
            src/FuncEstimator.cpp \ 
            src/MyDMEditor.cpp \ 
-           src/DMSolver.cpp
+           src/DMSolver.cpp \ 
+           src/Constraints.cpp
            # src/NodeModifier.cpp
 
 # CGAL

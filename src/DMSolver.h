@@ -14,10 +14,14 @@
 
 typedef stree<hnode*> tree_hnode;
 
-
-struct Vars {
-public:
+// TODO :
+// check later if we need bool type of Vars
+struct Var {
+public: 
+    // the variable id in the list of all variables
+    // i.e. the column id
     int _solver_id;
+    float _cur_val;
 };
 
 // we need to also record the original point of each primitive
@@ -34,4 +38,5 @@ private:
     tree_hnode* shape_tree;
     Eigen::VectorXd sigma_0;
     int param_count;
+    std::vector<Var> all_vars;
 };

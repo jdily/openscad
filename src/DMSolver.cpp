@@ -7,6 +7,7 @@ DMSolver::~DMSolver() {}
 
 void DMSolver::set_tree(tree_hnode* tree) {
     shape_tree = tree;
+    all_vars.clear();
 }
 
 void DMSolver::gather_vars() {
@@ -19,6 +20,7 @@ void DMSolver::gather_vars() {
     iterator = shape_tree->begin();
     std::vector<double> params;
     std::vector<int> nids;
+    std::vector<Var> vars;
     while (iterator != shape_tree->end()) {
         std::string type = (*iterator)->type;
         int index = (*iterator)->idx;

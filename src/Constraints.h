@@ -5,8 +5,8 @@ class Constraints {
 public:
     // Constraints();
     // ~Constraints();
-    virtual int num_eqs() { return _num_eqs; }
-    virtual int num_vars() { return _num_vars; }
+    int num_eqs() { return _num_eqs; }
+    int num_vars() { return _num_vars; }
 
 protected:
     int _num_eqs;
@@ -20,10 +20,15 @@ public:
     EqualNumConsts();
     EqualNumConsts(int a_idx, int b_idx);
     ~EqualNumConsts();
+    // int num_eqs() { return _num_eqs; }
+    // int num_vars() { return _num_vars; }
 };
 
 class EqualPtsConsts : public Constraints {
 public:
     EqualPtsConsts();
     ~EqualPtsConsts();
+
+    // int num_eqs() { return _num_eqs; }
+    // int num_vars() { return _num_vars; }
 };
