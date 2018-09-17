@@ -1,5 +1,9 @@
 #pragma once 
-
+#include "DMSolver.h"
+#include <Eigen/Core>
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
+class Var;
 
 class Constraints {
 public:
@@ -18,17 +22,25 @@ class EqualNumConsts : public Constraints {
 public:
     // arguments should be the variable position (idx)
     EqualNumConsts();
-    EqualNumConsts(int a_idx, int b_idx);
+    EqualNumConsts(Var a, Var b);
     ~EqualNumConsts();
+
+    void write_jacobian(SpMat &jac_mat, int _row);
+    double violate_distance(Eigen::VectorXd pos);
     // int num_eqs() { return _num_eqs; }
     // int num_vars() { return _num_vars; }
+    Var _a;
+    Var _b;
 };
 
 class EqualPtsConsts : public Constraints {
 public:
     EqualPtsConsts();
+    EqualPtsConsts(std::vector<Var> as, std::vector<Var> bs);
     ~EqualPtsConsts();
 
-    // int num_eqs() { return _num_eqs; }
-    // int num_vars() { return _num_vars; }
+    void write_jacobian(SpMat &jac_mat, int _row);
+
+    std::vector<Var> _as;
+    std::vector<Var> _bs;
 };
