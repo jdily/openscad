@@ -14,9 +14,7 @@ public:
 
     void build_constraints();
     void add_constraint();
-private:
-    std::vector<Constriants> constraints;
-
-
-
+// private:
+    std::vector<Constraints> constraints;
+    tree_hnode* shape_tree;
 };

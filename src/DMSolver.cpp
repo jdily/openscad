@@ -38,16 +38,22 @@ void DMSolver::gather_vars() {
                 all_vars.push_back(vx);
                 all_vars.push_back(vy);
                 all_vars.push_back(vz);
+                std::vector<int> var_ids;
+                var_ids.push_back(cur_id);
+                var_ids.push_back(cur_id+1);
+                var_ids.push_back(cur_id+2);
+                shape_var_dict.insert(std::pair<int, std::vector<int>>(index, var_ids));
                 cur_id += 3;
-                // params.push_back(pn->x);
-                // params.push_back(pn->y);
-                // params.push_back(pn->z);
                 nids.push_back(index);
                 nids.push_back(index);
                 nids.push_back(index);
+
             } else if (poly_type == "sphere") {
                 Var vr(cur_id, index, pn->r1);
                 all_vars.push_back(vr);
+                std::vector<int> var_ids;
+                var_ids.push_back(cur_id);
+                shape_var_dict.insert(std::pair<int, std::vector<int>>(index, var_ids));
                 cur_id += 1;
                 // params.push_back(pn->r1);
                 nids.push_back(index);
@@ -58,10 +64,12 @@ void DMSolver::gather_vars() {
                 all_vars.push_back(vh);
                 all_vars.push_back(vr1);
                 all_vars.push_back(vr2);
+                std::vector<int> var_ids;
+                var_ids.push_back(cur_id);
+                var_ids.push_back(cur_id+1);
+                var_ids.push_back(cur_id+2);
+                shape_var_dict.insert(std::pair<int, std::vector<int>>(index, var_ids));
                 cur_id += 3;
-                // params.push_back(pn->h);
-                // params.push_back(pn->r1);
-                // params.push_back(pn->r2);
                 nids.push_back(index);
                 nids.push_back(index);
                 nids.push_back(index);

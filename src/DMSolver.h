@@ -36,6 +36,10 @@ public:
     int _shape_id;
 };
 
+// struct ShapeVars {
+
+// }
+
 // we need to also record the original point of each primitive
 // how to get it??
 
@@ -51,7 +55,7 @@ public:
     void add_constraint(Constraints cont);
 
 
-private:
+// private:
     tree_hnode* shape_tree;
     // refer to the Lilicon symbols
     Eigen::VectorXd sigma_0;
@@ -59,4 +63,5 @@ private:
 
     int var_count;
     std::vector<Var> all_vars;
+    std::map<int, std::vector<int>> shape_var_dict;
 };
