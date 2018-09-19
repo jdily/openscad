@@ -76,6 +76,7 @@ void DMSolver::gather_vars() {
 
             } 
         }
+        ++iterator;
     }
     // record total params length
     var_count = (int)all_vars.size();
@@ -86,12 +87,39 @@ void DMSolver::gather_vars() {
     sigma_0 = Eigen::Map<Eigen::VectorXd>(init_vals.data(), init_vals.size());  
 }  
 
+int DMSolver::num_vars() { return var_count; }
+int DMSolver::num_constraints() { return (int)all_constraints.size(); }
+
 // tmp fixed function for constraints.
 void DMSolver::analyze_constraints() {
-    int shape0 = 2;
-    int shape1 = 4;
-    int s0_r_id = shape_var_dict[shape0][0];
-    int s1_r_id = shape_var_dict[shape1][0];
-    EqualNumConsts encont(all_vars[s0_r_id], all_vars[s1_r_id]);
+    int shape0 = 4;
+    int shape1 = 10;
+    // x
+    int s0_id = shape_var_dict[shape0][0];
+    int s1_id = shape_var_dict[shape1][0];
+    std::cout << "s0_x_id : " << s0_id << std::endl;
+    std::cout << "s1_x_id : " << s1_id << std::endl;
+    EqualNumConsts *encont = new EqualNumConsts(all_vars[s0_id], all_vars[s1_id]);
     all_constraints.push_back(encont);
+    // y
+    s0_id = shape_var_dict[shape0][1];
+    s1_id = shape_var_dict[shape1][1];
+    std::cout << "s0_x_id : " << s0_id << std::endl;
+    std::cout << "s1_x_id : " << s1_id << std::endl;  
+    EqualNumConsts *encout2 = new EqualNumConsts(all_vars[s0_id], all_vars[s1_id]);
+    all_constraints.push_back(encout2);
 }
+
+void DMSolver::load_constraint_jacobian() {
+    if (jac_mat == nullptr) {
+        jac_mat = new SpMat(all_constraints.size(), var_count);
+        // should be 0
+        std::cout << "init, nonzero count : " << jac_mat->nonZeros() << std::endl; 
+        for (int i = 0; i < num_constraints(); i++) {
+            std::cout << i << " add constraint jacobian " << std::endl;
+            all_constraints[i]->write_jacobian(jac_mat, i);  
+        }
+        std::cout << "after, nonzero count : " << jac_mat->nonZeros() << std::endl; 
+    }
+}
+// int DMSolver::var_c

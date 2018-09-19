@@ -25,6 +25,7 @@
 #include "vizTools.h"
 #include "pair_treeViewer.h"
 #include "GeomGroup.h"
+#include "DMSolver.h"
 
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
@@ -354,6 +355,7 @@ private:
 
 	tree_hnode* main_tree;
 	tree_hnode* sugg_tree;
+	DMSolver* m_solver;
 
 	CSGTreeEvaluator *cur_csgrenderer;
 

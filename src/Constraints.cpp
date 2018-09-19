@@ -19,10 +19,11 @@ EqualNumConsts::EqualNumConsts(Var a, Var b) {
 }
 EqualNumConsts::~EqualNumConsts() {}
 
-void EqualNumConsts::write_jacobian(SpMat &jac_mat, int _row) {
+void EqualNumConsts::write_jacobian(SpMat *jac_mat, int _row) {
     // sm1.coeffRef(i,j) = v_ij
-    jac_mat.coeffRef(_row, _a._solver_id) = 1;
-    jac_mat.coeffRef(_row, _b._solver_id) = -1;
+    std::cout << _row << " " << _a._solver_id << " " << _b._solver_id << std::endl;
+    jac_mat->coeffRef(_row, _a._solver_id) = 1;
+    jac_mat->coeffRef(_row, _b._solver_id) = -1;
 }
 
 double EqualNumConsts::violate_distance(Eigen::VectorXd pos) {
@@ -57,6 +58,6 @@ EqualPtsConsts::EqualPtsConsts(std::vector<Var> as, std::vector<Var> bs) {
 }
 EqualPtsConsts::~EqualPtsConsts() {}
 
-void EqualPtsConsts::write_jacobian(SpMat &jac_mat, int _row) {
+void EqualPtsConsts::write_jacobian(SpMat *jac_mat, int _row) {
 
 }

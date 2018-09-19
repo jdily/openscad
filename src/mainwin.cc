@@ -1260,6 +1260,12 @@ void MainWindow::instantiateRoot()
 			// qtreeViewer->setTree(&this->tree);	
 			// ichao : initialize the transferer
 			this->transferer = new geomTransferer(&this->tree);
+			this->m_solver = new DMSolver(main_tree);
+			this->m_solver->gather_vars();
+			this->m_solver->analyze_constraints();
+			std::cout << "there are " << this->m_solver->var_count << " vars in the solver." << std::endl;
+			std::cout << "there are " << this->m_solver->num_constraints() << " constraints in the solver." << std::endl;
+			this->m_solver->load_constraint_jacobian();
 			if (GuiLocker::isLocked()) {
 				std::cout << "after build tree gui lock..." << std::endl;
 				return;
@@ -1656,12 +1662,12 @@ void MainWindow::compileCSG(bool procevents)
 #endif
 	// ichao added -> do the polyset sampling on the geometry here
 	// cur_proj_samples = sampler->get_samples(*root_node, this->qglviewer_suggest->m_mainViewer, true);
-	if (cur_samples.isEmpty()) {
-		TreeSampler *sampler = new TreeSampler(&tree, &geomevaluator);
-		cur_samples = sampler->get_samples(*root_node, this->qglviewer_suggest->m_mainViewer, false);
-	} else {
-		// std::cout << "we don't need to resample" << std::endl;
-	}
+	// if (cur_samples.isEmpty()) {
+	// 	TreeSampler *sampler = new TreeSampler(&tree, &geomevaluator);
+	// 	cur_samples = sampler->get_samples(*root_node, this->qglviewer_suggest->m_mainViewer, false);
+	// } else {
+	// 	// std::cout << "we don't need to resample" << std::endl;
+	// }
 	progress_report_prep(this->root_node, report_func, this);
 	
 	try {

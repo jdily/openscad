@@ -38,22 +38,24 @@ public:
     ~DMSolver();
     void set_tree(tree_hnode* tree);
     void gather_vars(); 
-
-    void add_constraints(std::vector<Constraints> conts);
-    void add_constraint(Constraints cont);
+    int num_vars();
+    // void add_constraints(std::vector<Constraints> conts);
+    void add_constraint(Constraints *cont);
     // temp function
     void analyze_constraints();
     // DMAnalyzer *analyzer;
+    int num_constraints();
+
+    void load_constraint_jacobian();
+
 // private:
     tree_hnode* shape_tree;
     // refer to the Lilicon symbols
     Eigen::VectorXd sigma_0;
-    SpMat jac_mat;
+    SpMat* jac_mat;
 
     int var_count;
     std::vector<Var> all_vars;
     std::map<int, std::vector<int>> shape_var_dict;
-
-    std::vector<Constraints> all_constraints;
-
+    std::vector<Constraints*> all_constraints;
 };

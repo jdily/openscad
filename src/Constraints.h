@@ -3,6 +3,7 @@
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <iostream>
 
 #include "Var.h"
 typedef Eigen::SparseMatrix<double> SpMat; // declares a column-major sparse matrix type of double
@@ -13,7 +14,10 @@ public:
     ~Constraints();
     int num_eqs() { return _num_eqs; }
     int num_vars() { return _num_vars; }
-
+    virtual void write_jacobian(SpMat *jac_mat, int _row) = 0;
+    // {
+        // std::cout << "original contraints class" << std::endl;
+    // }
 protected:
     int _num_eqs;
     int _num_vars;
@@ -27,7 +31,7 @@ public:
     EqualNumConsts(Var a, Var b);
     ~EqualNumConsts();
 
-    void write_jacobian(SpMat &jac_mat, int _row);
+    void write_jacobian(SpMat *jac_mat, int _row);
     double violate_distance(Eigen::VectorXd pos);
     // int num_eqs() { return _num_eqs; }
     // int num_vars() { return _num_vars; }
@@ -41,7 +45,7 @@ public:
     EqualPtsConsts(std::vector<Var> as, std::vector<Var> bs);
     ~EqualPtsConsts();
 
-    void write_jacobian(SpMat &jac_mat, int _row);
+    void write_jacobian(SpMat *jac_mat, int _row);
 
     std::vector<Var> _as;
     std::vector<Var> _bs;
