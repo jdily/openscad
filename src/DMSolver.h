@@ -4,7 +4,7 @@
 #include <Eigen/Geometry>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-
+#include<Eigen/IterativeLinearSolvers>
 #include "iTree.h"
 // #include "DMAnalyzer.h"
 #include "Var.h"
@@ -47,6 +47,7 @@ public:
     int num_constraints();
 
     void load_constraint_jacobian();
+    void solve_ff(Eigen::VectorXd force);
 
 // private:
     tree_hnode* shape_tree;

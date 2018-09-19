@@ -115,11 +115,33 @@ void DMSolver::load_constraint_jacobian() {
         jac_mat = new SpMat(all_constraints.size(), var_count);
         // should be 0
         std::cout << "init, nonzero count : " << jac_mat->nonZeros() << std::endl; 
+        int row_i = 0;
         for (int i = 0; i < num_constraints(); i++) {
             std::cout << i << " add constraint jacobian " << std::endl;
-            all_constraints[i]->write_jacobian(jac_mat, i);  
+            all_constraints[i]->write_jacobian(jac_mat, row_i);  
+            row_i += all_constraints[i]->num_eqs();
         }
         std::cout << "after, nonzero count : " << jac_mat->nonZeros() << std::endl; 
     }
 }
 // int DMSolver::var_c
+
+// desired_sigma -> user-specified
+void DMSolver::solve_ff(Eigen::VectorXd desired_sigma) {
+    Eigen::VectorXd ideal_sigma = Eigen::VectorXd::Zero(var_count);
+    Eigen::VectorXd delta = desired_sigma - sigma_0;
+    Eigen::VectorXd rhs = Eigen::VectorXd::Zero(all_constraints.size());
+    rhs = (*jac_mat)*sigma_0;
+    // negate.
+    rhs *= -1.0;
+    // lagrange_multiplier
+    Eigen::VectorXd lag_multi = Eigen::VectorXd::Zero(all_constraints.size());
+    // solve for X: (A * A^t) * X = B
+    SpMat Jt = (jac_mat->transpose());
+    SpMat JJt = (*jac_mat)*(Jt);
+    Eigen::ConjugateGradient<SpMat, Eigen::Upper> cgsolver;
+    lag_multi = cgsolver.compute(JJt).solve(rhs);
+    ideal_sigma = delta - Jt*lag_multi;
+    // closest output 
+    Eigen::VectorXd out = sigma_0 + ideal_sigma;
+}
