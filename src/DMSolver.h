@@ -6,9 +6,12 @@
 #include <Eigen/Sparse>
 
 #include "iTree.h"
-// #include "Constraints.h"
+// #include "DMAnalyzer.h"
+#include "Var.h"
+#include "Constraints.h"
 
-class Constraints;
+// class Constraints;
+// class EqualNumConsts;
 // TODO:
 // 1. collect the parameters from the given shape tree as the init state
 // 2. check how to represent the constraints
@@ -19,22 +22,7 @@ typedef stree<hnode*> tree_hnode;
 typedef Eigen::SparseMatrix<double> SpMat; // declares a column-major sparse matrix type of double
 typedef Eigen::Triplet<double> T;
 
-// TODO :
-// check later if we need bool type of Vars
-struct Var {
-public: 
-    Var() {}
-    Var(int solver_id, int shape_id, double cur_val) {
-        _solver_id = solver_id;
-        _shape_id = shape_id;
-        _cur_val = cur_val;
-    }
-    // the variable id in the list of all variables
-    // i.e. the column id
-    int _solver_id;
-    double _cur_val;
-    int _shape_id;
-};
+
 
 // struct ShapeVars {
 
@@ -53,8 +41,9 @@ public:
 
     void add_constraints(std::vector<Constraints> conts);
     void add_constraint(Constraints cont);
-
-
+    // temp function
+    void analyze_constraints();
+    // DMAnalyzer *analyzer;
 // private:
     tree_hnode* shape_tree;
     // refer to the Lilicon symbols
@@ -64,4 +53,7 @@ public:
     int var_count;
     std::vector<Var> all_vars;
     std::map<int, std::vector<int>> shape_var_dict;
+
+    std::vector<Constraints> all_constraints;
+
 };

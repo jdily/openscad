@@ -1,5 +1,13 @@
 #include "Constraints.h"
 
+
+Constraints::Constraints() {
+    _num_eqs = 0;
+    _num_vars = 0;
+}
+Constraints::~Constraints() {}
+
+
 ////////////////////////////////////////////
 // EqualNumConsts
 ////////////////////////////////////////////

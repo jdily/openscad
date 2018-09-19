@@ -47,7 +47,6 @@ void DMSolver::gather_vars() {
                 nids.push_back(index);
                 nids.push_back(index);
                 nids.push_back(index);
-
             } else if (poly_type == "sphere") {
                 Var vr(cur_id, index, pn->r1);
                 all_vars.push_back(vr);
@@ -85,5 +84,14 @@ void DMSolver::gather_vars() {
         init_vals.push_back(all_vars[i]._cur_val);
     }
     sigma_0 = Eigen::Map<Eigen::VectorXd>(init_vals.data(), init_vals.size());  
-    
 }  
+
+// tmp fixed function for constraints.
+void DMSolver::analyze_constraints() {
+    int shape0 = 2;
+    int shape1 = 4;
+    int s0_r_id = shape_var_dict[shape0][0];
+    int s1_r_id = shape_var_dict[shape1][0];
+    EqualNumConsts encont(all_vars[s0_r_id], all_vars[s1_r_id]);
+    all_constraints.push_back(encont);
+}

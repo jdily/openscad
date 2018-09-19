@@ -1,14 +1,16 @@
 #pragma once 
-#include "DMSolver.h"
+// #include "DMSolver.h"
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-class Var;
 
+#include "Var.h"
+typedef Eigen::SparseMatrix<double> SpMat; // declares a column-major sparse matrix type of double
+// typedef Eigen::Triplet<double> T;
 class Constraints {
 public:
-    // Constraints();
-    // ~Constraints();
+    Constraints();
+    ~Constraints();
     int num_eqs() { return _num_eqs; }
     int num_vars() { return _num_vars; }
 
