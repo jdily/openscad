@@ -92,8 +92,8 @@ int DMSolver::num_constraints() { return (int)all_constraints.size(); }
 
 // tmp fixed function for constraints.
 void DMSolver::analyze_constraints() {
-    int shape0 = 4;
-    int shape1 = 10;
+    int shape0 = 3; // 4;
+    int shape1 = 6; //10;
     // x
     int s0_id = shape_var_dict[shape0][0];
     int s1_id = shape_var_dict[shape1][0];
