@@ -127,7 +127,7 @@ void DMSolver::load_constraint_jacobian() {
 // int DMSolver::var_c
 
 // desired_sigma -> user-specified
-void DMSolver::solve_ff(Eigen::VectorXd desired_sigma) {
+Eigen::VectorXd DMSolver::solve_ff(Eigen::VectorXd desired_sigma) {
     Eigen::VectorXd ideal_sigma = Eigen::VectorXd::Zero(var_count);
     Eigen::VectorXd delta = desired_sigma - sigma_0;
     Eigen::VectorXd rhs = Eigen::VectorXd::Zero(all_constraints.size());
@@ -144,4 +144,5 @@ void DMSolver::solve_ff(Eigen::VectorXd desired_sigma) {
     ideal_sigma = delta - Jt*lag_multi;
     // closest output 
     Eigen::VectorXd out = sigma_0 + ideal_sigma;
+    return out;
 }

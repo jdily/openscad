@@ -160,6 +160,9 @@ void MyDMEditor::createSlider() {
 	spinbox->setRange(min_val, max_val);
 	spinbox->setSingleStep(0.05);
 	connect(spinbox, SIGNAL(valueChanged(double)), this, SLOT(update_mani_val(double)));
+	// TODO : check if we can connect two different slot to a single signal.
+	// if not, check how to combine both things into one single slot...
+
 	QBoxLayout *popupLayout = new QHBoxLayout(popup);
     popupLayout->setMargin(2);
     // popupLayout->addWidget(slider);

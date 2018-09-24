@@ -47,7 +47,7 @@ public:
     int num_constraints();
 
     void load_constraint_jacobian();
-    void solve_ff(Eigen::VectorXd force);
+    Eigen::VectorXd solve_ff(Eigen::VectorXd force);
 
 // private:
     tree_hnode* shape_tree;
