@@ -71,6 +71,9 @@ public slots:
 	void createSlider();
 
 	void update_mani_val(double new_val);
+	// TODO : check if we know all the parameter at this time???
+	// Or how to do this 
+	void opt_mani_val(double new_val);
 private:
 	class QTextEdit *textedit;
 	class Highlighter *highlighter;
