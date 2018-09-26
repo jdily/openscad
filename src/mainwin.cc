@@ -1266,6 +1266,11 @@ void MainWindow::instantiateRoot()
 			std::cout << "there are " << this->m_solver->var_count << " vars in the solver." << std::endl;
 			std::cout << "there are " << this->m_solver->num_constraints() << " constraints in the solver." << std::endl;
 			this->m_solver->load_constraint_jacobian();
+
+			// set the tree and the solver to the editor
+			// static_cast<MyDMEditor*>(this->editor)->set_shape_tree(this->main_tree);
+			// static_cast<MyDMEditor*>(this->editor)->set_solver(this->m_solver);
+			
 			if (GuiLocker::isLocked()) {
 				std::cout << "after build tree gui lock..." << std::endl;
 				return;

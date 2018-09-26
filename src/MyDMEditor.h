@@ -5,6 +5,10 @@
 #include <QDoubleSpinBox>
 #include <QWidgetAction>
 
+#include "iTree.h"
+typedef stree<hnode*> tree_hnode;
+#include "DMSolver.h"
+
 class MyDMEditor : public EditorInterface
 {
 	Q_OBJECT
@@ -24,6 +28,8 @@ public:
     bool canUndo() override;
 
 	void check_selection();
+	void set_shape_tree(tree_hnode* _tree);
+	void set_solver(DMSolver *_solver);
 
 
 	QAction *createSliderAct;
@@ -46,6 +52,8 @@ public:
 	bool mani_variable;
 	QString mani_val_str;
 
+	tree_hnode* shape_tree;
+	DMSolver* m_solver;
 
 public slots:
 	void zoomIn() override;

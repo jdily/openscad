@@ -31,6 +31,13 @@ MyDMEditor::MyDMEditor(QWidget *parent) : EditorInterface(parent)
 	mani_variable = false;
 }
 
+void MyDMEditor::set_shape_tree(tree_hnode* _tree) {
+	this->shape_tree = _tree;
+}
+void MyDMEditor::set_solver(DMSolver* _solver) {
+	this->m_solver = _solver;
+}
+
 // use selected_line_no and selected_var
 void MyDMEditor::check_selection() {
 	QRegExp num_re("-?[0-9]+([.][0-9]+)?");
@@ -142,6 +149,21 @@ void MyDMEditor::update_mani_val(double new_val) {
 	}
 }
 
+void MyDMEditor::opt_mani_val(double new_val) {
+	std::cout << "optimized for manipulated values" << std::endl;
+	// check if the tree and solver are set?
+	// if (this->shape_tree == nullptr) {
+	// 	std::cout << "shape_tree not set" << std::endl;
+	// } else {
+	// 	std::cout << "shape_tree is set" << std::endl;
+	// }
+	// if (this->m_solver == nullptr) {
+	// 	std::cout << "solver not set" << std::endl;
+	// } else {
+	// 	std::cout << "solver is set" << std::endl;
+	// }
+}
+
 void MyDMEditor::createSlider() {
 	std::cout << "create slider " << std::endl;
 
@@ -162,7 +184,7 @@ void MyDMEditor::createSlider() {
 	connect(spinbox, SIGNAL(valueChanged(double)), this, SLOT(update_mani_val(double)));
 	// TODO : check if we can connect two different slot to a single signal.
 	// if not, check how to combine both things into one single slot...
-
+	connect(spinbox, SIGNAL(valueChanged(double)), this, SLOT(opt_mani_val(double)));
 	QBoxLayout *popupLayout = new QHBoxLayout(popup);
     popupLayout->setMargin(2);
     // popupLayout->addWidget(slider);
