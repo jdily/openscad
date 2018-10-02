@@ -152,16 +152,16 @@ void MyDMEditor::update_mani_val(double new_val) {
 void MyDMEditor::opt_mani_val(double new_val) {
 	std::cout << "optimized for manipulated values" << std::endl;
 	// check if the tree and solver are set?
-	// if (this->shape_tree == nullptr) {
-	// 	std::cout << "shape_tree not set" << std::endl;
-	// } else {
-	// 	std::cout << "shape_tree is set" << std::endl;
-	// }
-	// if (this->m_solver == nullptr) {
-	// 	std::cout << "solver not set" << std::endl;
-	// } else {
-	// 	std::cout << "solver is set" << std::endl;
-	// }
+	if (this->shape_tree == nullptr) {
+		std::cout << "shape_tree not set" << std::endl;
+	} else {
+		std::cout << "shape_tree is set" << std::endl;
+	}
+	if (this->m_solver == nullptr) {
+		std::cout << "solver not set" << std::endl;
+	} else {
+		std::cout << "solver is set" << std::endl;
+	}
 }
 
 void MyDMEditor::createSlider() {
