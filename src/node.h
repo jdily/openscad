@@ -18,6 +18,9 @@ void progress_report_fin();
 	scratch for each compile.
 
  */
+
+//ichao
+// can we check if we can access the Location information in MI?>??
 class AbstractNode : public BaseVisitable
 {
 	// FIXME: the idx_counter/idx is mostly (only?) for debugging.

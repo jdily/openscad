@@ -2,6 +2,8 @@
 
 #include <string>
 
+// TODO : the block location information?
+
 class Location {
 public:
 	Location(int firstLine, int firstCol, int lastLine, int lastCol)

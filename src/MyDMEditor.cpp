@@ -3,6 +3,11 @@
 #include "highlighter.h"
 #include "QSettingsCached.h"
 
+//the following are UBUNTU/LINUX ONLY terminal color codes.
+#define COLOR_RESET   "\033[0m"
+#define COLOR_RED     "\033[31m"      /* Red */
+#define COLOR_YELLOW    "\033[33m"      /* Blue */
+
 MyDMEditor::MyDMEditor(QWidget *parent) : EditorInterface(parent)
 {
 	QVBoxLayout *legacyeditorLayout = new QVBoxLayout(this);
@@ -32,9 +37,13 @@ MyDMEditor::MyDMEditor(QWidget *parent) : EditorInterface(parent)
 }
 
 void MyDMEditor::set_shape_tree(tree_hnode* _tree) {
+	// std::cout << "set shape tree" << std::endl;
+	std::cout << COLOR_YELLOW << "set shape tree" << COLOR_RESET << std::endl;
 	this->shape_tree = _tree;
 }
 void MyDMEditor::set_solver(DMSolver* _solver) {
+	std::cout << COLOR_YELLOW << "set shape solver" << COLOR_RESET << std::endl;
+	// std::cout << "set shape solver" << std::endl;
 	this->m_solver = _solver;
 }
 
@@ -152,16 +161,16 @@ void MyDMEditor::update_mani_val(double new_val) {
 void MyDMEditor::opt_mani_val(double new_val) {
 	std::cout << "optimized for manipulated values" << std::endl;
 	// check if the tree and solver are set?
-	if (this->shape_tree == nullptr) {
-		std::cout << "shape_tree not set" << std::endl;
-	} else {
-		std::cout << "shape_tree is set" << std::endl;
-	}
-	if (this->m_solver == nullptr) {
-		std::cout << "solver not set" << std::endl;
-	} else {
-		std::cout << "solver is set" << std::endl;
-	}
+	// if (this->shape_tree == nullptr) {
+	// 	std::cout << "shape_tree not set" << std::endl;
+	// } else {
+	// 	std::cout << "shape_tree is set" << std::endl;
+	// }
+	// if (this->m_solver == nullptr) {
+	// 	std::cout << "solver not set" << std::endl;
+	// } else {
+	// 	std::cout << "solver is set" << std::endl;
+	// }
 }
 
 void MyDMEditor::createSlider() {
@@ -174,7 +183,6 @@ void MyDMEditor::createSlider() {
 	// 1. start value of the manipulation
 	// 2. where to modify the document.....
 	QWidget *popup = new QWidget(this);
-
 	QDoubleSpinBox *spinbox = new QDoubleSpinBox(popup);
 	spinbox->setValue(mani_val);
 	float min_val = (mani_val-2.0 > 0.0)? mani_val-1.0:0.0;

@@ -1261,15 +1261,18 @@ void MainWindow::instantiateRoot()
 			// ichao : initialize the transferer
 			this->transferer = new geomTransferer(&this->tree);
 			this->m_solver = new DMSolver(main_tree);
-			this->m_solver->gather_vars();
-			this->m_solver->analyze_constraints();
-			std::cout << "there are " << this->m_solver->var_count << " vars in the solver." << std::endl;
-			std::cout << "there are " << this->m_solver->num_constraints() << " constraints in the solver." << std::endl;
-			this->m_solver->load_constraint_jacobian();
 
 			// set the tree and the solver to the editor
-			// static_cast<MyDMEditor*>(this->editor)->set_shape_tree(this->main_tree);
-			// static_cast<MyDMEditor*>(this->editor)->set_solver(this->m_solver);
+			static_cast<MyDMEditor*>(this->editor)->set_shape_tree(this->main_tree);
+			static_cast<MyDMEditor*>(this->editor)->set_solver(this->m_solver);
+
+			this->m_solver->gather_vars();
+			// [CMT] analyze constraints now use hardcoded id so it will brings crash. 
+			// [CMT] ignore it first.
+			// this->m_solver->analyze_constraints();
+			// std::cout << "there are " << this->m_solver->var_count << " vars in the solver." << std::endl;
+			// std::cout << "there are " << this->m_solver->num_constraints() << " constraints in the solver." << std::endl;
+			// this->m_solver->load_constraint_jacobian();
 			
 			if (GuiLocker::isLocked()) {
 				std::cout << "after build tree gui lock..." << std::endl;
@@ -2284,6 +2287,7 @@ void MainWindow::compileTopLevelDocument(bool rebuildParameterWidget)
 	
 	auto fnameba = this->fileName.toLocal8Bit();
 	const char* fname = this->fileName.isEmpty() ? "" : fnameba;
+	// FileModule
 	delete this->parsed_module;
 	this->root_module = parse(this->parsed_module, fulltext.c_str(), fname, false) ? this->parsed_module : nullptr;
 
