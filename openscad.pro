@@ -390,7 +390,8 @@ HEADERS += src/version_check.h \
            src/MyDMEditor.h \ 
            src/DMSolver.h \ 
            src/Constraints.h \ 
-           src/Var.h
+           src/Var.h \ 
+           src/EditorLoc.h
            # src/NodeModifier.h
 
 SOURCES += \
@@ -560,7 +561,8 @@ SOURCES += \
            src/FuncEstimator.cpp \ 
            src/MyDMEditor.cpp \ 
            src/DMSolver.cpp \ 
-           src/Constraints.cpp 
+           src/Constraints.cpp \ 
+           src/EditorLoc.cpp
            # src/NodeModifier.cpp
 
 # CGAL

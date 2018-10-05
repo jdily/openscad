@@ -15,7 +15,7 @@ public:
 	int lastLine() const { return last_line; }
 	int lastColumn() const { return last_col; }
 
-	bool inside(int q_first_line, int q_first_col, int q_last_line, int q_last_col);
+	// bool inside(int q_first_line, int q_first_col, int q_last_line, int q_last_col);
 
 	static const Location NONE;
 ;

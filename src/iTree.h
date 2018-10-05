@@ -13,11 +13,12 @@
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/detail/read_graphviz_new.hpp>
 #include <boost/property_map/dynamic_property_map.hpp>
-
+#include "AST.h"
+// class Location;
 #include "csgnode.h"
 #include "stree.h"
 typedef boost::square_topology<boost::mt19937>::point_type topo_point;
-
+#include "EditorLoc.h"
 // class graphConverter;
 
 // struct Node {
@@ -69,6 +70,7 @@ struct hnode {
         geom = nullptr;
         centroid = Eigen::Vector3d::Zero();
         transform = Transform3d::Identity();
+        loc = EditorLoc(0, 0, 0, 0);
     }
     std::string type;
     int idx;
@@ -84,6 +86,7 @@ struct hnode {
     // the centroid of the geomemtry (derived from boundingbox)
     Eigen::Vector3d centroid;
     Transform3d transform;
+    EditorLoc loc;
     // check for LFD feature
 };
 
