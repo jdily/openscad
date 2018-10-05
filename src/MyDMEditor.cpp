@@ -131,6 +131,8 @@ void MyDMEditor::update_mani_val(double new_val) {
 			this->textedit->moveCursor(QTextCursor::MoveOperation::Left, QTextCursor::MoveMode::KeepAnchor);        
 		}	
 
+		// test if it can find the right node.
+
 	} else {
 		// move the cursor to "mani_line_no"
 		QTextCursor text_cursor(this->textedit->document()->findBlockByLineNumber(mani_line_no));
@@ -503,13 +505,45 @@ void MyDMEditor::mousePressEvent(QMouseEvent *event) {
 	selected_col_no = this->textedit->textCursor().columnNumber();
 	selected_start = this->textedit->textCursor().selectionStart();
 	selected_end = this->textedit->textCursor().selectionEnd();
-	std::cout << "start : end -> " << selected_start << " : " << selected_end << std::endl;
+	// std::cout << "start : end -> " << selected_start << " : " << selected_end << std::endl;
 	selected_anchor = this->textedit->textCursor().anchor();
 	selected_position = this->textedit->textCursor().position();
 	selected_var = selectedText();
+
+	int selected_nid = search_node(selected_line_no, selected_col_no);
+	std::cout << "selected_nid : " << selected_nid << std::endl;
+
 
 	QMenu *menu = this->textedit->createStandardContextMenu();
 	menu->addAction(createSliderAct);
 	slider_pos = new QPoint(mapToGlobal(event->pos()));
 	menu->popup(mapToGlobal(event->pos()));
+}
+
+// TODO : check why the node 4 column is wrong??? 
+
+int MyDMEditor::search_node(int select_line, int select_col) {
+	// traverse the tree
+	// std::cout << "Search node " << std::endl;
+	tree_hnode::sibling_iterator children;
+	tree_hnode::iterator iterator;
+	iterator = shape_tree->begin();
+	std::cout << "selected : " << selected_line_no << " " << selected_col_no << std::endl;
+	while (iterator != shape_tree->end()) {
+		std::string type = (*iterator)->type;
+		int index = (*iterator)->idx;
+		// std::cout << "search " << index << std::endl;
+		if (type == "poly") {
+			std::cout << (*iterator)->loc.first_line << " " << (*iterator)->loc.first_col << " "
+				      << (*iterator)->loc.last_line << " " << (*iterator)->loc.last_col << std::endl;
+			// the start line no mismatch. +1 for alignment.
+			bool inside = (*iterator)->loc.inside(select_line+1, select_col);
+			// std::cout << "inside : " << inside << std::endl;
+			if (inside) {
+				return index;
+			}
+		}
+		++iterator;
+	}
+	return -1;
 }

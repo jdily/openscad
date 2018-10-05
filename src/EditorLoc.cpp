@@ -17,10 +17,18 @@ EditorLoc::EditorLoc(int firstLine, int firstCol, int lastLine, int lastCol) {
 EditorLoc::~EditorLoc() {}
 
 
-bool EditorLoc::inside(int q_first_line, int q_first_col, int q_last_line, int q_last_col) {
-	if ((q_first_line >= first_line) && (q_first_col >= first_col) 
-	 && (q_last_line <= last_line) && (q_last_col <= last_col)) {
-		return true;
-	}
-	return false;
+// bool EditorLoc::inside(int q_first_line, int q_first_col, int q_last_line, int q_last_col) {
+// 	if ((q_first_line >= first_line) && (q_first_col >= first_col) 
+// 	 && (q_last_line <= last_line) && (q_last_col <= last_col)) {
+// 		return true;
+// 	}
+// 	return false;
+// }
+
+bool EditorLoc::inside(int select_line_no, int select_col_no) {
+    if ((select_line_no >= first_line) && (select_line_no <= last_line)
+     && (select_col_no >= first_col) && (select_col_no <= last_col)) {
+         return true;
+    }
+    return false;
 }

@@ -135,6 +135,8 @@ tree_hnode* vizTools::make_layout_graphviz(tree_hnode *tree, QString filename, Q
     tree_centroid.clear();
     QMap<int, Transform3d> tree_trans;
     tree_trans.clear();
+    QMap<int, EditorLoc> tree_locs;
+    tree_locs.clear();
     QMap<int, const AbstractNode*> tree_nodes;
     tree_nodes.clear();
 
@@ -145,6 +147,7 @@ tree_hnode* vizTools::make_layout_graphviz(tree_hnode *tree, QString filename, Q
         tree_centroid.insert(index, (*iterator)->centroid);
         tree_trans.insert(index, (*iterator)->transform);
         tree_nodes.insert(index, (*iterator)->node);
+        tree_locs.insert(index, (*iterator)->loc);
         std::cout << index << " " << (*iterator)->type <<  std::endl;
         // TODO : check should it start from 0
         QString indexstr = QString::number(index);
@@ -191,6 +194,7 @@ tree_hnode* vizTools::make_layout_graphviz(tree_hnode *tree, QString filename, Q
         (*iterator)->centroid = tree_centroid[idx];
         (*iterator)->transform = tree_trans[idx];
         (*iterator)->node = tree_nodes[idx];
+        (*iterator)->loc = tree_locs[idx];
         ++iterator;
     }
 

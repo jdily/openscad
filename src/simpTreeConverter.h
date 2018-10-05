@@ -16,6 +16,7 @@
 #include "cgaladvnode.h"
 #include "GeometryEvaluator.h"
 #include "polyset.h"
+#include "EditorLoc.h"
 typedef stree<hnode*> tree_hnode;
 
 class simpTreeConverter : public NodeVisitor {

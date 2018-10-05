@@ -82,6 +82,7 @@ public slots:
 	// TODO : check if we know all the parameter at this time???
 	// Or how to do this 
 	void opt_mani_val(double new_val);
+	int search_node(int select_line_no, int select_col);
 private:
 	class QTextEdit *textedit;
 	class Highlighter *highlighter;

@@ -1,7 +1,7 @@
 #include "simpTreeConverter.h"
 #include <boost/type_index.hpp>
 #include <typeinfo>
-
+#include "ModuleInstantiation.h"
 
 simpTreeConverter::simpTreeConverter() {
     this->m_Tree = new tree_hnode();
@@ -37,6 +37,9 @@ Response simpTreeConverter::visit(State &state, const RootNode &node) {
             _node->csgnode = this->tree_stored_leaf_term[node.index()];
             _node->obj_filename = QString("%1.obj").arg(node.index()).toStdString();
         }
+        // add location
+        Location loc = node.modinst->location();
+        _node->loc = EditorLoc(loc.firstLine(), loc.firstColumn(), loc.lastLine(), loc.lastColumn());
         // _node.parent_idx = -1;
         // // hnodes[node.index()] = _node;
         hnodes.insert(node.index(), _node);
@@ -62,6 +65,9 @@ Response simpTreeConverter::visit(State &state, const TransformNode &node) {
             _node->csgnode = this->tree_stored_leaf_term[node.index()];
             _node->obj_filename = QString("%1.obj").arg(node.index()).toStdString();
         }
+        // add location
+        Location loc = node.modinst->location();
+        _node->loc = EditorLoc(loc.firstLine(), loc.firstColumn(), loc.lastLine(), loc.lastColumn());
         _node->centroid = Eigen::Vector3d::Zero();
         hnodes.insert(node.index(), _node);
         for (auto child : visitedchildren[node.index()]) {
@@ -86,7 +92,11 @@ Response simpTreeConverter::visit(State &state, const AbstractPolyNode &node) {
             _node->csgnode = this->tree_stored_leaf_term[node.index()];
             _node->obj_filename = QString("%1.obj").arg(node.index()).toStdString();
         }
+        // add location
+        Location loc = node.modinst->location();
+        _node->loc = EditorLoc(loc.firstLine(), loc.firstColumn(), loc.lastLine(), loc.lastColumn());
         hnodes.insert(node.index(), _node);
+        
         for (auto child : visitedchildren[node.index()]) {
             child->parent_idx = node.index();
         }
@@ -115,6 +125,9 @@ Response simpTreeConverter::visit(State &state, const CsgOpNode &node) {
             _node->csgnode = this->tree_stored_leaf_term[node.index()];
             _node->obj_filename = QString("%1.obj").arg(node.index()).toStdString();
         }
+        // add location
+        Location loc = node.modinst->location();
+        _node->loc = EditorLoc(loc.firstLine(), loc.firstColumn(), loc.lastLine(), loc.lastColumn());
         hnodes.insert(node.index(), _node);
         for (auto child : visitedchildren[node.index()]) {
             child->parent_idx = node.index();
@@ -138,6 +151,9 @@ Response simpTreeConverter::visit(State &state, const CgaladvNode &node) {
             _node->csgnode = this->tree_stored_leaf_term[node.index()];
             _node->obj_filename = QString("%1.obj").arg(node.index()).toStdString();
         }
+        // add location
+        Location loc = node.modinst->location();
+        _node->loc = EditorLoc(loc.firstLine(), loc.firstColumn(), loc.lastLine(), loc.lastColumn());
         hnodes.insert(node.index(), _node);
         for (auto child : visitedchildren[node.index()]) {
             child->parent_idx = node.index();
@@ -162,6 +178,9 @@ Response simpTreeConverter::visit(State &state, const GroupNode &node) {
             _node->csgnode = this->tree_stored_leaf_term[node.index()];
             _node->obj_filename = QString("%1.obj").arg(node.index()).toStdString();
         }
+        // add location
+        Location loc = node.modinst->location();
+        _node->loc = EditorLoc(loc.firstLine(), loc.firstColumn(), loc.lastLine(), loc.lastColumn());
         hnodes.insert(node.index(), _node);
         for (auto child : visitedchildren[node.index()]) {
             child->parent_idx = node.index();
@@ -238,6 +257,8 @@ int simpTreeConverter::search_valid_parent(int id) {
     return -1;
 }
 
+// TODO : add location information
+
 tree_hnode* simpTreeConverter::convert_tree(Tree *tree) {
     // TODO : test if we can obtain the right stored information here...
     this->tree_stored_leaf_term = tree->csg_stored_leaf_term;
@@ -257,7 +278,7 @@ tree_hnode* simpTreeConverter::convert_tree(Tree *tree) {
         // std::cout << k << " parent id : " << parent_id << std::endl;
         // change the parent information.
         hnodes[k]->parent_idx = parent_id;
-        std::cout << k << " " << hnodes[k]->centroid[0] << " " << hnodes[k]->centroid[1] << " " << hnodes[k]->centroid[2] << std::endl;
+        // std::cout << k << " " << hnodes[k]->centroid[0] << " " << hnodes[k]->centroid[1] << " " << hnodes[k]->centroid[2] << std::endl;
         // std::cout << hnodes[k]->type << std::endl;
         if (parent_id == -1) {
             newNodeIter = m_Tree->begin();
