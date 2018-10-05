@@ -1,5 +1,6 @@
 #include "DMSolver.h"
 #include "primitives.h"
+#include "ModuleInstantiation.h"
 
 DMSolver::DMSolver() {}
 DMSolver::DMSolver(tree_hnode* tree) : shape_tree(tree) {}
@@ -30,6 +31,13 @@ void DMSolver::gather_vars() {
         if (type == "poly") {
             std::string poly_type = (*iterator)->node->name();
             std::cout << "poly type : " << poly_type << std::endl;
+
+            // check the Location things.
+            // seems like work for non-module code, i.e. direct geometry declare.
+            Location loc = (*iterator)->node->modinst->location();
+            std::cout << "show the location of node " << index << std::endl;
+            std::cout << loc.firstLine() << " " << loc.firstColumn() << " " << loc.lastLine() << " " << loc.lastColumn() << std::endl; 
+
             const PrimitiveNode *pn = dynamic_cast<const PrimitiveNode*>((*iterator)->node);
             if (poly_type == "cube") {
                 Var vx(cur_id, index, pn->x);

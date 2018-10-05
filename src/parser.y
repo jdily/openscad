@@ -357,6 +357,7 @@ expr:
             }
         | '[' optional_commas ']'
             {
+                printf("test optional_commas;");
               $$ = new Literal(ValuePtr(Value::VectorType()), LOC(@$));
             }
         | '[' vector_expr optional_commas ']'

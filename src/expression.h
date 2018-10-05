@@ -90,6 +90,7 @@ private:
 	shared_ptr<Expression> index;
 };
 
+// assuming the simplest geom declaration is this one.
 class Literal : public Expression
 {
 public:

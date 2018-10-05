@@ -1253,8 +1253,7 @@ void MainWindow::instantiateRoot()
 
 			tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()), this->data_basepath);
 			main_tree = new tree_hnode(*layout_tree);
-			// qtreeViewer->setSTree(layout_tree);
-			// qtreeViewer_ref->setSTree(layout_tree);
+			
 			pair_viewer->setSTree(layout_tree, 0);
 			// pair_viewer->setSTree(layout_tree, 1);
 			// qtreeViewer->setTree(&this->tree);	

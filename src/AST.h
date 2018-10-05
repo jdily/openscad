@@ -3,7 +3,7 @@
 #include <string>
 
 // TODO : the block location information?
-
+// Add more information in Location to judge if the editing is involved.
 class Location {
 public:
 	Location(int firstLine, int firstCol, int lastLine, int lastCol)
@@ -15,6 +15,7 @@ public:
 	int lastLine() const { return last_line; }
 	int lastColumn() const { return last_col; }
 
+	bool inside(int q_first_line, int q_first_col, int q_last_line, int q_last_col);
 
 	static const Location NONE;
 ;
@@ -24,6 +25,9 @@ private:
 	int last_line;
 	int last_col;
 };
+
+
+
 
 class ASTNode
 {
