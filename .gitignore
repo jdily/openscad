@@ -69,3 +69,25 @@ external/LFD/fftw/*
 libraries/MCAD
 
 \.vscode/settings\.json
+
+\.vs/openscad/v15/\.suo
+
+\.vs/openscad/v15/Browse\.VC\.db
+
+\.vs/openscad/v15/ipch/AutoPCH/316811c9506816df/AST\.ipch
+
+\.vs/ProjectSettings\.json
+
+\.vs/slnx\.sqlite
+
+\.vs/VSWorkspaceState\.json
+
+\.vscode/c_cpp_properties\.json
+
+\.vscode/launch\.json
+
+\.vscode/settings\.json\.bak
+
+external/LFD/align10\.txt
+
+external/LFD/LFD
