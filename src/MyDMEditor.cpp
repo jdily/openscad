@@ -521,6 +521,7 @@ void MyDMEditor::mousePressEvent(QMouseEvent *event) {
 }
 
 // TODO : check why the node 4 column is wrong??? 
+// Seems like the column is accumulating?
 
 int MyDMEditor::search_node(int select_line, int select_col) {
 	// traverse the tree
