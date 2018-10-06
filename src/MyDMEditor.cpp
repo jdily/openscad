@@ -510,6 +510,11 @@ void MyDMEditor::mousePressEvent(QMouseEvent *event) {
 	selected_position = this->textedit->textCursor().position();
 	selected_var = selectedText();
 
+	std::cout << "selected_line_no : " << selected_line_no << std::endl;
+	std::cout << "selected_col_no : " << selected_col_no << std::endl;
+	std::cout << "selected_start : " << selected_start << std::endl;
+	std::cout << "selected_end : " << selected_end << std::endl;
+
 	int selected_nid = search_node(selected_line_no, selected_col_no);
 	std::cout << "selected_nid : " << selected_nid << std::endl;
 
@@ -538,7 +543,7 @@ int MyDMEditor::search_node(int select_line, int select_col) {
 			std::cout << (*iterator)->loc.first_line << " " << (*iterator)->loc.first_col << " "
 				      << (*iterator)->loc.last_line << " " << (*iterator)->loc.last_col << std::endl;
 			// the start line no mismatch. +1 for alignment.
-			bool inside = (*iterator)->loc.inside(select_line+1, select_col);
+			bool inside = (*iterator)->loc.inside_col(select_line+1, select_col+1);
 			// std::cout << "inside : " << inside << std::endl;
 			if (inside) {
 				return index;

@@ -25,14 +25,20 @@ EditorLoc::~EditorLoc() {}
 // 	return false;
 // }
 
-// Let's first assume that one line only contain one command
-bool EditorLoc::inside(int select_line_no, int select_col_no) {
+// TODO : how do we know the full set of parameters
+// This function only consider line
+bool EditorLoc::inside(int select_line_no) {
     if ((select_line_no >= first_line) && (select_line_no <= last_line)) {
         return true;
     }
-    // if ((select_line_no >= first_line) && (select_line_no <= last_line)
-    //  && (select_col_no >= first_col) && (select_col_no <= last_col)) {
-        //  return true;
-    // }
+    return false;
+}
+
+// This function consider both
+bool EditorLoc::inside_col(int select_line_no, int select_col_no) {
+    if ((select_line_no >= first_line) && (select_line_no <= last_line)
+     && (select_col_no >= first_col) && (select_col_no <= last_col)) {
+         return true;
+    }
     return false;
 }
