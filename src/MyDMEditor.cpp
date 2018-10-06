@@ -543,7 +543,7 @@ int MyDMEditor::search_node(int select_line, int select_col) {
 			std::cout << (*iterator)->loc.first_line << " " << (*iterator)->loc.first_col << " "
 				      << (*iterator)->loc.last_line << " " << (*iterator)->loc.last_col << std::endl;
 			// the start line no mismatch. +1 for alignment.
-			bool inside = (*iterator)->loc.inside_col(select_line+1, select_col+1);
+			bool inside = (*iterator)->loc.inside_col(select_line+1, selected_start+1, selected_end+1);
 			// std::cout << "inside : " << inside << std::endl;
 			if (inside) {
 				return index;

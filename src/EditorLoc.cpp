@@ -35,9 +35,9 @@ bool EditorLoc::inside(int select_line_no) {
 }
 
 // This function consider both
-bool EditorLoc::inside_col(int select_line_no, int select_col_no) {
+bool EditorLoc::inside_col(int select_line_no, int select_start, int select_end) {
     if ((select_line_no >= first_line) && (select_line_no <= last_line)
-     && (select_col_no >= first_col) && (select_col_no <= last_col)) {
+     && (select_start >= first_col) && (select_end <= last_col)) {
          return true;
     }
     return false;
