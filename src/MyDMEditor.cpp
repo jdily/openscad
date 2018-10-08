@@ -2,7 +2,7 @@
 #include "Preferences.h"
 #include "highlighter.h"
 #include "QSettingsCached.h"
-
+#include "primitives.h"
 //the following are UBUNTU/LINUX ONLY terminal color codes.
 #define COLOR_RESET   "\033[0m"
 #define COLOR_RED     "\033[31m"      /* Red */
@@ -47,12 +47,21 @@ void MyDMEditor::set_solver(DMSolver* _solver) {
 	this->m_solver = _solver;
 }
 
+// Example -> cube([5, 3, 2])
+//            select 5 -> get 5, 3, 2 
+QString MyDMEditor::search_all_params() {
+	
+}
+
+
 // use selected_line_no and selected_var
 void MyDMEditor::check_selection() {
 	QRegExp num_re("-?[0-9]+([.][0-9]+)?");
 	if (num_re.exactMatch(selected_var)) {
 		std::cout << "it's a number" << std::endl;
 		mani_val = selected_var.toFloat();
+		QString mani_val_str = QString("%1").arg(mani_val);
+		mani_val_len = mani_val_str.length();
 		mani_line_no = selected_line_no;
 		mani_variable = false;
 	} else {
@@ -117,6 +126,7 @@ void MyDMEditor::check_selection() {
 }
 
 void MyDMEditor::update_mani_val(double new_val) {
+	// for directly manipulate numbers
 	if (mani_variable == false) {
 		if (this->textedit->textCursor().hasSelection()) {
 			std::cout << "has selection" << std::endl;
@@ -130,8 +140,8 @@ void MyDMEditor::update_mani_val(double new_val) {
 		for (int k = 0; k < str_len; k++) {
 			this->textedit->moveCursor(QTextCursor::MoveOperation::Left, QTextCursor::MoveMode::KeepAnchor);        
 		}	
-
 		// test if it can find the right node.
+		
 
 	} else {
 		// move the cursor to "mani_line_no"
@@ -160,8 +170,69 @@ void MyDMEditor::update_mani_val(double new_val) {
 	}
 }
 
+void MyDMEditor::update_params(hnode* node, std::vector<double> u_params) {
+	// type should be "poly"
+	std::string type = node->type;
+	std::string poly_type = node->node->name();
+	// modify the internal node parameters
+		// const PrimitiveNode *pn = dynamic_cast<const PrimitiveNode*>(node->node);
+		// PolySet* newps = static_cast<PolySet*>(const_cast<Geometry*>(n->geom.get()));
+		PrimitiveNode* pn = dynamic_cast<PrimitiveNode*>(const_cast<AbstractNode*>(node->node));
+		// PrimitiveNode* _pn = const_cast<const PrimitiveNode*>(pn);
+	if (poly_type == "cube") {
+		// check if the length = 3
+		// assert((int)u_params.size() == 3);
+		pn->x = u_params[0];
+		pn->y = u_params[1];
+		pn->z = u_params[2];
+	} else if (poly_type == "sphere") {
+		pn->r1 = u_params[0];
+	} else if (poly_type == "cylinder") {
+		pn->h = u_params[0];
+		pn->r1 = u_params[1];
+		pn->r2 = u_params[2];
+	}
+}
+
 void MyDMEditor::opt_mani_val(double new_val) {
 	std::cout << "optimized for manipulated values" << std::endl;
+	// directly on numbers
+	if (mani_variable == false) {
+		QString new_val_str = QString("%1").arg(new_val);
+		int str_len = new_val_str.length();
+		int change_len = (str_len - mani_val_len);		
+		// 1. try to expand the selection to all params
+		int _param_start_pos = param_start_pos;
+		int _param_end_pos = param_end_pos;
+		if (change_len == false) {
+			_param_end_pos += change_len;
+		}
+		QTextCursor param_cursor(this->textedit->document());
+		param_cursor.clearSelection();
+		param_cursor.setPosition(_param_start_pos, QTextCursor::MoveAnchor);
+		param_cursor.movePosition(QTextCursor::MoveOperation::Right, QTextCursor::MoveMode::KeepAnchor, param_str_len+change_len);
+		QString cur_param_str;
+		if (param_cursor.hasSelection()) {
+			cur_param_str = param_cursor.selectedText(); 
+		}
+		QStringList update_param_strs = cur_param_str.split(","); 
+		std::vector<double> u_params;
+		for (const QString& pstr : update_param_strs) {
+			u_params.push_back(pstr.toDouble());
+		}
+		std::cout << "updated_param_str : " << cur_param_str.toStdString() << std::endl;
+		// 2. check the current node type -> search node...
+		hnode* selected_node = search_node(selected_line_no, selected_col_no);
+		// std::cout << "selected_nid : " << selected_node->idx << std::endl;
+		// TODO 1 -> update the parameters in this node
+		update_params(selected_node, u_params);
+		// TODO 2 -> check if the node in the tree got updated
+
+		// TODO 3 -> update the tree in the solver
+	 	//        -> extract the force..
+
+
+	}
 	// check if the tree and solver are set?
 	// if (this->shape_tree == nullptr) {
 	// 	std::cout << "shape_tree not set" << std::endl;
@@ -515,9 +586,38 @@ void MyDMEditor::mousePressEvent(QMouseEvent *event) {
 	std::cout << "selected_start : " << selected_start << std::endl;
 	std::cout << "selected_end : " << selected_end << std::endl;
 
-	int selected_nid = search_node(selected_line_no, selected_col_no);
-	std::cout << "selected_nid : " << selected_nid << std::endl;
+	hnode* selected_node = search_node(selected_line_no, selected_col_no);
+	std::cout << "selected_nid : " << selected_node->idx << std::endl;
+	// can we get the entire selected 
+	// 1. get the col number from the selected_node.
+	int first_col = selected_node->loc.first_col-1;
+	int last_col = selected_node->loc.last_col-1;
+	std::cout << first_col << " " << last_col << std::endl;
+	QTextCursor shape_cursor(this->textedit->document());
+	shape_cursor.clearSelection();
+	shape_cursor.setPosition(first_col, QTextCursor::MoveAnchor);
+	shape_cursor.movePosition(QTextCursor::MoveOperation::Right, QTextCursor::MoveMode::KeepAnchor, last_col-first_col);
+	if (shape_cursor.hasSelection()) {
+		std::cout << "selected text : " << shape_cursor.selectedText().toStdString() << std::endl;
+		QRegExp exp("\\[([^\\]]+)\\]");
+		QString s1 = shape_cursor.selectedText();
+		int match_idx = exp.indexIn(s1);
+		param_start_ind = match_idx + 1;
+		cap_param_str = exp.capturedTexts()[1];
+		param_str_len = cap_param_str.length();
+		std::cout << match_idx << std::endl;
+		std::cout << "captured param set : " << cap_param_str.toStdString() << std::endl;
+		param_start_pos = first_col + param_start_ind;
+		param_end_pos = param_start_pos + param_str_len;
+		shape_cursor.clearSelection();
+		shape_cursor.setPosition(first_col+param_start_ind, QTextCursor::MoveAnchor);
+		shape_cursor.movePosition(QTextCursor::MoveOperation::Right, QTextCursor::MoveMode::KeepAnchor, param_str_len);
+		std::cout << "compared selected params : " << shape_cursor.selectedText().toStdString() << std::endl;
 
+	} else {
+		std::cout << "shape_cursor current position : " << shape_cursor.position() << std::endl;
+		std::cout << "shape_cursor has no selection..." << std::endl;
+	}
 
 	QMenu *menu = this->textedit->createStandardContextMenu();
 	menu->addAction(createSliderAct);
@@ -528,7 +628,7 @@ void MyDMEditor::mousePressEvent(QMouseEvent *event) {
 // TODO : check why the node 4 column is wrong??? 
 // Seems like the column is accumulating?
 
-int MyDMEditor::search_node(int select_line, int select_col) {
+hnode* MyDMEditor::search_node(int select_line, int select_col) {
 	// traverse the tree
 	// std::cout << "Search node " << std::endl;
 	tree_hnode::sibling_iterator children;
@@ -546,10 +646,11 @@ int MyDMEditor::search_node(int select_line, int select_col) {
 			bool inside = (*iterator)->loc.inside_col(select_line+1, selected_start+1, selected_end+1);
 			// std::cout << "inside : " << inside << std::endl;
 			if (inside) {
-				return index;
+				return (*iterator);
 			}
 		}
 		++iterator;
 	}
-	return -1;
+	return nullptr;
 }
+

@@ -46,8 +46,18 @@ public:
 	int var_str_end;
 	int var_val_str;
 
+	// the current selected node's parameter sets
+	int param_start_ind;
+	int param_end_ind;
+	int param_start_pos;
+	int param_end_pos;
+	int param_str_len;
+	QString cap_param_str;
+
 	QString selected_var;
 	float mani_val;
+	int mani_val_len;
+
 	int mani_line_no;
 	bool mani_variable;
 	QString mani_val_str;
@@ -82,7 +92,10 @@ public slots:
 	// TODO : check if we know all the parameter at this time???
 	// Or how to do this 
 	void opt_mani_val(double new_val);
-	int search_node(int select_line_no, int select_col);
+	hnode* search_node(int select_line_no, int select_col);
+	QString search_all_params();
+	void update_params(hnode* node, std::vector<double> u_params);
+	
 private:
 	class QTextEdit *textedit;
 	class Highlighter *highlighter;

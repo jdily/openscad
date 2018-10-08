@@ -49,6 +49,8 @@ public:
     void load_constraint_jacobian();
     Eigen::VectorXd solve_ff(Eigen::VectorXd force);
 
+    static Eigen::VectorXd pack_vars(tree_hnode* temp_tree);
+
 // private:
     tree_hnode* shape_tree;
     // refer to the Lilicon symbols

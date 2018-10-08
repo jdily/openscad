@@ -95,6 +95,14 @@ void DMSolver::gather_vars() {
     sigma_0 = Eigen::Map<Eigen::VectorXd>(init_vals.data(), init_vals.size());  
 }  
 
+// [TODO]
+// func to packing the current vals of variables 
+// used for getting editor updated values -> compute force vector
+// Return : force vector
+Eigen::VectorXd DMSolver::pack_vars(tree_hnode* temp_tree) {
+
+}
+
 int DMSolver::num_vars() { return var_count; }
 int DMSolver::num_constraints() { return (int)all_constraints.size(); }
 
