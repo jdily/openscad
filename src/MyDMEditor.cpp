@@ -228,9 +228,9 @@ void MyDMEditor::opt_mani_val(double new_val) {
 		update_params(selected_node, u_params);
 		// TODO 2 -> check if the node in the tree got updated
 
-		// TODO 3 -> update the tree in the solver
-	 	//        -> extract the force..
-
+		// TODO 3 -> extract the force..
+		Eigen::VectorXd edited_vars = DMSolver::pack_vars(shape_tree);
+		Eigen::VectorXd force = edited_vars - this->m_solver->sigma_0;
 
 	}
 	// check if the tree and solver are set?
