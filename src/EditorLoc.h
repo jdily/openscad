@@ -15,4 +15,8 @@ public:
     int first_col;
     int last_line;
     int last_col;
+
+    // the position of param start and end
+    int param_start;
+    int param_end;
 };

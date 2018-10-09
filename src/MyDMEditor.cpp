@@ -34,6 +34,11 @@ MyDMEditor::MyDMEditor(QWidget *parent) : EditorInterface(parent)
 	mani_line_no = 0;
 	selected_line_no = 0;
 	mani_variable = false;
+
+	// preprocessing 1 : get the param_start and param_end;
+	did_pre_param = false;
+	cur_selected_node = nullptr;
+	// pre_locate_param_string();
 }
 
 void MyDMEditor::set_shape_tree(tree_hnode* _tree) {
@@ -49,10 +54,39 @@ void MyDMEditor::set_solver(DMSolver* _solver) {
 
 // Example -> cube([5, 3, 2])
 //            select 5 -> get 5, 3, 2 
-QString MyDMEditor::search_all_params() {
-	
+void MyDMEditor::pre_locate_param_string() {
+	tree_hnode::sibling_iterator children;
+	tree_hnode::iterator iterator;
+	// if (shape_tree == nullptr) {}
+    iterator = shape_tree->begin();
+	while (iterator != shape_tree->end()) {
+		std::string type = (*iterator)->type;
+		int index = (*iterator)->idx;
+		if (type == "poly") {
+			std::string poly_type = (*iterator)->node->name();
+			int first_col = (*iterator)->loc.first_col-1;
+			int last_col = (*iterator)->loc.last_col-1;
+			// move to the line of the declaration -> and select the entire line.
+			QTextCursor shape_cursor(this->textedit->document());
+			shape_cursor.clearSelection();
+			shape_cursor.setPosition(first_col, QTextCursor::MoveAnchor);
+			shape_cursor.movePosition(QTextCursor::MoveOperation::Right, QTextCursor::MoveMode::KeepAnchor, last_col-first_col);
+			// 
+			if (shape_cursor.hasSelection()) {
+				QRegExp exp("\\[([^\\]]+)\\]");
+				// the index of left brace
+				int match_idx = exp.indexIn(shape_cursor.selectedText());
+				QString param_str = exp.capturedTexts()[1];
+				param_str_len = param_str.length();
+				int start_pos = first_col + match_idx + 1;
+				int end_pos = start_pos + param_str_len;
+				(*iterator)->loc.param_start = start_pos;
+				(*iterator)->loc.param_end = end_pos;
+			}
+		}
+		++iterator;
+	}
 }
-
 
 // use selected_line_no and selected_var
 void MyDMEditor::check_selection() {
@@ -60,7 +94,7 @@ void MyDMEditor::check_selection() {
 	if (num_re.exactMatch(selected_var)) {
 		std::cout << "it's a number" << std::endl;
 		mani_val = selected_var.toFloat();
-		QString mani_val_str = QString("%1").arg(mani_val);
+		mani_val_str = QString("%1").arg(mani_val);
 		mani_val_len = mani_val_str.length();
 		mani_line_no = selected_line_no;
 		mani_variable = false;
@@ -177,7 +211,7 @@ void MyDMEditor::update_params(hnode* node, std::vector<double> u_params) {
 	// modify the internal node parameters
 		// const PrimitiveNode *pn = dynamic_cast<const PrimitiveNode*>(node->node);
 		// PolySet* newps = static_cast<PolySet*>(const_cast<Geometry*>(n->geom.get()));
-		PrimitiveNode* pn = dynamic_cast<PrimitiveNode*>(const_cast<AbstractNode*>(node->node));
+	PrimitiveNode* pn = dynamic_cast<PrimitiveNode*>(const_cast<AbstractNode*>(node->node));
 		// PrimitiveNode* _pn = const_cast<const PrimitiveNode*>(pn);
 	if (poly_type == "cube") {
 		// check if the length = 3
@@ -194,23 +228,63 @@ void MyDMEditor::update_params(hnode* node, std::vector<double> u_params) {
 	}
 }
 
+// Given opted sols (Eigen::VectorXd)
+// traverse all geometric node -> 
+// 1. use index to find the var's vals
+// 2. find the position of params string in the text editor -> update the vals.
+void MyDMEditor::write_opted_val(Eigen::VectorXd sols) {
+    tree_hnode::sibling_iterator children;
+	tree_hnode::iterator iterator;
+    iterator = shape_tree->begin();
+	while (iterator != shape_tree->end()) {
+		std::string type = (*iterator)->type;
+		int index = (*iterator)->idx;
+		if (type == "poly") {
+			std::string poly_type = (*iterator)->node->name();
+			std::vector<int> var_inds = this->m_solver->shape_var_dict[index];
+			// 1.
+			QStringList val_strs;
+			for (int &ind : var_inds) {
+				val_strs.push_back(QString::number(sols[ind]));
+				// vals.push_back(sols[ind]);
+			}
+			QString sol_strs = val_strs.join(",");
+			// 2. 
+
+		}
+		++iterator;
+	}
+}
+
 void MyDMEditor::opt_mani_val(double new_val) {
 	std::cout << "optimized for manipulated values" << std::endl;
 	// directly on numbers
 	if (mani_variable == false) {
 		QString new_val_str = QString("%1").arg(new_val);
 		int str_len = new_val_str.length();
-		int change_len = (str_len - mani_val_len);		
+		int change_len = (str_len - mani_val_len);
+		std::cout << "new val str : " << new_val_str.toStdString() << " " << str_len << std::endl;
+		std::cout << "ori (mani) val str : " << mani_val_str.toStdString() << " " << mani_val_len << std::endl;
+		std::cout << "change len : " << change_len << std::endl;
 		// 1. try to expand the selection to all params
-		int _param_start_pos = param_start_pos;
-		int _param_end_pos = param_end_pos;
-		if (change_len == false) {
+		int _param_start_pos = cur_selected_node->loc.param_start;
+		int _param_end_pos = cur_selected_node->loc.param_end;
+		// int _param_start_pos = param_start_pos;
+		// int _param_end_pos = param_end_pos;
+		// TODO : should we do this in another update_mani_val func???
+		if (change_len != 0) {
 			_param_end_pos += change_len;
+			cur_selected_node->loc.param_end += change_len;
+			param_str_len += change_len;
 		}
+
+		mani_val_str = new_val_str;
+		mani_val_len = str_len;
+
 		QTextCursor param_cursor(this->textedit->document());
 		param_cursor.clearSelection();
 		param_cursor.setPosition(_param_start_pos, QTextCursor::MoveAnchor);
-		param_cursor.movePosition(QTextCursor::MoveOperation::Right, QTextCursor::MoveMode::KeepAnchor, param_str_len+change_len);
+		param_cursor.movePosition(QTextCursor::MoveOperation::Right, QTextCursor::MoveMode::KeepAnchor, param_str_len);
 		QString cur_param_str;
 		if (param_cursor.hasSelection()) {
 			cur_param_str = param_cursor.selectedText(); 
@@ -222,16 +296,25 @@ void MyDMEditor::opt_mani_val(double new_val) {
 		}
 		std::cout << "updated_param_str : " << cur_param_str.toStdString() << std::endl;
 		// 2. check the current node type -> search node...
-		hnode* selected_node = search_node(selected_line_no, selected_col_no);
+		// hnode* selected_node = search_node(selected_line_no, selected_col_no);
 		// std::cout << "selected_nid : " << selected_node->idx << std::endl;
 		// TODO 1 -> update the parameters in this node
-		update_params(selected_node, u_params);
-		// TODO 2 -> check if the node in the tree got updated
-
-		// TODO 3 -> extract the force..
+		update_params(cur_selected_node, u_params);
+		// TODO 2 -> extract the force..
 		Eigen::VectorXd edited_vars = DMSolver::pack_vars(shape_tree);
+		std::cout << "dim of vector : " << edited_vars.size() << std::endl;
+		for (int i = 0; i < edited_vars.size(); i++) {
+			std::cout << edited_vars[i] << " ";
+		}
+		std::cout << std::endl;
 		Eigen::VectorXd force = edited_vars - this->m_solver->sigma_0;
-
+		for (int i = 0; i < force.size(); i++) {
+			std::cout << force[i] << " ";
+		}
+		std::cout << std::endl;
+		// Eigen::VectorXd sol = this->m_solver->solve_ff(edited_vars);
+		// TODO 3 -> write back the sol to the text editor...
+		
 	}
 	// check if the tree and solver are set?
 	// if (this->shape_tree == nullptr) {
@@ -568,6 +651,11 @@ QStringList MyDMEditor::colorSchemes()
 }
 
 void MyDMEditor::mousePressEvent(QMouseEvent *event) {
+	if (!did_pre_param) {
+		pre_locate_param_string();
+		did_pre_param = true;
+	}
+
 	std::cout << "press mouse" << std::endl;
 	// std::cout << selectedText().toStdString() << std::endl;
 
@@ -586,38 +674,48 @@ void MyDMEditor::mousePressEvent(QMouseEvent *event) {
 	std::cout << "selected_start : " << selected_start << std::endl;
 	std::cout << "selected_end : " << selected_end << std::endl;
 
-	hnode* selected_node = search_node(selected_line_no, selected_col_no);
-	std::cout << "selected_nid : " << selected_node->idx << std::endl;
+	cur_selected_node = search_node(selected_line_no, selected_col_no);
+	std::cout << "selected_nid : " << cur_selected_node->idx << std::endl;
 	// can we get the entire selected 
 	// 1. get the col number from the selected_node.
-	int first_col = selected_node->loc.first_col-1;
-	int last_col = selected_node->loc.last_col-1;
-	std::cout << first_col << " " << last_col << std::endl;
-	QTextCursor shape_cursor(this->textedit->document());
-	shape_cursor.clearSelection();
-	shape_cursor.setPosition(first_col, QTextCursor::MoveAnchor);
-	shape_cursor.movePosition(QTextCursor::MoveOperation::Right, QTextCursor::MoveMode::KeepAnchor, last_col-first_col);
-	if (shape_cursor.hasSelection()) {
-		std::cout << "selected text : " << shape_cursor.selectedText().toStdString() << std::endl;
-		QRegExp exp("\\[([^\\]]+)\\]");
-		QString s1 = shape_cursor.selectedText();
-		int match_idx = exp.indexIn(s1);
-		param_start_ind = match_idx + 1;
-		cap_param_str = exp.capturedTexts()[1];
-		param_str_len = cap_param_str.length();
-		std::cout << match_idx << std::endl;
-		std::cout << "captured param set : " << cap_param_str.toStdString() << std::endl;
-		param_start_pos = first_col + param_start_ind;
-		param_end_pos = param_start_pos + param_str_len;
-		shape_cursor.clearSelection();
-		shape_cursor.setPosition(first_col+param_start_ind, QTextCursor::MoveAnchor);
-		shape_cursor.movePosition(QTextCursor::MoveOperation::Right, QTextCursor::MoveMode::KeepAnchor, param_str_len);
-		std::cout << "compared selected params : " << shape_cursor.selectedText().toStdString() << std::endl;
+	// int first_col = selected_node->loc.first_col-1;
+	// int last_col = selected_node->loc.last_col-1;
+	// std::cout << first_col << " " << last_col << std::endl;
+	// QTextCursor shape_cursor(this->textedit->document());
+	// shape_cursor.clearSelection();
+	// shape_cursor.setPosition(first_col, QTextCursor::MoveAnchor);
+	// shape_cursor.movePosition(QTextCursor::MoveOperation::Right, QTextCursor::MoveMode::KeepAnchor, last_col-first_col);
+	// if (shape_cursor.hasSelection()) {
+	// 	std::cout << "selected text : " << shape_cursor.selectedText().toStdString() << std::endl;
+	// 	QRegExp exp("\\[([^\\]]+)\\]");
+	// 	QString s1 = shape_cursor.selectedText();
+	// 	int match_idx = exp.indexIn(s1);
+	// 	param_start_ind = match_idx + 1;
+	// 	cap_param_str = exp.capturedTexts()[1];
+	// 	param_str_len = cap_param_str.length();
+	// 	std::cout << match_idx << std::endl;
+	// 	std::cout << "captured param set : " << cap_param_str.toStdString() << std::endl;
+	// 	param_start_pos = first_col + param_start_ind;
+	// 	param_end_pos = param_start_pos + param_str_len;
+	// 	shape_cursor.clearSelection();
+	// 	shape_cursor.setPosition(first_col+param_start_ind, QTextCursor::MoveAnchor);
+	// 	shape_cursor.movePosition(QTextCursor::MoveOperation::Right, QTextCursor::MoveMode::KeepAnchor, param_str_len);
+	// 	std::cout << "compared selected params : " << shape_cursor.selectedText().toStdString() << std::endl;
 
-	} else {
-		std::cout << "shape_cursor current position : " << shape_cursor.position() << std::endl;
-		std::cout << "shape_cursor has no selection..." << std::endl;
-	}
+	// } else {
+	// 	std::cout << "shape_cursor current position : " << shape_cursor.position() << std::endl;
+	// 	std::cout << "shape_cursor has no selection..." << std::endl;
+	// }
+
+	// test if the precompute param pos is correct.
+	// int p_start_ind = selected_node->loc.param_start;
+	// int p_end_ind = selected_node->loc.param_end;
+	// QTextCursor test_cursor(this->textedit->document());
+	// test_cursor.clearSelection();
+	// test_cursor.setPosition(p_start_ind, QTextCursor::MoveAnchor);
+	// test_cursor.movePosition(QTextCursor::MoveOperation::Right, QTextCursor::MoveMode::KeepAnchor, p_end_ind-p_start_ind);
+	// std::cout << "verified selected params : " << test_cursor.selectedText().toStdString() << std::endl;
+
 
 	QMenu *menu = this->textedit->createStandardContextMenu();
 	menu->addAction(createSliderAct);

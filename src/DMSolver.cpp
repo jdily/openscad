@@ -118,7 +118,7 @@ Eigen::VectorXd DMSolver::pack_vars(tree_hnode* temp_tree) {
         int index = (*iterator)->idx;
         if (type == "poly") {
             std::string poly_type = (*iterator)->node->name();
-            std::cout << "poly type : " << poly_type << std::endl;
+            // std::cout << "poly type : " << poly_type << std::endl;
             // check the Location things.
             // seems like work for non-module code, i.e. direct geometry declare.
             Location loc = (*iterator)->node->modinst->location();
@@ -131,64 +131,20 @@ Eigen::VectorXd DMSolver::pack_vars(tree_hnode* temp_tree) {
                 edited_vals.push_back(pn->y);
                 edited_vals.push_back(pn->z);
                 cur_id += 3;
-                // Var vx(cur_id, index, pn->x);
-                // Var vy(cur_id+1, index, pn->y);
-                // Var vz(cur_id+2, index, pn->z);
-                // all_vars.push_back(vx);
-                // all_vars.push_back(vy);
-                // all_vars.push_back(vz);
-                // std::vector<int> var_ids;
-                // var_ids.push_back(cur_id);
-                // var_ids.push_back(cur_id+1);
-                // var_ids.push_back(cur_id+2);
-                // shape_var_dict.insert(std::pair<int, std::vector<int>>(index, var_ids));
-                // cur_id += 3;
-                // nids.push_back(index);
-                // nids.push_back(index);
-                // nids.push_back(index);
             } else if (poly_type == "sphere") {
                 edited_vals.push_back(pn->r1);
                 cur_id += 1;
-                // Var vr(cur_id, index, pn->r1);
-                // all_vars.push_back(vr);
-                // std::vector<int> var_ids;
-                // var_ids.push_back(cur_id);
-                // shape_var_dict.insert(std::pair<int, std::vector<int>>(index, var_ids));
-                // cur_id += 1;
-                // // params.push_back(pn->r1);
-                // nids.push_back(index);
             } else if (poly_type == "cylinder") {
                 edited_vals.push_back(pn->h);
                 edited_vals.push_back(pn->r1);
                 edited_vals.push_back(pn->r2);
                 cur_id += 1;
-                // Var vh(cur_id, index, pn->h);
-                // Var vr1(cur_id+1, index, pn->r1);
-                // Var vr2(cur_id+2, index, pn->r2);
-                // all_vars.push_back(vh);
-                // all_vars.push_back(vr1);
-                // all_vars.push_back(vr2);
-                // std::vector<int> var_ids;
-                // var_ids.push_back(cur_id);
-                // var_ids.push_back(cur_id+1);
-                // var_ids.push_back(cur_id+2);
-                // shape_var_dict.insert(std::pair<int, std::vector<int>>(index, var_ids));
-                // cur_id += 3;
-                // nids.push_back(index);
-                // nids.push_back(index);
-                // nids.push_back(index);
             } else if (poly_type == "polyhedron") {
 
             } 
         }
         ++iterator;
     }
-    // // record total params length
-    // var_count = (int)all_vars.size();
-    // // std::vector<double> edited_vals;
-    // for (int i = 0; i < var_count; i++) {
-    //     edited_vals.push_back(all_vars[i]._cur_val);
-    // }
     edited_vars = Eigen::Map<Eigen::VectorXd>(edited_vals.data(), edited_vals.size());  
     return edited_vars;
 }
@@ -235,6 +191,7 @@ void DMSolver::load_constraint_jacobian() {
 // desired_sigma -> user-specified
 Eigen::VectorXd DMSolver::solve_ff(Eigen::VectorXd desired_sigma) {
     Eigen::VectorXd ideal_sigma = Eigen::VectorXd::Zero(var_count);
+    // compute the force here, not outside..
     Eigen::VectorXd delta = desired_sigma - sigma_0;
     Eigen::VectorXd rhs = Eigen::VectorXd::Zero(all_constraints.size());
     rhs = (*jac_mat)*sigma_0;

@@ -47,7 +47,7 @@ public:
     int num_constraints();
 
     void load_constraint_jacobian();
-    Eigen::VectorXd solve_ff(Eigen::VectorXd force);
+    Eigen::VectorXd solve_ff(Eigen::VectorXd desired_sigma);
 
     static Eigen::VectorXd pack_vars(tree_hnode* temp_tree);
 
@@ -59,6 +59,7 @@ public:
 
     int var_count;
     std::vector<Var> all_vars;
+    // Given node id -> fetch the var ids in the var array
     std::map<int, std::vector<int>> shape_var_dict;
     std::vector<Constraints*> all_constraints;
 };

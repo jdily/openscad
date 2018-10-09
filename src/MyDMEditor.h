@@ -30,7 +30,7 @@ public:
 	void check_selection();
 	void set_shape_tree(tree_hnode* _tree);
 	void set_solver(DMSolver *_solver);
-
+	
 
 	QAction *createSliderAct;
 	QPoint *slider_pos;
@@ -53,6 +53,7 @@ public:
 	int param_end_pos;
 	int param_str_len;
 	QString cap_param_str;
+	hnode* cur_selected_node;
 
 	QString selected_var;
 	float mani_val;
@@ -64,6 +65,8 @@ public:
 
 	tree_hnode* shape_tree;
 	DMSolver* m_solver;
+
+	bool did_pre_param;
 
 public slots:
 	void zoomIn() override;
@@ -93,9 +96,10 @@ public slots:
 	// Or how to do this 
 	void opt_mani_val(double new_val);
 	hnode* search_node(int select_line_no, int select_col);
-	QString search_all_params();
+	// QString search_all_params();
 	void update_params(hnode* node, std::vector<double> u_params);
-	
+	void write_opted_val(Eigen::VectorXd sols);
+	void pre_locate_param_string();
 private:
 	class QTextEdit *textedit;
 	class Highlighter *highlighter;
