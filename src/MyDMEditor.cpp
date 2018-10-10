@@ -277,7 +277,7 @@ void MyDMEditor::opt_mani_val(double new_val) {
 			cur_selected_node->loc.param_end += change_len;
 			param_str_len += change_len;
 		}
-
+		// update the curret edited value str...
 		mani_val_str = new_val_str;
 		mani_val_len = str_len;
 
@@ -295,9 +295,6 @@ void MyDMEditor::opt_mani_val(double new_val) {
 			u_params.push_back(pstr.toDouble());
 		}
 		std::cout << "updated_param_str : " << cur_param_str.toStdString() << std::endl;
-		// 2. check the current node type -> search node...
-		// hnode* selected_node = search_node(selected_line_no, selected_col_no);
-		// std::cout << "selected_nid : " << selected_node->idx << std::endl;
 		// TODO 1 -> update the parameters in this node
 		update_params(cur_selected_node, u_params);
 		// TODO 2 -> extract the force..
@@ -312,7 +309,12 @@ void MyDMEditor::opt_mani_val(double new_val) {
 			std::cout << force[i] << " ";
 		}
 		std::cout << std::endl;
-		// Eigen::VectorXd sol = this->m_solver->solve_ff(edited_vars);
+		Eigen::VectorXd sol = this->m_solver->solve_ff(edited_vars);
+		// std::cout << sol << std::endl;
+		// for (int i = 0; i < sol.size(); i++) {
+			// std::cout << sol[i] << " ";
+		// }
+		// std::cout << std::endl;
 		// TODO 3 -> write back the sol to the text editor...
 		
 	}

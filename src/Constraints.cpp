@@ -12,10 +12,13 @@ Constraints::~Constraints() {}
 // EqualNumConsts
 ////////////////////////////////////////////
 
-EqualNumConsts::EqualNumConsts() { }
+EqualNumConsts::EqualNumConsts() { 
+    _num_eqs = 1;
+}
 EqualNumConsts::EqualNumConsts(Var a, Var b) {
     _a = a;
     _b = b;
+    _num_eqs = 1;
 }
 EqualNumConsts::~EqualNumConsts() {}
 
@@ -31,7 +34,6 @@ double EqualNumConsts::violate_distance(Eigen::VectorXd pos) {
     d = fabs(pos[_a._solver_id]-pos[_b._solver_id]);
     return d;
 }
-
 
 // int EqualNumConsts::num_eqs() {
 //     return 1;

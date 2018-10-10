@@ -154,8 +154,8 @@ int DMSolver::num_constraints() { return (int)all_constraints.size(); }
 
 // tmp fixed function for constraints.
 void DMSolver::analyze_constraints() {
-    int shape0 = 3; // 4;
-    int shape1 = 6; //10;
+    int shape0 = 2; // 4;
+    int shape1 = 4; //10;
     // x
     int s0_id = shape_var_dict[shape0][0];
     int s1_id = shape_var_dict[shape1][0];
@@ -184,28 +184,53 @@ void DMSolver::load_constraint_jacobian() {
             row_i += all_constraints[i]->num_eqs();
         }
         std::cout << "after, nonzero count : " << jac_mat->nonZeros() << std::endl; 
+        std::cout << "jacobian shape : " << jac_mat->rows() << " " << jac_mat->cols() << std::endl;
     }
 }
 // int DMSolver::var_c
 
 // desired_sigma -> user-specified
 Eigen::VectorXd DMSolver::solve_ff(Eigen::VectorXd desired_sigma) {
+    std::cout << "solve ff " << std::endl;
     Eigen::VectorXd ideal_sigma = Eigen::VectorXd::Zero(var_count);
     // compute the force here, not outside..
     Eigen::VectorXd delta = desired_sigma - sigma_0;
+    std::cout << delta << std::endl;
     Eigen::VectorXd rhs = Eigen::VectorXd::Zero(all_constraints.size());
-    rhs = (*jac_mat)*sigma_0;
-    // negate.
-    rhs *= -1.0;
+    Eigen::MatrixXd dense_jac((*jac_mat));
+    std::cout << "jacobian : " << std::endl;
+    std::cout << dense_jac << std::endl;
+    // rhs = (*jac_mat)*sigma_0;
+    std::cout << "sigma_0 : " << std::endl;
+    std::cout << sigma_0 << std::endl;
+    // TODO : debug if this is jac*sigma_0 or jac*ideal_force
+    // rhs = dense_jac*sigma_0;
+    rhs = dense_jac*delta;
+    std::cout << "rhs : " << std::endl;
+    std::cout << rhs << std::endl;
+    // negate or not
+    rhs *= 1.0;
     // lagrange_multiplier
     Eigen::VectorXd lag_multi = Eigen::VectorXd::Zero(all_constraints.size());
     // solve for X: (A * A^t) * X = B
     SpMat Jt = (jac_mat->transpose());
     SpMat JJt = (*jac_mat)*(Jt);
+    Eigen::MatrixXd dJt = dense_jac.transpose();
+    Eigen::MatrixXd dJJt = dense_jac*Jt;
+    std::cout << "dJt : " << std::endl;
+    std::cout << dJt << std::endl;
+    std::cout << "dJJt : " << std::endl;
+    std::cout << dJJt << std::endl;
+
     Eigen::ConjugateGradient<SpMat, Eigen::Upper> cgsolver;
     lag_multi = cgsolver.compute(JJt).solve(rhs);
     ideal_sigma = delta - Jt*lag_multi;
+    std::cout << "ideal sigma : " << std::endl;
+    std::cout << ideal_sigma << std::endl;
     // closest output 
     Eigen::VectorXd out = sigma_0 + ideal_sigma;
+
+    std::cout << "out : " << std::endl;
+    std::cout << out << std::endl;
     return out;
 }
