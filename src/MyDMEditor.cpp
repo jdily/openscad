@@ -232,10 +232,15 @@ void MyDMEditor::update_params(hnode* node, std::vector<double> u_params) {
 // traverse all geometric node -> 
 // 1. use index to find the var's vals
 // 2. find the position of params string in the text editor -> update the vals.
+
+// TODO : take the global position change into consideration...
+// Cuz the update parameter string len is different...
 void MyDMEditor::write_opted_val(Eigen::VectorXd sols) {
+	int global_shift = 0;
     tree_hnode::sibling_iterator children;
 	tree_hnode::iterator iterator;
     iterator = shape_tree->begin();
+	// this->textedit->setTextCursor(para);
 	while (iterator != shape_tree->end()) {
 		std::string type = (*iterator)->type;
 		int index = (*iterator)->idx;
@@ -249,11 +254,35 @@ void MyDMEditor::write_opted_val(Eigen::VectorXd sols) {
 				// vals.push_back(sols[ind]);
 			}
 			QString sol_strs = val_strs.join(",");
-			// 2. 
+			// 2. find the position to put these params
+			(*iterator)->loc.param_start += global_shift;
+			(*iterator)->loc.param_end += global_shift;
+			int _param_start_pos = (*iterator)->loc.param_start;
+			int _param_end_pos = (*iterator)->loc.param_end;
 
+			// original param str length.
+			int ori_param_str_len = _param_end_pos - _param_start_pos;
+			int cur_shift = sol_strs.length() - ori_param_str_len;
+			global_shift += cur_shift;
+			(*iterator)->loc.param_end = _param_start_pos + sol_strs.length();
+
+			QTextCursor param_cursor(this->textedit->document());
+			param_cursor.clearSelection();
+			param_cursor.setPosition(_param_start_pos);
+			param_cursor.movePosition(QTextCursor::MoveOperation::Right, QTextCursor::MoveMode::KeepAnchor, _param_end_pos-_param_start_pos);
+			this->textedit->setTextCursor(param_cursor);
+			// replace the selection with the sol_strs
+			this->textedit->insertPlainText(sol_strs);
+			
+			// for (int k = 0; k < str_len; k++) {
+				// this->textedit->moveCursor(QTextCursor::MoveOperation::Left, QTextCursor::MoveMode::KeepAnchor);        
+			// }	
 		}
 		++iterator;
+		// param_cursor.clearSelection();
 	}
+	// TODO : move the cursor back to original edited place
+
 }
 
 void MyDMEditor::opt_mani_val(double new_val) {
@@ -263,9 +292,9 @@ void MyDMEditor::opt_mani_val(double new_val) {
 		QString new_val_str = QString("%1").arg(new_val);
 		int str_len = new_val_str.length();
 		int change_len = (str_len - mani_val_len);
-		std::cout << "new val str : " << new_val_str.toStdString() << " " << str_len << std::endl;
-		std::cout << "ori (mani) val str : " << mani_val_str.toStdString() << " " << mani_val_len << std::endl;
-		std::cout << "change len : " << change_len << std::endl;
+		// std::cout << "new val str : " << new_val_str.toStdString() << " " << str_len << std::endl;
+		// std::cout << "ori (mani) val str : " << mani_val_str.toStdString() << " " << mani_val_len << std::endl;
+		// std::cout << "change len : " << change_len << std::endl;
 		// 1. try to expand the selection to all params
 		int _param_start_pos = cur_selected_node->loc.param_start;
 		int _param_end_pos = cur_selected_node->loc.param_end;
@@ -316,7 +345,7 @@ void MyDMEditor::opt_mani_val(double new_val) {
 		// }
 		// std::cout << std::endl;
 		// TODO 3 -> write back the sol to the text editor...
-		
+		write_opted_val(sol);
 	}
 	// check if the tree and solver are set?
 	// if (this->shape_tree == nullptr) {
