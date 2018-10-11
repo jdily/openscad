@@ -239,7 +239,7 @@ Eigen::VectorXd DMSolver::snap_constraints(Eigen::VectorXd cur_vals) {
     std::cout << "snap to constraints using gradient descent" << std::endl;
     Eigen::VectorXd grad = Eigen::VectorXd::Zero(var_count);
     float step_size = 0.49; // This is a crude tool here.  Can do better...
-    int num_steps = 10;
+    int num_steps = 5;
     Eigen::VectorXd vals = cur_vals;
     for (int step = 0; step < num_steps; step++) {
         std::cout << "Step " << step << " : " << std::endl;

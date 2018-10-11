@@ -35,10 +35,16 @@ double EqualNumConsts::violate_distance(Eigen::VectorXd pos) {
     return d;
 }
 
-void EqualNumConsts::accumulate_enforcement_grad(int step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos) {
+void EqualNumConsts::accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos) {
     double d = pos[_a._solver_id]-pos[_b._solver_id];
-    grad[_a._solver_id] -= step_size * d;
-    grad[_b._solver_id] += step_size * d;
+    // TODO: check here.
+    std::cout << "d : " << d << std::endl;
+    std::cout << _a._solver_id << " " << _b._solver_id << std::endl;
+    // std::cout << "step size : " 
+    grad[_a._solver_id] = grad[_a._solver_id] - step_size * d;
+    grad[_b._solver_id] = grad[_b._solver_id] + step_size * d;
+    std::cout << "grad inside : " << std::endl;
+    std::cout << grad << std::endl;
 }
 // int EqualNumConsts::num_eqs() {
 //     return 1;
@@ -69,5 +75,5 @@ void EqualPtsConsts::write_jacobian(SpMat *jac_mat, int _row) {
 
 }
 
-void EqualPtsConsts::accumulate_enforcement_grad(int step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos) {
+void EqualPtsConsts::accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos) {
 }
