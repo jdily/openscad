@@ -100,6 +100,7 @@ public slots:
 	void update_params(hnode* node, std::vector<double> u_params);
 	void write_opted_val(Eigen::VectorXd sols);
 	void pre_locate_param_string();
+	
 private:
 	class QTextEdit *textedit;
 	class Highlighter *highlighter;

@@ -35,6 +35,11 @@ double EqualNumConsts::violate_distance(Eigen::VectorXd pos) {
     return d;
 }
 
+void EqualNumConsts::accumulate_enforcement_grad(int step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos) {
+    double d = pos[_a._solver_id]-pos[_b._solver_id];
+    grad[_a._solver_id] -= step_size * d;
+    grad[_b._solver_id] += step_size * d;
+}
 // int EqualNumConsts::num_eqs() {
 //     return 1;
 // }
@@ -62,4 +67,7 @@ EqualPtsConsts::~EqualPtsConsts() {}
 
 void EqualPtsConsts::write_jacobian(SpMat *jac_mat, int _row) {
 
+}
+
+void EqualPtsConsts::accumulate_enforcement_grad(int step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos) {
 }

@@ -47,8 +47,10 @@ public:
     int num_constraints();
 
     void load_constraint_jacobian();
-    Eigen::VectorXd solve_ff(Eigen::VectorXd desired_sigma);
 
+    Eigen::VectorXd solve_ff(Eigen::VectorXd desired_sigma);
+    // Use the gradient of constraints to snap to the constraint manifold
+    Eigen::VectorXd snap_constraints(Eigen::VectorXd cur_vals);
     static Eigen::VectorXd pack_vars(tree_hnode* temp_tree);
 
 // private:

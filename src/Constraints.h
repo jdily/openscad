@@ -15,6 +15,7 @@ public:
     int num_eqs() { return _num_eqs; }
     int num_vars() { return _num_vars; }
     virtual void write_jacobian(SpMat *jac_mat, int _row) = 0;
+    virtual void accumulate_enforcement_grad(int step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos) = 0;
     // {
         // std::cout << "original contraints class" << std::endl;
     // }
@@ -32,6 +33,7 @@ public:
     ~EqualNumConsts();
 
     void write_jacobian(SpMat *jac_mat, int _row);
+    void accumulate_enforcement_grad(int step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos);
     double violate_distance(Eigen::VectorXd pos);
     // int num_eqs() { return _num_eqs; }
     // int num_vars() { return _num_vars; }
@@ -46,7 +48,7 @@ public:
     ~EqualPtsConsts();
 
     void write_jacobian(SpMat *jac_mat, int _row);
-
+    void accumulate_enforcement_grad(int step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos);
     std::vector<Var> _as;
     std::vector<Var> _bs;
 };

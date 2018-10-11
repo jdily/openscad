@@ -273,10 +273,6 @@ void MyDMEditor::write_opted_val(Eigen::VectorXd sols) {
 			this->textedit->setTextCursor(param_cursor);
 			// replace the selection with the sol_strs
 			this->textedit->insertPlainText(sol_strs);
-			
-			// for (int k = 0; k < str_len; k++) {
-				// this->textedit->moveCursor(QTextCursor::MoveOperation::Left, QTextCursor::MoveMode::KeepAnchor);        
-			// }	
 		}
 		++iterator;
 		// param_cursor.clearSelection();
@@ -338,14 +334,11 @@ void MyDMEditor::opt_mani_val(double new_val) {
 			std::cout << force[i] << " ";
 		}
 		std::cout << std::endl;
+		// fast linear solve
 		Eigen::VectorXd sol = this->m_solver->solve_ff(edited_vars);
-		// std::cout << sol << std::endl;
-		// for (int i = 0; i < sol.size(); i++) {
-			// std::cout << sol[i] << " ";
-		// }
-		// std::cout << std::endl;
-		// TODO 3 -> write back the sol to the text editor...
-		write_opted_val(sol);
+		// snap back to the manifold.
+		Eigen::VectorXd snapped_sol = this->m_solver->snap_constraints(sol);
+		write_opted_val(snapped_sol);
 	}
 	// check if the tree and solver are set?
 	// if (this->shape_tree == nullptr) {

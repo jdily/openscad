@@ -209,7 +209,7 @@ Eigen::VectorXd DMSolver::solve_ff(Eigen::VectorXd desired_sigma) {
     std::cout << "rhs : " << std::endl;
     std::cout << rhs << std::endl;
     // negate or not
-    rhs *= 1.0;
+    // rhs *= -1.0;
     // lagrange_multiplier
     Eigen::VectorXd lag_multi = Eigen::VectorXd::Zero(all_constraints.size());
     // solve for X: (A * A^t) * X = B
@@ -233,4 +233,27 @@ Eigen::VectorXd DMSolver::solve_ff(Eigen::VectorXd desired_sigma) {
     std::cout << "out : " << std::endl;
     std::cout << out << std::endl;
     return out;
+}
+
+Eigen::VectorXd DMSolver::snap_constraints(Eigen::VectorXd cur_vals) {
+    std::cout << "snap to constraints using gradient descent" << std::endl;
+    Eigen::VectorXd grad = Eigen::VectorXd::Zero(var_count);
+    float step_size = 0.49; // This is a crude tool here.  Can do better...
+    int num_steps = 10;
+    Eigen::VectorXd vals = cur_vals;
+    for (int step = 0; step < num_steps; step++) {
+        std::cout << "Step " << step << " : " << std::endl;
+        grad.setZero();
+        for (int i = 0; i < num_constraints(); i++) {
+            // std::cout << i << " add constraint jacobian " << std::endl;
+            all_constraints[i]->accumulate_enforcement_grad(step_size, grad, cur_vals);  
+            // row_i += all_constraints[i]->num_eqs();
+        }
+        std::cout << "grad : " << std::endl;
+        std::cout << grad << std::endl;
+        for (int k = 0; k < var_count; k++) {
+            vals[k] += grad[k];
+        }
+    }
+    return vals;
 }
