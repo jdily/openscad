@@ -25,11 +25,13 @@ protected:
 };
 
 // Equal Number Constraints -> g(\sigma) = a-b
+// thinking about if we can add additional constraints for user-specified values
 class EqualNumConsts : public Constraints {
 public:
     // arguments should be the variable position (idx)
     EqualNumConsts();
     EqualNumConsts(Var a, Var b);
+    EqualNumConsts(Var a, Var b, double tar_val);
     ~EqualNumConsts();
 
     void write_jacobian(SpMat *jac_mat, int _row);
@@ -39,12 +41,14 @@ public:
     // int num_vars() { return _num_vars; }
     Var _a;
     Var _b;
+    double _tar_val;
 };
 
 class EqualPtsConsts : public Constraints {
 public:
     EqualPtsConsts();
-    EqualPtsConsts(std::vector<Var> as, std::vector<Var> bs);
+    // ws is used to specify which point to align
+    EqualPtsConsts(std::vector<Var> as, std::vector<Var> bs, std::vector<float> ws_a, std::vector<float> ws_b);
     ~EqualPtsConsts();
 
     void write_jacobian(SpMat *jac_mat, int _row);
@@ -52,3 +56,13 @@ public:
     std::vector<Var> _as;
     std::vector<Var> _bs;
 };
+
+class ParallelLineConsts : public Constraints {
+public:
+    ParallelLineConsts();
+    ~ParallelLineConsts();
+    void write_jacobian(SpMat *jac_mat, int _row);
+    void accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos);
+
+    
+}

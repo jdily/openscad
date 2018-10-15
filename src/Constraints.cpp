@@ -20,6 +20,13 @@ EqualNumConsts::EqualNumConsts(Var a, Var b) {
     _b = b;
     _num_eqs = 1;
 }
+EqualNumConsts::EqualNumConsts(Var a, Var b, double tar_val) {
+    _a = a;
+    _b = b;
+    _num_eqs = 2;
+    _tar_val = tar_val;
+}
+
 EqualNumConsts::~EqualNumConsts() {}
 
 void EqualNumConsts::write_jacobian(SpMat *jac_mat, int _row) {
@@ -65,7 +72,8 @@ void EqualNumConsts::accumulate_enforcement_grad(float step_size, Eigen::VectorX
 // }
 
 EqualPtsConsts::EqualPtsConsts() {}
-EqualPtsConsts::EqualPtsConsts(std::vector<Var> as, std::vector<Var> bs) {
+// 
+EqualPtsConsts::EqualPtsConsts(std::vector<Var> as, std::vector<Var> bs, std::vector<float> ws_a, std::vector<float> ws_b) {
     _as = as;
     _bs = bs;
 }

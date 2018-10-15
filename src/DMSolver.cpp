@@ -190,6 +190,7 @@ void DMSolver::load_constraint_jacobian() {
 // int DMSolver::var_c
 
 // desired_sigma -> user-specified
+
 Eigen::VectorXd DMSolver::solve_ff(Eigen::VectorXd desired_sigma) {
     std::cout << "solve ff " << std::endl;
     Eigen::VectorXd ideal_sigma = Eigen::VectorXd::Zero(var_count);
