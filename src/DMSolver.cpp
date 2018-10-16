@@ -28,6 +28,7 @@ void DMSolver::gather_vars() {
     while (iterator != shape_tree->end()) {
         std::string type = (*iterator)->type;
         int index = (*iterator)->idx;
+
         if (type == "poly") {
             std::string poly_type = (*iterator)->node->name();
             std::cout << "poly type : " << poly_type << std::endl;
@@ -38,6 +39,14 @@ void DMSolver::gather_vars() {
             std::cout << "show the location of node " << index << std::endl;
             std::cout << loc.firstLine() << " " << loc.firstColumn() << " " << loc.lastLine() << " " << loc.lastColumn() << std::endl; 
 
+            Eigen::Matrix4d m = (*iterator)->transform.matrix();
+            // std::cout << m << std::endl;
+            Eigen::Vector4d o(0.0, 0.0, 0.0, 1.0);
+            Eigen::Vector4d cur_o = m*o;
+            cur_o[0] /= cur_o[3];
+            cur_o[1] /= cur_o[3];
+            cur_o[2] /= cur_o[3];
+            std::cout << cur_o.head(3) << std::endl;    
             const PrimitiveNode *pn = dynamic_cast<const PrimitiveNode*>((*iterator)->node);
             if (poly_type == "cube") {
                 Var vx(cur_id, index, pn->x);
@@ -180,7 +189,7 @@ void DMSolver::load_constraint_jacobian() {
         int row_i = 0;
         for (int i = 0; i < num_constraints(); i++) {
             std::cout << i << " add constraint jacobian " << std::endl;
-            all_constraints[i]->write_jacobian(jac_mat, row_i);  
+            all_constraints[i]->write_jacobian(jac_mat, row_i, sigma_0);  
             row_i += all_constraints[i]->num_eqs();
         }
         std::cout << "after, nonzero count : " << jac_mat->nonZeros() << std::endl; 

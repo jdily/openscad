@@ -92,7 +92,7 @@ Response simpTreeConverter::visit(State &state, const AbstractPolyNode &node) {
             _node->csgnode = this->tree_stored_leaf_term[node.index()];
             _node->obj_filename = QString("%1.obj").arg(node.index()).toStdString();
         }
-        // add location
+        // add location in the editor.
         Location loc = node.modinst->location();
         _node->loc = EditorLoc(loc.firstLine(), loc.firstColumn(), loc.lastLine(), loc.lastColumn());
         hnodes.insert(node.index(), _node);

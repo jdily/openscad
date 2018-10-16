@@ -14,7 +14,7 @@ public:
     ~Constraints();
     int num_eqs() { return _num_eqs; }
     int num_vars() { return _num_vars; }
-    virtual void write_jacobian(SpMat *jac_mat, int _row) = 0;
+    virtual void write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos) = 0;
     virtual void accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos) = 0;
     // {
         // std::cout << "original contraints class" << std::endl;
@@ -34,7 +34,7 @@ public:
     EqualNumConsts(Var a, Var b, double tar_val);
     ~EqualNumConsts();
 
-    void write_jacobian(SpMat *jac_mat, int _row);
+    void write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos);
     void accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos);
     double violate_distance(Eigen::VectorXd pos);
     // int num_eqs() { return _num_eqs; }
@@ -51,18 +51,20 @@ public:
     EqualPtsConsts(std::vector<Var> as, std::vector<Var> bs, std::vector<float> ws_a, std::vector<float> ws_b);
     ~EqualPtsConsts();
 
-    void write_jacobian(SpMat *jac_mat, int _row);
+    void write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos);
     void accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos);
     std::vector<Var> _as;
     std::vector<Var> _bs;
+    std::vector<float> ws_a;
+    std::vector<float> ws_b;
 };
 
 class ParallelLineConsts : public Constraints {
 public:
     ParallelLineConsts();
     ~ParallelLineConsts();
-    void write_jacobian(SpMat *jac_mat, int _row);
+    void write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos);
     void accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos);
 
     
-}
+};

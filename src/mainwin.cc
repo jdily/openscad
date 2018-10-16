@@ -1237,6 +1237,7 @@ void MainWindow::instantiateRoot()
 			// streeConverter *sconv = new streeConverter();
 			tree_hnode* htree = sconv->convert_tree(&tree);
 			std::cout << "htree size : " << htree->size() << std::endl;
+
 			// std::cout << sconv->with_csginfo() << std::endl;
 			// TODO : [Retrieval] check here..
 			// if (sconv->with_csginfo()) {
@@ -1252,7 +1253,7 @@ void MainWindow::instantiateRoot()
 			std::cout << "finish convert" << std::endl;
 
 			tree_hnode* layout_tree = vizTools::make_layout_graphviz(htree, QString(strs[0].c_str()), this->data_basepath);
-			main_tree = new tree_hnode(*layout_tree);
+			main_tree = new tree_hnode(*layout_tree);	
 			
 			pair_viewer->setSTree(layout_tree, 0);
 			// pair_viewer->setSTree(layout_tree, 1);

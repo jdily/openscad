@@ -79,12 +79,15 @@ struct hnode {
     std::string posstr;
     float pos_x;
     float pos_y;
+
     const AbstractNode *node;
     shared_ptr<CSGLeaf> csgnode;
     std::string obj_filename;
     shared_ptr<const Geometry> geom;
     // the centroid of the geomemtry (derived from boundingbox)
     Eigen::Vector3d centroid;
+    // the origin point of the geometry (after transformation)
+    Eigen::Vector3d origin;
     Transform3d transform;
     EditorLoc loc;
     // check for LFD feature

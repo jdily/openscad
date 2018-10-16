@@ -29,7 +29,7 @@ EqualNumConsts::EqualNumConsts(Var a, Var b, double tar_val) {
 
 EqualNumConsts::~EqualNumConsts() {}
 
-void EqualNumConsts::write_jacobian(SpMat *jac_mat, int _row) {
+void EqualNumConsts::write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos) {
     // sm1.coeffRef(i,j) = v_ij
     std::cout << _row << " " << _a._solver_id << " " << _b._solver_id << std::endl;
     jac_mat->coeffRef(_row, _a._solver_id) = 1;
@@ -72,16 +72,42 @@ void EqualNumConsts::accumulate_enforcement_grad(float step_size, Eigen::VectorX
 // }
 
 EqualPtsConsts::EqualPtsConsts() {}
-// 
+
+// [cube] the ws should be a 1x3 vector -> represent each vertex using the x, y, z variables.
 EqualPtsConsts::EqualPtsConsts(std::vector<Var> as, std::vector<Var> bs, std::vector<float> ws_a, std::vector<float> ws_b) {
     _as = as;
     _bs = bs;
+
+    // in 3D 
+    _num_eqs = 3;
 }
 EqualPtsConsts::~EqualPtsConsts() {}
 
-void EqualPtsConsts::write_jacobian(SpMat *jac_mat, int _row) {
-
+void EqualPtsConsts::write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos) {
+    int x_row = _row;
+    int y_row = _row+1;
+    int z_row = _row+2;
+    
+    // jac_mat->coeffRef(x_row, _a._solver_id) = 1;
 }
 
 void EqualPtsConsts::accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos) {
+}
+
+
+// ////////////////////////////////////////////
+// // ParallelLineConsts
+// ////////////////////////////////////////////
+ParallelLineConsts::ParallelLineConsts() {}
+
+ParallelLineConsts::~ParallelLineConsts() {}
+
+void ParallelLineConsts::write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos) {
+
+}
+
+
+
+void ParallelLineConsts::accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos) {
+ 
 }
