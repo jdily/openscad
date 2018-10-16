@@ -32,7 +32,6 @@ void DMSolver::gather_vars() {
         if (type == "poly") {
             std::string poly_type = (*iterator)->node->name();
             std::cout << "poly type : " << poly_type << std::endl;
-
             // check the Location things.
             // seems like work for non-module code, i.e. direct geometry declare.
             Location loc = (*iterator)->node->modinst->location();
@@ -42,11 +41,14 @@ void DMSolver::gather_vars() {
             Eigen::Matrix4d m = (*iterator)->transform.matrix();
             // std::cout << m << std::endl;
             Eigen::Vector4d o(0.0, 0.0, 0.0, 1.0);
-            Eigen::Vector4d cur_o = m*o;
-            cur_o[0] /= cur_o[3];
-            cur_o[1] /= cur_o[3];
-            cur_o[2] /= cur_o[3];
-            std::cout << cur_o.head(3) << std::endl;    
+            o = m*o;
+            o[0] /= o[3];
+            o[1] /= o[3];
+            o[2] /= o[3];
+            Eigen::Vector3d cur_o = o.head(3);
+            std::cout << cur_o << std::endl;
+            shape_origin_dict.insert(std::pair<int, Eigen::Vector3d>(index, cur_o));
+            
             const PrimitiveNode *pn = dynamic_cast<const PrimitiveNode*>((*iterator)->node);
             if (poly_type == "cube") {
                 Var vx(cur_id, index, pn->x);
