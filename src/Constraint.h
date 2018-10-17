@@ -19,9 +19,13 @@ public:
     // {
         // std::cout << "original contraints class" << std::endl;
     // }
-protected:
+    virtual std::vector<Var*> variables() = 0;
+    virtual void save_indices() = 0;
+// protected:
     int _num_eqs;
     int _num_vars;
+    std::vector<int> _indices;
+    // std::vector<Var> _variables;
 };
 
 // Equal Number Constraints -> g(\sigma) = a-b
@@ -37,6 +41,8 @@ public:
     void write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos);
     void accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos);
     double violate_distance(Eigen::VectorXd pos);
+    void save_indices();
+    std::vector<Var*> variables();
     // int num_eqs() { return _num_eqs; }
     // int num_vars() { return _num_vars; }
     Var _a;
@@ -53,6 +59,8 @@ public:
 
     void write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos);
     void accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos);
+    void save_indices();
+    std::vector<Var*> variables(); 
     std::vector<Var> _as;
     std::vector<Var> _bs;
     std::vector<float> ws_a;
@@ -65,14 +73,17 @@ public:
     ~ParallelLineConsts();
     void write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos);
     void accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos);
-
+    void save_indices();
+    std::vector<Var*> variables();
     
 };
 
-class AlignPoint2DConsts : public Constraints {
+class AlignPoint2DConsts : public Constraint {
 public:
     AlignPoint2DConsts();
     ~AlignPoint2DConsts();
     void write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos);
     void accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos);
+    void save_indices();
+    std::vector<Var*> variables();
 };

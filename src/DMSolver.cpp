@@ -12,6 +12,85 @@ void DMSolver::set_tree(tree_hnode* tree) {
     all_vars.clear();
 }
 
+void DMSolver::prepare_vars() {
+    if (shape_tree == nullptr) {
+        return ;
+    }
+    // navigate the shape tree
+    tree_hnode::sibling_iterator children;
+	tree_hnode::iterator iterator;
+    iterator = shape_tree->begin();
+    std::vector<double> params;
+    std::vector<int> nids;
+    std::vector<Var> vars;
+    int cur_id = 0;
+    while (iterator != shape_tree->end()) {
+        std::string type = (*iterator)->type;
+        int index = (*iterator)->idx;
+        if (type == "poly") {
+            std::string poly_type = (*iterator)->node->name();
+            std::cout << "poly type : " << poly_type << std::endl;
+            // check the Location things.
+            // seems like work for non-module code, i.e. direct geometry declare.
+            Location loc = (*iterator)->node->modinst->location();
+            std::cout << "show the location of node " << index << std::endl;
+            std::cout << loc.firstLine() << " " << loc.firstColumn() << " " << loc.lastLine() << " " << loc.lastColumn() << std::endl; 
+            Eigen::Matrix4d m = (*iterator)->transform.matrix();
+            // std::cout << m << std::endl;
+            Eigen::Vector4d o(0.0, 0.0, 0.0, 1.0);
+            o = m*o;
+            o[0] /= o[3];
+            o[1] /= o[3];
+            o[2] /= o[3];
+            Eigen::Vector3d cur_o = o.head(3);
+            std::cout << cur_o << std::endl;
+            shape_origin_dict.insert(std::pair<int, Eigen::Vector3d>(index, cur_o));
+
+            const PrimitiveNode *pn = dynamic_cast<const PrimitiveNode*>((*iterator)->node);
+            if (poly_type == "cube") {
+                Var vx(index, pn->x, false);
+                Var vy(index, pn->y, false);
+                Var vz(index, pn->z, false);
+                (*iterator)->var_dict.insert(std::pair<std::string, Var>("x", vx));
+                (*iterator)->var_dict.insert(std::pair<std::string, Var>("y", vy));
+                (*iterator)->var_dict.insert(std::pair<std::string, Var>("z", vz));
+
+                // all_vars.push_back(vx);
+                // all_vars.push_back(vy);
+                // all_vars.push_back(vz);
+                // std::vector<int> var_ids;
+                // var_ids.push_back(cur_id);
+                // var_ids.push_back(cur_id+1);
+                // var_ids.push_back(cur_id+2);
+                // shape_var_dict.insert(std::pair<int, std::vector<int>>(index, var_ids));
+                // cur_id += 3;
+                // nids.push_back(index);
+                // nids.push_back(index);
+                // nids.push_back(index);
+            } else if (poly_type == "sphere") {
+                Var vr(index, pn->r1, false);
+                (*iterator)->var_dict.insert(std::pair<std::string, Var>("r1", vr));
+                // all_vars.push_back(vr);
+                // std::vector<int> var_ids;
+                // var_ids.push_back(cur_id);
+                // shape_var_dict.insert(std::pair<int, std::vector<int>>(index, var_ids));
+                // cur_id += 1;
+                // // params.push_back(pn->r1);
+                // nids.push_back(index);
+            } else if (poly_type == "cylinder") {
+                Var vh(index, pn->h, false);
+                Var vr1(index, pn->r1, false);
+                Var vr2(index, pn->r2, false);
+                (*iterator)->var_dict.insert(std::pair<std::string, Var>("h", vh));
+                (*iterator)->var_dict.insert(std::pair<std::string, Var>("r1", vr1));
+                (*iterator)->var_dict.insert(std::pair<std::string, Var>("r2", vr2));
+            } else if (poly_type == "polyhedron") {
+
+            } 
+        }
+        ++iterator;
+    }
+}
 
 void DMSolver::gather_vars() {
     if (shape_tree == nullptr) {
@@ -28,7 +107,6 @@ void DMSolver::gather_vars() {
     while (iterator != shape_tree->end()) {
         std::string type = (*iterator)->type;
         int index = (*iterator)->idx;
-
         if (type == "poly") {
             std::string poly_type = (*iterator)->node->name();
             std::cout << "poly type : " << poly_type << std::endl;
@@ -48,15 +126,15 @@ void DMSolver::gather_vars() {
             Eigen::Vector3d cur_o = o.head(3);
             std::cout << cur_o << std::endl;
             shape_origin_dict.insert(std::pair<int, Eigen::Vector3d>(index, cur_o));
-            
+
             const PrimitiveNode *pn = dynamic_cast<const PrimitiveNode*>((*iterator)->node);
             if (poly_type == "cube") {
                 Var vx(cur_id, index, pn->x);
                 Var vy(cur_id+1, index, pn->y);
                 Var vz(cur_id+2, index, pn->z);
-                all_vars.push_back(vx);
-                all_vars.push_back(vy);
-                all_vars.push_back(vz);
+                all_vars.push_back(&vx);
+                all_vars.push_back(&vy);
+                all_vars.push_back(&vz);
                 std::vector<int> var_ids;
                 var_ids.push_back(cur_id);
                 var_ids.push_back(cur_id+1);
@@ -68,7 +146,7 @@ void DMSolver::gather_vars() {
                 nids.push_back(index);
             } else if (poly_type == "sphere") {
                 Var vr(cur_id, index, pn->r1);
-                all_vars.push_back(vr);
+                all_vars.push_back(&vr);
                 std::vector<int> var_ids;
                 var_ids.push_back(cur_id);
                 shape_var_dict.insert(std::pair<int, std::vector<int>>(index, var_ids));
@@ -79,9 +157,9 @@ void DMSolver::gather_vars() {
                 Var vh(cur_id, index, pn->h);
                 Var vr1(cur_id+1, index, pn->r1);
                 Var vr2(cur_id+2, index, pn->r2);
-                all_vars.push_back(vh);
-                all_vars.push_back(vr1);
-                all_vars.push_back(vr2);
+                all_vars.push_back(&vh);
+                all_vars.push_back(&vr1);
+                all_vars.push_back(&vr2);
                 std::vector<int> var_ids;
                 var_ids.push_back(cur_id);
                 var_ids.push_back(cur_id+1);
@@ -101,7 +179,7 @@ void DMSolver::gather_vars() {
     var_count = (int)all_vars.size();
     std::vector<double> init_vals;
     for (int i = 0; i < var_count; i++) {
-        init_vals.push_back(all_vars[i]._cur_val);
+        init_vals.push_back(all_vars[i]->_cur_val);
     }
     sigma_0 = Eigen::Map<Eigen::VectorXd>(init_vals.data(), init_vals.size());  
 }  
@@ -159,28 +237,63 @@ Eigen::VectorXd DMSolver::pack_vars(tree_hnode* temp_tree) {
     edited_vars = Eigen::Map<Eigen::VectorXd>(edited_vals.data(), edited_vals.size());  
     return edited_vars;
 }
+void DMSolver::clear() {
+    all_constraints.clear();
+    all_vars.clear();
+}
+
+void DMSolver::compile() {
+    var_count = (int)all_vars.size();
+    int n_constraints = all_constraints.size();
+    for (int c = 0; c < n_constraints; c++) {
+        all_constraints[c]->save_indices();
+    }
+}
 
 int DMSolver::num_vars() { return var_count; }
 int DMSolver::num_constraints() { return (int)all_constraints.size(); }
 
 // tmp fixed function for constraints.
 void DMSolver::analyze_constraints() {
-    int shape0 = 2; // 4;
-    int shape1 = 4; //10;
-    // x
-    int s0_id = shape_var_dict[shape0][0];
-    int s1_id = shape_var_dict[shape1][0];
-    std::cout << "s0_x_id : " << s0_id << std::endl;
-    std::cout << "s1_x_id : " << s1_id << std::endl;
-    EqualNumConsts *encont = new EqualNumConsts(all_vars[s0_id], all_vars[s1_id]);
-    all_constraints.push_back(encont);
-    // y
-    s0_id = shape_var_dict[shape0][1];
-    s1_id = shape_var_dict[shape1][1];
-    std::cout << "s0_x_id : " << s0_id << std::endl;
-    std::cout << "s1_x_id : " << s1_id << std::endl;  
-    EqualNumConsts *encout2 = new EqualNumConsts(all_vars[s0_id], all_vars[s1_id]);
-    all_constraints.push_back(encout2);
+    // int shape0 = 2; // 4;
+    // int shape1 = 4; //10;   
+    // // x
+    // int s0_id = shape_var_dict[shape0][0];
+    // int s1_id = shape_var_dict[shape1][0];
+    // std::cout << "s0_x_id : " << s0_id << std::endl;
+    // std::cout << "s1_x_id : " << s1_id << std::endl;
+    // EqualNumConsts *encont = new EqualNumConsts(all_vars[s0_id], all_vars[s1_id]);
+    // all_constraints.push_back(encont);
+    // // y
+    // s0_id = shape_var_dict[shape0][1];
+    // s1_id = shape_var_dict[shape1][1];
+    // std::cout << "s0_x_id : " << s0_id << std::endl;
+    // std::cout << "s1_x_id : " << s1_id << std::endl;  
+    // EqualNumConsts *encout2 = new EqualNumConsts(all_vars[s0_id], all_vars[s1_id]);
+    // all_constraints.push_back(encout2);
+}
+
+void DMSolver::add_variable(Var *_v) {
+    int cur_idx = (int)this->all_vars.size();
+    this->all_vars.push_back(_v);
+    _v->_solver_id = cur_idx;
+}
+
+// add variable at the same time...
+void DMSolver::add_constraint(Constraint *_const) {
+    all_constraints.push_back(_const);
+    for (auto V : _const->variables()) {
+    // for (int i = 0; i < _const->num_vars(); i++) {
+        this->add_variable(V);
+    }
+}  
+
+void DMSolver::add_constraints(std::vector<Constraint*> consts) {
+    int cont_size = (int)consts.size();
+    for (int i = 0; i < cont_size; i++) {
+        add_constraint(consts[i]);
+    }
+
 }
 
 void DMSolver::load_constraint_jacobian() {

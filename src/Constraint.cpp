@@ -1,11 +1,11 @@
-#include "Constraints.h"
+#include "Constraint.h"
 
 
-Constraints::Constraints() {
+Constraint::Constraint() {
     _num_eqs = 0;
     _num_vars = 0;
 }
-Constraints::~Constraints() {}
+Constraint::~Constraint() {}
 
 
 ////////////////////////////////////////////
@@ -28,6 +28,11 @@ EqualNumConsts::EqualNumConsts(Var a, Var b, double tar_val) {
 }
 
 EqualNumConsts::~EqualNumConsts() {}
+void EqualNumConsts::save_indices() {
+    // for (int v = 0; v < _variables.size(); v++) {
+    //     _indices.push_back(_variables[v]->_solver_id);
+    // }
+}
 
 void EqualNumConsts::write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos) {
     // sm1.coeffRef(i,j) = v_ij
@@ -53,6 +58,11 @@ void EqualNumConsts::accumulate_enforcement_grad(float step_size, Eigen::VectorX
     std::cout << "grad inside : " << std::endl;
     std::cout << grad << std::endl;
 }
+
+std::vector<Var*> EqualNumConsts::variables() {
+
+}
+
 // int EqualNumConsts::num_eqs() {
 //     return 1;
 // }
@@ -93,6 +103,10 @@ void EqualPtsConsts::write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd po
 
 void EqualPtsConsts::accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos) {
 }
+void EqualPtsConsts::save_indices() {}
+std::vector<Var*> EqualPtsConsts::variables() {
+
+}
 
 
 // ////////////////////////////////////////////
@@ -110,4 +124,10 @@ void ParallelLineConsts::write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorX
 
 void ParallelLineConsts::accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos) {
  
+}
+
+void ParallelLineConsts::save_indices() {}
+
+std::vector<Var*> ParallelLineConsts::variables() {
+
 }

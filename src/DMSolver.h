@@ -8,7 +8,7 @@
 #include "iTree.h"
 // #include "DMAnalyzer.h"
 #include "Var.h"
-#include "Constraints.h"
+#include "Constraint.h"
 
 // class Constraints;
 // class EqualNumConsts;
@@ -38,15 +38,24 @@ public:
     ~DMSolver();
     void set_tree(tree_hnode* tree);
     void gather_vars(); 
+    void prepare_vars();
+
     int num_vars();
     // void add_constraints(std::vector<Constraints> conts);
-    void add_constraint(Constraints *cont);
+    void add_constraint(Constraint *cont);
+    void add_constraints(std::vector<Constraint*> conts);
+    
+    void add_variable(Var *_v);
     // temp function
     void analyze_constraints();
     // DMAnalyzer *analyzer;
     int num_constraints();
 
     void load_constraint_jacobian();
+    
+    void compile();
+    void clear();
+
 
     Eigen::VectorXd solve_ff(Eigen::VectorXd desired_sigma);
     // Use the gradient of constraints to snap to the constraint manifold
@@ -60,9 +69,10 @@ public:
     SpMat* jac_mat;
 
     int var_count;
-    std::vector<Var> all_vars;
+
     // Given node id -> fetch the var ids in the var array
     std::map<int, std::vector<int>> shape_var_dict;
     std::map<int, Eigen::Vector3d> shape_origin_dict;
-    std::vector<Constraints*> all_constraints;
+    std::vector<Constraint*> all_constraints;
+    std::vector<Var*> all_vars;
 };

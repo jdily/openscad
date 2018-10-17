@@ -1266,7 +1266,8 @@ void MainWindow::instantiateRoot()
 			static_cast<MyDMEditor*>(this->editor)->set_shape_tree(this->main_tree);
 			static_cast<MyDMEditor*>(this->editor)->set_solver(this->m_solver);
 
-			this->m_solver->gather_vars();
+			// this->m_solver->gather_vars();
+			this->m_solver->prepare_vars();
 			// [CMT] analyze constraints now use hardcoded id so it will brings crash. 
 			// [CMT] ignore it first.
 			// this->m_solver->analyze_constraints();

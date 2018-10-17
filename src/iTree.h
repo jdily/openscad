@@ -19,6 +19,7 @@
 #include "stree.h"
 typedef boost::square_topology<boost::mt19937>::point_type topo_point;
 #include "EditorLoc.h"
+#include "Var.h"
 // class graphConverter;
 
 // struct Node {
@@ -90,7 +91,9 @@ struct hnode {
     Eigen::Vector3d origin;
     Transform3d transform;
     EditorLoc loc;
-    // check for LFD feature
+    // for DM optimization
+    // std::vector<Var> vars;
+    std::map<std::string, Var> var_dict;
 };
 
 class iTree {
