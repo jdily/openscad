@@ -27,8 +27,9 @@ void DMSolver::prepare_vars() {
     while (iterator != shape_tree->end()) {
         std::string type = (*iterator)->type;
         int index = (*iterator)->idx;
-        shape_node_dict.insert(std::pair<int, hnode*>(index, (*iterator)));
-
+        // if (index == 4) {
+        //     break;
+        // }
         if (type == "poly") {
             std::string poly_type = (*iterator)->node->name();
             std::cout << "poly type : " << poly_type << std::endl;
@@ -49,29 +50,41 @@ void DMSolver::prepare_vars() {
             shape_origin_dict.insert(std::pair<int, Eigen::Vector3d>(index, cur_o));
 
             const PrimitiveNode *pn = dynamic_cast<const PrimitiveNode*>((*iterator)->node);
+            // Check here.
             if (poly_type == "cube") {
-                Var vx(index, pn->x, false);
-                Var vy(index, pn->y, false);
-                Var vz(index, pn->z, false);
-                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("x", &vx));
-                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("y", &vy));
-                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("z", &vz));
+                Var *vx = new Var(index, pn->x, false);
+                Var *vy = new Var(index, pn->y, false);
+                Var *vz = new Var(index, pn->z, false);
+                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("x", vx));
+                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("y", vy));
+                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("z", vz));
             } else if (poly_type == "sphere") {
-                Var vr(index, pn->r1, false);
-                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("r1", &vr));
+                Var *vr = new Var(index, pn->r1, false);
+                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("r1", vr));
             } else if (poly_type == "cylinder") {
-                Var vh(index, pn->h, false);
-                Var vr1(index, pn->r1, false);
-                Var vr2(index, pn->r2, false);
-                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("h", &vh));
-                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("r1", &vr1));
-                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("r2", &vr2));
+                Var *vh = new Var(index, pn->h, false);
+                Var *vr1 = new Var(index, pn->r1, false);
+                Var *vr2 = new Var(index, pn->r2, false);
+                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("h", vh));
+                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("r1", vr1));
+                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("r2", vr2));
             } else if (poly_type == "polyhedron") {
 
-            } 
+            }
+            shape_node_dict.insert(std::pair<int, hnode*>(index, (*iterator)));
         }
+        
         ++iterator;
     }
+    for (std::map<int,hnode*>::iterator it=shape_node_dict.begin(); it!=shape_node_dict.end(); ++it) {
+        std::cout << "index : " << it->first << std::endl;
+        // if (it->first)
+        std::cout << it->second->var_dict["x"]->_shape_id << std::endl;
+        std::cout << it->second->var_dict["x"]->_solver_id << std::endl;
+        std::cout << it->second->var_dict["x"]->_cur_val << std::endl;
+    }
+
+
 }
 
 void DMSolver::gather_vars() {
@@ -239,10 +252,30 @@ int DMSolver::num_constraints() { return (int)all_constraints.size(); }
 void DMSolver::analyze_constraints() {
     int shape0 = 2; // 4;
     int shape1 = 4; //10;
+
+    // 
+    std::cout << "2 : " << shape_node_dict[shape0]->idx << std::endl;
+    std::cout << "4 : " << shape_node_dict[shape1]->idx << std::endl;
+
+    // test
+    std::cout << "2_x : " << shape_node_dict[shape0]->var_dict["x"]->_shape_id << std::endl;
+    std::cout << "2_x solver : " << shape_node_dict[shape0]->var_dict["x"]->_solver_id << std::endl;
+
+    std::cout << "4_x : " << shape_node_dict[shape1]->var_dict["x"]->_shape_id << std::endl;
+    std::cout << "4_x solver : " << shape_node_dict[shape1]->var_dict["x"]->_solver_id << std::endl;
+
+
     EqualNumConsts *cont1 = new EqualNumConsts(shape_node_dict[shape0]->var_dict["x"], shape_node_dict[shape1]->var_dict["x"]);
-    this->add_constraint(cont1); 
+    this->add_constraint(cont1);
 
     std::cout << "num of variable : " << this->all_vars.size() << std::endl;
+    // for (int i = 0; i < this->all_vars.size(); i++) {
+        // std::cout << all_vars[i]->_solver_id << std::endl;
+    // }
+    std::cout << all_vars[0]->_shape_id << std::endl;
+    std::cout << all_vars[1]->_shape_id << std::endl;
+
+
     // // x
     // int s0_id = shape_var_dict[shape0][0];
     // int s1_id = shape_var_dict[shape1][0];
@@ -261,8 +294,11 @@ void DMSolver::analyze_constraints() {
 
 void DMSolver::add_variable(Var *_v) {
     int cur_idx = (int)this->all_vars.size();
-    this->all_vars.push_back(_v);
+    std::cout << "cur_idx : " << cur_idx << std::endl;
     _v->_solver_id = cur_idx;
+    std::cout << "v solver id : " << _v->_solver_id << std::endl;
+    std::cout << "v shape id : " << _v->_shape_id << std::endl;
+    this->all_vars.push_back(_v);
 }
 
 // add variable at the same time...
