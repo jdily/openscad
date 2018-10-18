@@ -27,6 +27,8 @@ void DMSolver::prepare_vars() {
     while (iterator != shape_tree->end()) {
         std::string type = (*iterator)->type;
         int index = (*iterator)->idx;
+        shape_node_dict.insert(std::pair<int, hnode*>(index, (*iterator)));
+
         if (type == "poly") {
             std::string poly_type = (*iterator)->node->name();
             std::cout << "poly type : " << poly_type << std::endl;
@@ -36,7 +38,7 @@ void DMSolver::prepare_vars() {
             std::cout << "show the location of node " << index << std::endl;
             std::cout << loc.firstLine() << " " << loc.firstColumn() << " " << loc.lastLine() << " " << loc.lastColumn() << std::endl; 
             Eigen::Matrix4d m = (*iterator)->transform.matrix();
-            // std::cout << m << std::endl;
+            std::cout << m << std::endl;
             Eigen::Vector4d o(0.0, 0.0, 0.0, 1.0);
             o = m*o;
             o[0] /= o[3];
@@ -51,39 +53,19 @@ void DMSolver::prepare_vars() {
                 Var vx(index, pn->x, false);
                 Var vy(index, pn->y, false);
                 Var vz(index, pn->z, false);
-                (*iterator)->var_dict.insert(std::pair<std::string, Var>("x", vx));
-                (*iterator)->var_dict.insert(std::pair<std::string, Var>("y", vy));
-                (*iterator)->var_dict.insert(std::pair<std::string, Var>("z", vz));
-
-                // all_vars.push_back(vx);
-                // all_vars.push_back(vy);
-                // all_vars.push_back(vz);
-                // std::vector<int> var_ids;
-                // var_ids.push_back(cur_id);
-                // var_ids.push_back(cur_id+1);
-                // var_ids.push_back(cur_id+2);
-                // shape_var_dict.insert(std::pair<int, std::vector<int>>(index, var_ids));
-                // cur_id += 3;
-                // nids.push_back(index);
-                // nids.push_back(index);
-                // nids.push_back(index);
+                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("x", &vx));
+                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("y", &vy));
+                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("z", &vz));
             } else if (poly_type == "sphere") {
                 Var vr(index, pn->r1, false);
-                (*iterator)->var_dict.insert(std::pair<std::string, Var>("r1", vr));
-                // all_vars.push_back(vr);
-                // std::vector<int> var_ids;
-                // var_ids.push_back(cur_id);
-                // shape_var_dict.insert(std::pair<int, std::vector<int>>(index, var_ids));
-                // cur_id += 1;
-                // // params.push_back(pn->r1);
-                // nids.push_back(index);
+                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("r1", &vr));
             } else if (poly_type == "cylinder") {
                 Var vh(index, pn->h, false);
                 Var vr1(index, pn->r1, false);
                 Var vr2(index, pn->r2, false);
-                (*iterator)->var_dict.insert(std::pair<std::string, Var>("h", vh));
-                (*iterator)->var_dict.insert(std::pair<std::string, Var>("r1", vr1));
-                (*iterator)->var_dict.insert(std::pair<std::string, Var>("r2", vr2));
+                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("h", &vh));
+                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("r1", &vr1));
+                (*iterator)->var_dict.insert(std::pair<std::string, Var*>("r2", &vr2));
             } else if (poly_type == "polyhedron") {
 
             } 
@@ -255,8 +237,12 @@ int DMSolver::num_constraints() { return (int)all_constraints.size(); }
 
 // tmp fixed function for constraints.
 void DMSolver::analyze_constraints() {
-    // int shape0 = 2; // 4;
-    // int shape1 = 4; //10;   
+    int shape0 = 2; // 4;
+    int shape1 = 4; //10;
+    EqualNumConsts *cont1 = new EqualNumConsts(shape_node_dict[shape0]->var_dict["x"], shape_node_dict[shape1]->var_dict["x"]);
+    this->add_constraint(cont1); 
+
+    std::cout << "num of variable : " << this->all_vars.size() << std::endl;
     // // x
     // int s0_id = shape_var_dict[shape0][0];
     // int s1_id = shape_var_dict[shape1][0];

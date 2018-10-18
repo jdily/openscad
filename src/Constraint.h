@@ -34,8 +34,8 @@ class EqualNumConsts : public Constraint {
 public:
     // arguments should be the variable position (idx)
     EqualNumConsts();
-    EqualNumConsts(Var a, Var b);
-    EqualNumConsts(Var a, Var b, double tar_val);
+    EqualNumConsts(Var* a, Var* b);
+    // EqualNumConsts(Var* a, Var* b, double tar_val);
     ~EqualNumConsts();
 
     void write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos);
@@ -45,8 +45,8 @@ public:
     std::vector<Var*> variables();
     // int num_eqs() { return _num_eqs; }
     // int num_vars() { return _num_vars; }
-    Var _a;
-    Var _b;
+    Var* _a;
+    Var* _b;
     double _tar_val;
 };
 
@@ -54,15 +54,15 @@ class EqualPtsConsts : public Constraint {
 public:
     EqualPtsConsts();
     // ws is used to specify which point to align
-    EqualPtsConsts(std::vector<Var> as, std::vector<Var> bs, std::vector<float> ws_a, std::vector<float> ws_b);
+    EqualPtsConsts(std::vector<Var*> as, std::vector<Var*> bs, std::vector<float> ws_a, std::vector<float> ws_b);
     ~EqualPtsConsts();
 
     void write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos);
     void accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos);
     void save_indices();
     std::vector<Var*> variables(); 
-    std::vector<Var> _as;
-    std::vector<Var> _bs;
+    std::vector<Var*> _as;
+    std::vector<Var*> _bs;
     std::vector<float> ws_a;
     std::vector<float> ws_b;
 };
@@ -81,9 +81,15 @@ public:
 class AlignPoint2DConsts : public Constraint {
 public:
     AlignPoint2DConsts();
+    AlignPoint2DConsts(std::vector<Var*> vas, std::vector<Var*> vbs, std::vector<float> ws_a, std::vector<float> ws_b, std::vector<Var*> measurement);
     ~AlignPoint2DConsts();
     void write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos);
     void accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos);
     void save_indices();
     std::vector<Var*> variables();
+    std::vector<Var*> _as;
+    std::vector<Var*> _bs;
+    std::vector<float> ws_a;
+    std::vector<float> ws_b;
+    std::vector<Var*> _meas;
 };

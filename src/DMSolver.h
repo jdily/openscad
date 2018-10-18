@@ -73,6 +73,7 @@ public:
     // Given node id -> fetch the var ids in the var array
     std::map<int, std::vector<int>> shape_var_dict;
     std::map<int, Eigen::Vector3d> shape_origin_dict;
+    std::map<int, hnode*> shape_node_dict;
     std::vector<Constraint*> all_constraints;
     std::vector<Var*> all_vars;
 };

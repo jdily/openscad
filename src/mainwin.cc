@@ -1270,7 +1270,7 @@ void MainWindow::instantiateRoot()
 			this->m_solver->prepare_vars();
 			// [CMT] analyze constraints now use hardcoded id so it will brings crash. 
 			// [CMT] ignore it first.
-			// this->m_solver->analyze_constraints();
+			this->m_solver->analyze_constraints();
 			// std::cout << "there are " << this->m_solver->var_count << " vars in the solver." << std::endl;
 			// std::cout << "there are " << this->m_solver->num_constraints() << " constraints in the solver." << std::endl;
 			// this->m_solver->load_constraint_jacobian();

@@ -93,7 +93,7 @@ struct hnode {
     EditorLoc loc;
     // for DM optimization
     // std::vector<Var> vars;
-    std::map<std::string, Var> var_dict;
+    std::map<std::string, Var*> var_dict;
 };
 
 class iTree {
