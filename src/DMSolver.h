@@ -51,9 +51,10 @@ public:
     // DMAnalyzer *analyzer;
     int num_constraints();
 
-    void load_constraint_jacobian();
-    
+    SpMat* load_constraint_jacobian(Eigen::VectorXd pos);
+    Eigen::VectorXd load_position();
     void compile();
+    
     void clear();
 
 
@@ -66,9 +67,11 @@ public:
     tree_hnode* shape_tree;
     // refer to the Lilicon symbols
     Eigen::VectorXd sigma_0;
-    SpMat* jac_mat;
+    // SpMat* jac_mat;
 
-    int var_count;
+    int n_vars;
+    int n_constraints;
+    bool is_compiled;
 
     // Given node id -> fetch the var ids in the var array
     std::map<int, std::vector<int>> shape_var_dict;

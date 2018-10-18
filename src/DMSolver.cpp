@@ -2,14 +2,23 @@
 #include "primitives.h"
 #include "ModuleInstantiation.h"
 
-DMSolver::DMSolver() {}
-DMSolver::DMSolver(tree_hnode* tree) : shape_tree(tree) {}
+DMSolver::DMSolver() {
+    is_compiled = false;
+    n_vars = 0;
+    n_constraints = 0;
+}
+DMSolver::DMSolver(tree_hnode* tree) : shape_tree(tree) {
+    is_compiled = false;
+    n_vars = 0;
+    n_constraints = 0;
+}
 DMSolver::~DMSolver() {}
 
 void DMSolver::set_tree(tree_hnode* tree) {
     shape_tree = tree;
-    var_count = 0;
+    n_vars = 0;
     all_vars.clear();
+    // n_constraints = 0;
 }
 
 void DMSolver::prepare_vars() {
@@ -76,15 +85,6 @@ void DMSolver::prepare_vars() {
         
         ++iterator;
     }
-    for (std::map<int,hnode*>::iterator it=shape_node_dict.begin(); it!=shape_node_dict.end(); ++it) {
-        std::cout << "index : " << it->first << std::endl;
-        // if (it->first)
-        std::cout << it->second->var_dict["x"]->_shape_id << std::endl;
-        std::cout << it->second->var_dict["x"]->_solver_id << std::endl;
-        std::cout << it->second->var_dict["x"]->_cur_val << std::endl;
-    }
-
-
 }
 
 void DMSolver::gather_vars() {
@@ -171,9 +171,9 @@ void DMSolver::gather_vars() {
         ++iterator;
     }
     // record total params length
-    var_count = (int)all_vars.size();
+    n_vars = (int)all_vars.size();
     std::vector<double> init_vals;
-    for (int i = 0; i < var_count; i++) {
+    for (int i = 0; i < n_vars; i++) {
         init_vals.push_back(all_vars[i]->_cur_val);
     }
     sigma_0 = Eigen::Map<Eigen::VectorXd>(init_vals.data(), init_vals.size());  
@@ -235,46 +235,34 @@ Eigen::VectorXd DMSolver::pack_vars(tree_hnode* temp_tree) {
 void DMSolver::clear() {
     all_constraints.clear();
     all_vars.clear();
+    n_vars = 0;
+    n_constraints = 0;
+    is_compiled = false;
 }
 
 void DMSolver::compile() {
-    var_count = (int)all_vars.size();
-    int n_constraints = all_constraints.size();
-    for (int c = 0; c < n_constraints; c++) {
-        all_constraints[c]->save_indices();
+    if (is_compiled) {
+        std::cout << "solver already compiled" << std::endl;
+    } else {
+        n_vars = (int)all_vars.size();
+        n_constraints = (int)all_constraints.size();
+        int n_constraints = all_constraints.size();
+        for (int c = 0; c < n_constraints; c++) {
+            all_constraints[c]->save_indices();
+        }
+        is_compiled = true; 
     }
 }
 
-int DMSolver::num_vars() { return var_count; }
+int DMSolver::num_vars() { return n_vars; }
 int DMSolver::num_constraints() { return (int)all_constraints.size(); }
 
 // tmp fixed function for constraints.
 void DMSolver::analyze_constraints() {
     int shape0 = 2; // 4;
     int shape1 = 4; //10;
-
-    // 
-    std::cout << "2 : " << shape_node_dict[shape0]->idx << std::endl;
-    std::cout << "4 : " << shape_node_dict[shape1]->idx << std::endl;
-
-    // test
-    std::cout << "2_x : " << shape_node_dict[shape0]->var_dict["x"]->_shape_id << std::endl;
-    std::cout << "2_x solver : " << shape_node_dict[shape0]->var_dict["x"]->_solver_id << std::endl;
-
-    std::cout << "4_x : " << shape_node_dict[shape1]->var_dict["x"]->_shape_id << std::endl;
-    std::cout << "4_x solver : " << shape_node_dict[shape1]->var_dict["x"]->_solver_id << std::endl;
-
-
     EqualNumConsts *cont1 = new EqualNumConsts(shape_node_dict[shape0]->var_dict["x"], shape_node_dict[shape1]->var_dict["x"]);
     this->add_constraint(cont1);
-
-    std::cout << "num of variable : " << this->all_vars.size() << std::endl;
-    // for (int i = 0; i < this->all_vars.size(); i++) {
-        // std::cout << all_vars[i]->_solver_id << std::endl;
-    // }
-    std::cout << all_vars[0]->_shape_id << std::endl;
-    std::cout << all_vars[1]->_shape_id << std::endl;
-
 
     // // x
     // int s0_id = shape_var_dict[shape0][0];
@@ -294,10 +282,10 @@ void DMSolver::analyze_constraints() {
 
 void DMSolver::add_variable(Var *_v) {
     int cur_idx = (int)this->all_vars.size();
-    std::cout << "cur_idx : " << cur_idx << std::endl;
+    // std::cout << "cur_idx : " << cur_idx << std::endl;
     _v->_solver_id = cur_idx;
-    std::cout << "v solver id : " << _v->_solver_id << std::endl;
-    std::cout << "v shape id : " << _v->_shape_id << std::endl;
+    // std::cout << "v solver id : " << _v->_solver_id << std::endl;
+    // std::cout << "v shape id : " << _v->_shape_id << std::endl;
     this->all_vars.push_back(_v);
 }
 
@@ -318,20 +306,31 @@ void DMSolver::add_constraints(std::vector<Constraint*> consts) {
 
 }
 
-void DMSolver::load_constraint_jacobian() {
-    if (jac_mat == nullptr) {
-        jac_mat = new SpMat(all_constraints.size(), var_count);
-        // should be 0
-        std::cout << "init, nonzero count : " << jac_mat->nonZeros() << std::endl; 
-        int row_i = 0;
-        for (int i = 0; i < num_constraints(); i++) {
-            std::cout << i << " add constraint jacobian " << std::endl;
-            all_constraints[i]->write_jacobian(jac_mat, row_i, sigma_0);  
-            row_i += all_constraints[i]->num_eqs();
-        }
-        std::cout << "after, nonzero count : " << jac_mat->nonZeros() << std::endl; 
-        std::cout << "jacobian shape : " << jac_mat->rows() << " " << jac_mat->cols() << std::endl;
+SpMat* DMSolver::load_constraint_jacobian(Eigen::VectorXd pos) {
+    // if (jac_mat == nullptr) {
+    SpMat *out = new SpMat(n_constraints, n_vars);
+    std::cout << "init, nonzero count : " << out->nonZeros() << std::endl; 
+
+    //     jac_mat = new SpMat(all_constraints.size(), var_count);
+    //     // should be 0
+    //     std::cout << "init, nonzero count : " << jac_mat->nonZeros() << std::endl; 
+    int row_i = 0;
+    for (int i = 0; i < n_constraints; i++) {
+        std::cout << i << " add constraint jacobian " << std::endl;
+        all_constraints[i]->write_jacobian(out, row_i, pos);
+        row_i += all_constraints[i]->num_eqs();
     }
+    std::cout << "after, nonzero count : " << out->nonZeros() << std::endl; 
+    std::cout << "jacobian shape : " << out->rows() << " " << out->cols() << std::endl;
+    return out;
+}
+
+Eigen::VectorXd DMSolver::load_position() {
+    Eigen::VectorXd pos(n_vars);
+    for (int i = 0; i < all_vars.size(); i++) {
+        pos[i] = all_vars[i]->_init_val;
+    }
+    return pos;
 }
 // int DMSolver::var_c
 
@@ -339,35 +338,54 @@ void DMSolver::load_constraint_jacobian() {
 
 Eigen::VectorXd DMSolver::solve_ff(Eigen::VectorXd desired_sigma) {
     std::cout << "solve ff " << std::endl;
-    Eigen::VectorXd ideal_sigma = Eigen::VectorXd::Zero(var_count);
+    if (!is_compiled) {
+        this->compile();
+    }
+    // [tmp] should be 2
+    Eigen::VectorXd out;
+    Eigen::VectorXd init_pos = this->load_position();
+    // load jacobian..
+    // [tmp] should be 1x2
+    SpMat *jac_mat = this->load_constraint_jacobian(init_pos);
+
+    Eigen::VectorXd ideal_sigma = Eigen::VectorXd::Zero(n_vars);
+
+    // first manuaully set the vars from the outside 
+    // deal with the editor things later.
+    Eigen::VectorXd _d_sigma = Eigen::VectorXd::Zero(n_vars);
+    _d_sigma[0] = desired_sigma[0];
+    _d_sigma[1] = desired_sigma[3];
+    std::cout << _d_sigma << std::endl;
+
     // compute the force here, not outside..
-    Eigen::VectorXd delta = desired_sigma - sigma_0;
-    std::cout << delta << std::endl;
-    Eigen::VectorXd rhs = Eigen::VectorXd::Zero(all_constraints.size());
+    Eigen::VectorXd delta = _d_sigma - init_pos;
+    // // Eigen::VectorXd delta = desired_sigma - sigma_0;
+    // std::cout << delta << std::endl;
+    Eigen::VectorXd rhs = Eigen::VectorXd::Zero(n_constraints);
     Eigen::MatrixXd dense_jac((*jac_mat));
-    std::cout << "jacobian : " << std::endl;
-    std::cout << dense_jac << std::endl;
-    // rhs = (*jac_mat)*sigma_0;
-    std::cout << "sigma_0 : " << std::endl;
-    std::cout << sigma_0 << std::endl;
-    // TODO : debug if this is jac*sigma_0 or jac*ideal_force
-    // rhs = dense_jac*sigma_0;
+    // std::cout << "jacobian : " << std::endl;
+    // std::cout << dense_jac << std::endl;
+    // // rhs = (*jac_mat)*sigma_0;
+    // std::cout << "sigma_0 : " << std::endl;
+    // std::cout << sigma_0 << std::endl;
+    // // TODO : debug if this is jac*sigma_0 or jac*ideal_force
+    // // rhs = dense_jac*sigma_0;
     rhs = dense_jac*delta;
-    std::cout << "rhs : " << std::endl;
-    std::cout << rhs << std::endl;
-    // negate or not
-    // rhs *= -1.0;
-    // lagrange_multiplier
-    Eigen::VectorXd lag_multi = Eigen::VectorXd::Zero(all_constraints.size());
+    // std::cout << "rhs : " << std::endl;
+    // std::cout << rhs << std::endl;
+    // // negate or not
+    // // rhs *= -1.0;
+    // // lagrange_multiplier
+    Eigen::VectorXd lag_multi = Eigen::VectorXd::Zero(n_constraints);
     // solve for X: (A * A^t) * X = B
     SpMat Jt = (jac_mat->transpose());
     SpMat JJt = (*jac_mat)*(Jt);
     Eigen::MatrixXd dJt = dense_jac.transpose();
     Eigen::MatrixXd dJJt = dense_jac*Jt;
-    std::cout << "dJt : " << std::endl;
-    std::cout << dJt << std::endl;
-    std::cout << "dJJt : " << std::endl;
-    std::cout << dJJt << std::endl;
+    // std::cout << "dJt : " << std::endl;
+    // std::cout << dJt << std::endl;
+    // std::cout << "dJJt : " << std::endl;
+    // std::cout << dJJt << std::endl;
 
     Eigen::ConjugateGradient<SpMat, Eigen::Upper> cgsolver;
     lag_multi = cgsolver.compute(JJt).solve(rhs);
@@ -375,8 +393,8 @@ Eigen::VectorXd DMSolver::solve_ff(Eigen::VectorXd desired_sigma) {
     std::cout << "ideal sigma : " << std::endl;
     std::cout << ideal_sigma << std::endl;
     // closest output 
-    Eigen::VectorXd out = sigma_0 + ideal_sigma;
-
+    // out = sigma_0 + ideal_sigma;
+    out = init_pos + ideal_sigma;
     std::cout << "out : " << std::endl;
     std::cout << out << std::endl;
     return out;
@@ -384,7 +402,7 @@ Eigen::VectorXd DMSolver::solve_ff(Eigen::VectorXd desired_sigma) {
 
 Eigen::VectorXd DMSolver::snap_constraints(Eigen::VectorXd cur_vals) {
     std::cout << "snap to constraints using gradient descent" << std::endl;
-    Eigen::VectorXd grad = Eigen::VectorXd::Zero(var_count);
+    Eigen::VectorXd grad = Eigen::VectorXd::Zero(n_vars);
     float step_size = 0.49; // This is a crude tool here.  Can do better...
     int num_steps = 5;
     Eigen::VectorXd vals = cur_vals;
@@ -398,7 +416,7 @@ Eigen::VectorXd DMSolver::snap_constraints(Eigen::VectorXd cur_vals) {
         }
         std::cout << "grad : " << std::endl;
         std::cout << grad << std::endl;
-        for (int k = 0; k < var_count; k++) {
+        for (int k = 0; k < n_vars; k++) {
             vals[k] += grad[k];
         }
     }

@@ -329,16 +329,20 @@ void MyDMEditor::opt_mani_val(double new_val) {
 			std::cout << edited_vars[i] << " ";
 		}
 		std::cout << std::endl;
-		Eigen::VectorXd force = edited_vars - this->m_solver->sigma_0;
-		for (int i = 0; i < force.size(); i++) {
-			std::cout << force[i] << " ";
-		}
-		std::cout << std::endl;
+		// Eigen::VectorXd force = edited_vars - this->m_solver->sigma_0;
+		// for (int i = 0; i < force.size(); i++) {
+		// 	std::cout << force[i] << " ";
+		// }
+		// std::cout << std::endl;
 		// fast linear solve
 		Eigen::VectorXd sol = this->m_solver->solve_ff(edited_vars);
+		// TODO : have to fix the variable value mapping issue...
+		write_opted_val(sol);
+
+		
 		// snap back to the manifold.
-		Eigen::VectorXd snapped_sol = this->m_solver->snap_constraints(sol);
-		write_opted_val(snapped_sol);
+		// Eigen::VectorXd snapped_sol = this->m_solver->snap_constraints(sol);
+		// write_opted_val(snapped_sol);
 	}
 	// check if the tree and solver are set?
 	// if (this->shape_tree == nullptr) {
