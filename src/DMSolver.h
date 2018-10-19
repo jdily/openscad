@@ -53,6 +53,8 @@ public:
 
     SpMat* load_constraint_jacobian(Eigen::VectorXd pos);
     Eigen::VectorXd load_position();
+    void store_position(Eigen::VectorXd pos);
+    Eigen::VectorXd extract_values();
     void compile();
     
     void clear();

@@ -303,7 +303,6 @@ void DMSolver::add_constraints(std::vector<Constraint*> consts) {
     for (int i = 0; i < cont_size; i++) {
         add_constraint(consts[i]);
     }
-
 }
 
 SpMat* DMSolver::load_constraint_jacobian(Eigen::VectorXd pos) {
@@ -323,6 +322,30 @@ SpMat* DMSolver::load_constraint_jacobian(Eigen::VectorXd pos) {
     std::cout << "after, nonzero count : " << out->nonZeros() << std::endl; 
     std::cout << "jacobian shape : " << out->rows() << " " << out->cols() << std::endl;
     return out;
+}
+
+// extract the values from all poly node, after store_position
+Eigen::VectorXd DMSolver::extract_values() {
+    Eigen::VectorXd out;
+    std::vector<double> out_vals;
+    for (auto it : shape_node_dict) {
+    // for (auto it = shape_node_dict.begin(); it != shape_node_dict.end(); ++it) {
+        hnode* cur_node = it.second;
+        for (auto vit : cur_node->var_dict) {
+        // for (auto vit = (*it).second.var_dict.begin(); vit != (*it).second.var_dict.end(); vit++) {
+            out_vals.push_back(vit.second->_cur_val);
+        }
+    }
+    out = Eigen::Map<Eigen::VectorXd>(out_vals.data(), out_vals.size());  
+    return out;
+}
+
+
+// store the value back to all_vars
+void DMSolver::store_position(Eigen::VectorXd pos) {
+    for (int i = 0; i < n_vars; i++) {
+        all_vars[i]->_cur_val = pos[i];
+    }
 }
 
 Eigen::VectorXd DMSolver::load_position() {
@@ -397,7 +420,11 @@ Eigen::VectorXd DMSolver::solve_ff(Eigen::VectorXd desired_sigma) {
     out = init_pos + ideal_sigma;
     std::cout << "out : " << std::endl;
     std::cout << out << std::endl;
-    return out;
+    store_position(out);
+    // assign back 
+    Eigen::VectorXd all_vals = extract_values();
+    std::cout << all_vals << std::endl;
+    return all_vals;
 }
 
 Eigen::VectorXd DMSolver::snap_constraints(Eigen::VectorXd cur_vals) {
