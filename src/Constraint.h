@@ -16,6 +16,7 @@ public:
     int num_vars() { return _num_vars; }
     virtual void write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos) = 0;
     virtual void accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos) = 0;
+    virtual double violate_distance(Eigen::VectorXd pos) = 0;
     // {
         // std::cout << "original contraints class" << std::endl;
     // }
@@ -76,6 +77,7 @@ public:
 
     void write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos);
     void accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos);
+    double violate_distance(Eigen::VectorXd pos);
     void save_indices();
     std::vector<Var*> variables(); 
     std::vector<Var*> _as;
@@ -90,6 +92,7 @@ public:
     ~ParallelLineConsts();
     void write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos);
     void accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos);
+    double violate_distance(Eigen::VectorXd pos);
     void save_indices();
     std::vector<Var*> variables();
     
@@ -103,6 +106,7 @@ public:
     void write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos);
     void accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos);
     void save_indices();
+    double violate_distance(Eigen::VectorXd pos);
     std::vector<Var*> variables();
     std::vector<Var*> _as;
     std::vector<Var*> _bs;

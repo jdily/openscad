@@ -210,13 +210,11 @@ void MyDMEditor::update_mani_val(double new_val) {
 	}
 }
 
+// [IMPORTANT TODO] change the update method -> change the var values.
 void MyDMEditor::update_params(hnode* node, std::vector<double> u_params) {
 	// type should be "poly"
 	std::string type = node->type;
 	std::string poly_type = node->node->name();
-	// modify the internal node parameters
-		// const PrimitiveNode *pn = dynamic_cast<const PrimitiveNode*>(node->node);
-		// PolySet* newps = static_cast<PolySet*>(const_cast<Geometry*>(n->geom.get()));
 	PrimitiveNode* pn = dynamic_cast<PrimitiveNode*>(const_cast<AbstractNode*>(node->node));
 		// PrimitiveNode* _pn = const_cast<const PrimitiveNode*>(pn);
 	if (poly_type == "cube") {
@@ -293,6 +291,8 @@ void MyDMEditor::write_opted_val(Eigen::VectorXd sols) {
 
 }
 
+// TODO : we want to know the edited value 's var solver_id
+
 void MyDMEditor::opt_mani_val(double new_val) {
 	std::cout << "optimized for manipulated values" << std::endl;
 	// directly on numbers
@@ -301,7 +301,6 @@ void MyDMEditor::opt_mani_val(double new_val) {
 		int str_len = new_val_str.length();
 		int change_len = (str_len - mani_val_len);
 		
-
 		std::cout << "new val str : " << new_val_str.toStdString() << " " << str_len << std::endl;
 		std::cout << "ori (mani) val str : " << mani_val_str.toStdString() << " " << mani_val_len << std::endl;
 		std::cout << "change len : " << change_len << std::endl;
@@ -337,6 +336,7 @@ void MyDMEditor::opt_mani_val(double new_val) {
 		}
 		std::cout << "updated_param_str : " << cur_param_str.toStdString() << std::endl;
 		// TODO 1 -> update the parameters in this node
+		// Change the update method into update the variable content
 		update_params(cur_selected_node, u_params);
 		// TODO 2 -> extract the force..
 		Eigen::VectorXd edited_vars = DMSolver::pack_vars(shape_tree);
@@ -345,15 +345,14 @@ void MyDMEditor::opt_mani_val(double new_val) {
 			std::cout << edited_vars[i] << " ";
 		}
 		std::cout << std::endl;
-		// Eigen::VectorXd force = edited_vars - this->m_solver->sigma_0;
-		// for (int i = 0; i < force.size(); i++) {
-		// 	std::cout << force[i] << " ";
-		// }
-		// std::cout << std::endl;
+
+		
+
+
 		// fast linear solve
 		Eigen::VectorXd sol = this->m_solver->solve_ff(edited_vars);
 		// TODO : have to fix the variable value mapping issue...
-		// write_opted_val(sol);
+		write_opted_val(sol);
 
 
 		// snap back to the manifold.

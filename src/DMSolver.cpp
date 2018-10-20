@@ -371,7 +371,6 @@ Eigen::VectorXd DMSolver::solve_ff(Eigen::VectorXd desired_sigma) {
     if (!is_compiled) {
         this->compile();
     }
-
     // // [tmp] should be 2
     Eigen::VectorXd out;
     Eigen::VectorXd all_vals;

@@ -89,7 +89,15 @@ void NumDiffConsts::write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos
 
 
 void NumDiffConsts::accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos) {
- 
+    double d = pos[_a->_solver_id] - pos[_b->_solver_id] - pos[_val->_solver_id];
+    grad[_a->_solver_id] = grad[_a->_solver_id] - step_size * d;
+    grad[_b->_solver_id] = grad[_b->_solver_id] + step_size * d;
+    grad[_val->_solver_id] = grad[_val->_solver_id] + step_size * d;
+}
+
+double NumDiffConsts:: violate_distance(Eigen::VectorXd pos) {
+    double d = pos[_a->_solver_id] - pos[_b->_solver_id] - pos[_val->_solver_id];
+    return fabs(d);
 }
 
 void NumDiffConsts::save_indices() {
@@ -147,6 +155,8 @@ std::vector<Var*> EqualPtsConsts::variables() {
     return out;
 }
 
+double EqualPtsConsts:: violate_distance(Eigen::VectorXd pos) {}
+
 // ////////////////////////////////////////////
 // // AlignPoint2DConsts
 // ////////////////////////////////////////////
@@ -169,6 +179,9 @@ void AlignPoint2DConsts::write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorX
 void AlignPoint2DConsts::accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos) {
 
 }
+
+double AlignPoint2DConsts:: violate_distance(Eigen::VectorXd pos) {}
+
 
 void AlignPoint2DConsts::save_indices() {
     for (auto v : _as) {
@@ -201,6 +214,7 @@ void ParallelLineConsts::write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorX
 
 }
 
+double ParallelLineConsts:: violate_distance(Eigen::VectorXd pos) {}
 
 
 void ParallelLineConsts::accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos) {
