@@ -74,15 +74,16 @@ NumDiffConsts::NumDiffConsts(Var* a, Var* b, Var* val) {
     _a = a;
     _b = b;
     _val = val;
+    _num_eqs = 1;
 }
 
 NumDiffConsts::~NumDiffConsts() {}
 
 void NumDiffConsts::write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos) {
     std::cout << _row << " " << _a->_solver_id << " " << _b->_solver_id << std::endl;
-    jac_mat->coeffRef(_row, _a->_solver_id) = 1;
-    jac_mat->coeffRef(_row, _b->_solver_id) = -1;
-    jac_mat->coeffRef(_row, _val->_solver_id) = -1;
+    jac_mat->coeffRef(_row, this->_indices[0]) = 1;
+    jac_mat->coeffRef(_row, this->_indices[1]) = -1;
+    jac_mat->coeffRef(_row, this->_indices[2]) = -1;
 }
 
 

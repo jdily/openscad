@@ -355,7 +355,7 @@ void MyDMEditor::opt_mani_val(double new_val) {
 		// TODO : have to fix the variable value mapping issue...
 		// write_opted_val(sol);
 
-		
+
 		// snap back to the manifold.
 		// Eigen::VectorXd snapped_sol = this->m_solver->snap_constraints(sol);
 		// write_opted_val(snapped_sol);

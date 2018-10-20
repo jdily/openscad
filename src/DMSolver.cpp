@@ -391,11 +391,14 @@ Eigen::VectorXd DMSolver::solve_ff(Eigen::VectorXd desired_sigma) {
     std::cout << desired_sigma << std::endl;
     _d_sigma[0] = desired_sigma[2];
     _d_sigma[1] = desired_sigma[5];
+    _d_sigma[2] = 1.5;
     std::cout << "d_sigma : " << std::endl;
     std::cout << _d_sigma << std::endl;
 
     // compute the force here, not outside..
     Eigen::VectorXd delta = _d_sigma - init_pos;
+    std::cout << "delta :" << std::endl;
+    std::cout << delta << std::endl;    
     // // Eigen::VectorXd delta = desired_sigma - sigma_0;
     // std::cout << delta << std::endl;
     Eigen::VectorXd rhs = Eigen::VectorXd::Zero(n_constraints);
