@@ -65,23 +65,47 @@ std::vector<Var*> EqualNumConsts::variables() {
     return out;
 }
 
-// int EqualNumConsts::num_eqs() {
-//     return 1;
-// }
-
-// int EqualNumConsts::num_vars() {
-//     return 2;
-// }
-
 // ////////////////////////////////////////////
-// // EqualPtsConsts
+// // NumDiffConsts
 // ////////////////////////////////////////////
-// int EqualPtsConsts::num_eqs() {
-//     return 2;
-// }
-// int EqualPtsConsts::num_vars() {
-//     return 4;
-// }
+NumDiffConsts::NumDiffConsts() {}
+
+NumDiffConsts::NumDiffConsts(Var* a, Var* b, Var* val) {
+    _a = a;
+    _b = b;
+    _val = val;
+}
+
+NumDiffConsts::~NumDiffConsts() {}
+
+void NumDiffConsts::write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos) {
+    std::cout << _row << " " << _a->_solver_id << " " << _b->_solver_id << std::endl;
+    jac_mat->coeffRef(_row, _a->_solver_id) = 1;
+    jac_mat->coeffRef(_row, _b->_solver_id) = -1;
+    jac_mat->coeffRef(_row, _val->_solver_id) = -1;
+}
+
+
+
+void NumDiffConsts::accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos) {
+ 
+}
+
+void NumDiffConsts::save_indices() {
+    this->_indices.push_back(_a->_solver_id);
+    this->_indices.push_back(_b->_solver_id);
+    this->_indices.push_back(_val->_solver_id);
+}
+
+std::vector<Var*> NumDiffConsts::variables() {
+    std::vector<Var*> out;
+    out.push_back(_a);
+    out.push_back(_b);
+    out.push_back(_val);
+    return out;
+}
+
+
 
 EqualPtsConsts::EqualPtsConsts() {}
 

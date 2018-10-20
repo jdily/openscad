@@ -246,6 +246,10 @@ void DMSolver::compile() {
     } else {
         n_vars = (int)all_vars.size();
         n_constraints = (int)all_constraints.size();
+
+        std::cout << "n_vars : " << n_vars << std::endl;
+        std::cout << "n_constraints : " << n_constraints << std::endl;
+
         int n_constraints = all_constraints.size();
         for (int c = 0; c < n_constraints; c++) {
             all_constraints[c]->save_indices();
@@ -262,8 +266,11 @@ void DMSolver::analyze_constraints() {
     int shape0 = 2; // 4;
     int shape1 = 4; //10;
     EqualNumConsts *cont1 = new EqualNumConsts(shape_node_dict[shape0]->var_dict["x"], shape_node_dict[shape1]->var_dict["x"]);
-    this->add_constraint(cont1);
+    // this->add_constraint(cont1);
 
+    Var *diff = new Var(-1, 1.5, true);
+    NumDiffConsts *cont2 = new NumDiffConsts(shape_node_dict[shape0]->var_dict["z"], shape_node_dict[shape1]->var_dict["z"], diff);
+    this->add_constraint(cont2);
     // // x
     // int s0_id = shape_var_dict[shape0][0];
     // int s1_id = shape_var_dict[shape1][0];
@@ -364,8 +371,10 @@ Eigen::VectorXd DMSolver::solve_ff(Eigen::VectorXd desired_sigma) {
     if (!is_compiled) {
         this->compile();
     }
-    // [tmp] should be 2
+
+    // // [tmp] should be 2
     Eigen::VectorXd out;
+    Eigen::VectorXd all_vals;
     Eigen::VectorXd init_pos = this->load_position();
     // load jacobian..
     // [tmp] should be 1x2
@@ -376,8 +385,13 @@ Eigen::VectorXd DMSolver::solve_ff(Eigen::VectorXd desired_sigma) {
     // first manuaully set the vars from the outside 
     // deal with the editor things later.
     Eigen::VectorXd _d_sigma = Eigen::VectorXd::Zero(n_vars);
-    _d_sigma[0] = desired_sigma[0];
-    _d_sigma[1] = desired_sigma[3];
+
+    // TODO : the desired sigma is wrong..
+    std::cout << "desired_sigma : " << std::endl;
+    std::cout << desired_sigma << std::endl;
+    _d_sigma[0] = desired_sigma[2];
+    _d_sigma[1] = desired_sigma[5];
+    std::cout << "d_sigma : " << std::endl;
     std::cout << _d_sigma << std::endl;
 
     // compute the force here, not outside..
@@ -422,7 +436,7 @@ Eigen::VectorXd DMSolver::solve_ff(Eigen::VectorXd desired_sigma) {
     std::cout << out << std::endl;
     store_position(out);
     // assign back 
-    Eigen::VectorXd all_vals = extract_values();
+    all_vals = extract_values();
     std::cout << all_vals << std::endl;
     return all_vals;
 }

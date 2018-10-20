@@ -19,4 +19,5 @@ public:
     // the position of param start and end
     int param_start;
     int param_end;
+    int param_str_len;
 };

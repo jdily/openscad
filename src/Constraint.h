@@ -47,7 +47,24 @@ public:
     // int num_vars() { return _num_vars; }
     Var* _a;
     Var* _b;
-    double _tar_val;
+    // double _tar_val;
+};
+
+class NumDiffConsts : public Constraint {
+public:
+    NumDiffConsts();
+    NumDiffConsts(Var* a, Var* b, Var* _val);
+    ~NumDiffConsts();
+    void write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos);
+    void accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos);
+    double violate_distance(Eigen::VectorXd pos);
+    void save_indices();
+    std::vector<Var*> variables();
+
+    Var* _a;
+    Var* _b;
+    // double _tar_val;
+    Var* _val;
 };
 
 class EqualPtsConsts : public Constraint {

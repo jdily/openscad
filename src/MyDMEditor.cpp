@@ -78,10 +78,15 @@ void MyDMEditor::pre_locate_param_string() {
 				int match_idx = exp.indexIn(shape_cursor.selectedText());
 				QString param_str = exp.capturedTexts()[1];
 				param_str_len = param_str.length();
+				std::cout << "index : " << index << std::endl;
+				std::cout << param_str.toStdString() << std::endl;
+
+
 				int start_pos = first_col + match_idx + 1;
 				int end_pos = start_pos + param_str_len;
 				(*iterator)->loc.param_start = start_pos;
 				(*iterator)->loc.param_end = end_pos;
+				(*iterator)->loc.param_str_len = end_pos - start_pos;
 			}
 		}
 		++iterator;
@@ -164,6 +169,8 @@ void MyDMEditor::update_mani_val(double new_val) {
 	if (mani_variable == false) {
 		if (this->textedit->textCursor().hasSelection()) {
 			std::cout << "has selection" << std::endl;
+			// new_val is correct !
+			// std::cout << "new value : " << new_val << std::endl;
 		} else {
 			std::cout << "no selection at all" << std::endl;
 		}
@@ -175,7 +182,6 @@ void MyDMEditor::update_mani_val(double new_val) {
 			this->textedit->moveCursor(QTextCursor::MoveOperation::Left, QTextCursor::MoveMode::KeepAnchor);        
 		}	
 		// test if it can find the right node.
-		
 
 	} else {
 		// move the cursor to "mani_line_no"
@@ -236,6 +242,8 @@ void MyDMEditor::update_params(hnode* node, std::vector<double> u_params) {
 // TODO : take the global position change into consideration...
 // Cuz the update parameter string len is different...
 void MyDMEditor::write_opted_val(Eigen::VectorXd sols) {
+	std::cout << "write the following values : " << std::endl;
+	std::cout << sols << std::endl;
 	int global_shift = 0;
     tree_hnode::sibling_iterator children;
 	tree_hnode::iterator iterator;
@@ -246,13 +254,17 @@ void MyDMEditor::write_opted_val(Eigen::VectorXd sols) {
 		int index = (*iterator)->idx;
 		if (type == "poly") {
 			std::string poly_type = (*iterator)->node->name();
-			std::vector<int> var_inds = this->m_solver->shape_var_dict[index];
-			// 1.
 			QStringList val_strs;
-			for (int &ind : var_inds) {
-				val_strs.push_back(QString::number(sols[ind]));
-				// vals.push_back(sols[ind]);
+			if (poly_type == "cube") {
+				val_strs.append(QString::number((*iterator)->var_dict["x"]->_cur_val));
+				val_strs.append(QString::number((*iterator)->var_dict["y"]->_cur_val));
+				val_strs.append(QString::number((*iterator)->var_dict["z"]->_cur_val));
 			}
+			std::cout << "check val string : " << std::endl;
+			for (auto str : val_strs) {
+				std::cout << str.toStdString() << " ";
+			}
+			std::cout << std::endl;
 			QString sol_strs = val_strs.join(",");
 			// 2. find the position to put these params
 			(*iterator)->loc.param_start += global_shift;
@@ -288,19 +300,23 @@ void MyDMEditor::opt_mani_val(double new_val) {
 		QString new_val_str = QString("%1").arg(new_val);
 		int str_len = new_val_str.length();
 		int change_len = (str_len - mani_val_len);
-		// std::cout << "new val str : " << new_val_str.toStdString() << " " << str_len << std::endl;
-		// std::cout << "ori (mani) val str : " << mani_val_str.toStdString() << " " << mani_val_len << std::endl;
-		// std::cout << "change len : " << change_len << std::endl;
+		
+
+		std::cout << "new val str : " << new_val_str.toStdString() << " " << str_len << std::endl;
+		std::cout << "ori (mani) val str : " << mani_val_str.toStdString() << " " << mani_val_len << std::endl;
+		std::cout << "change len : " << change_len << std::endl;
 		// 1. try to expand the selection to all params
 		int _param_start_pos = cur_selected_node->loc.param_start;
 		int _param_end_pos = cur_selected_node->loc.param_end;
+		int _param_str_len = cur_selected_node->loc.param_str_len;
 		// int _param_start_pos = param_start_pos;
 		// int _param_end_pos = param_end_pos;
 		// TODO : should we do this in another update_mani_val func???
 		if (change_len != 0) {
 			_param_end_pos += change_len;
 			cur_selected_node->loc.param_end += change_len;
-			param_str_len += change_len;
+			_param_str_len += change_len;
+			cur_selected_node->loc.param_str_len += change_len;
 		}
 		// update the curret edited value str...
 		mani_val_str = new_val_str;
@@ -309,7 +325,7 @@ void MyDMEditor::opt_mani_val(double new_val) {
 		QTextCursor param_cursor(this->textedit->document());
 		param_cursor.clearSelection();
 		param_cursor.setPosition(_param_start_pos, QTextCursor::MoveAnchor);
-		param_cursor.movePosition(QTextCursor::MoveOperation::Right, QTextCursor::MoveMode::KeepAnchor, param_str_len);
+		param_cursor.movePosition(QTextCursor::MoveOperation::Right, QTextCursor::MoveMode::KeepAnchor, _param_str_len);
 		QString cur_param_str;
 		if (param_cursor.hasSelection()) {
 			cur_param_str = param_cursor.selectedText(); 
@@ -337,7 +353,7 @@ void MyDMEditor::opt_mani_val(double new_val) {
 		// fast linear solve
 		Eigen::VectorXd sol = this->m_solver->solve_ff(edited_vars);
 		// TODO : have to fix the variable value mapping issue...
-		write_opted_val(sol);
+		// write_opted_val(sol);
 
 		
 		// snap back to the manifold.
