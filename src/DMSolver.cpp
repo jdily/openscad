@@ -271,6 +271,11 @@ void DMSolver::analyze_constraints() {
     Var *diff = new Var(-1, 1.5, true);
     NumDiffConsts *cont2 = new NumDiffConsts(shape_node_dict[shape0]->var_dict["z"], shape_node_dict[shape1]->var_dict["z"], diff);
     this->add_constraint(cont2);
+
+    Var *diff_x = new Var(-1, 0.0, true);
+    Var *diff_y = new Var(-1, 0.0, true);
+
+
     // // x
     // int s0_id = shape_var_dict[shape0][0];
     // int s1_id = shape_var_dict[shape1][0];
@@ -287,10 +292,14 @@ void DMSolver::analyze_constraints() {
     // all_constraints.push_back(encout2);
 }
 
+// what if the variable solver id is set twice???
+// [TODO] -> add check if _solver_id == -1??
 void DMSolver::add_variable(Var *_v) {
     int cur_idx = (int)this->all_vars.size();
     // std::cout << "cur_idx : " << cur_idx << std::endl;
-    _v->_solver_id = cur_idx;
+    if (_v->_solver_id == -1) {
+        _v->_solver_id = cur_idx;
+    }
     // std::cout << "v solver id : " << _v->_solver_id << std::endl;
     // std::cout << "v shape id : " << _v->_shape_id << std::endl;
     this->all_vars.push_back(_v);

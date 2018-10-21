@@ -159,6 +159,7 @@ double EqualPtsConsts:: violate_distance(Eigen::VectorXd pos) {}
 
 // ////////////////////////////////////////////
 // // AlignPoint2DConsts
+// TODO : think what is the order of the varabiles??
 // ////////////////////////////////////////////
 
 AlignPoint2DConsts::AlignPoint2DConsts(std::vector<Var*> vas, std::vector<Var*> vbs,  std::vector<float> wsa, std::vector<float> wsb, std::vector<Var*> measurement) {
@@ -180,7 +181,9 @@ void AlignPoint2DConsts::accumulate_enforcement_grad(float step_size, Eigen::Vec
 
 }
 
-double AlignPoint2DConsts:: violate_distance(Eigen::VectorXd pos) {}
+double AlignPoint2DConsts::violate_distance(Eigen::VectorXd pos) {
+
+}
 
 
 void AlignPoint2DConsts::save_indices() {
@@ -195,8 +198,10 @@ void AlignPoint2DConsts::save_indices() {
     }
 }
 
+// what if one variable is constrained by multiple coonstraints
 std::vector<Var*> AlignPoint2DConsts::variables() {
     std::vector<Var*> out;
+    
     out.insert(out.end(), _as.begin(), _as.end());
     out.insert(out.end(), _bs.begin(), _bs.end());
     return out;
