@@ -30,7 +30,7 @@ public:
 	void check_selection();
 	void set_shape_tree(tree_hnode* _tree);
 	void set_solver(DMSolver *_solver);
-	
+	void editor_loc_shift(int shift, int cur_id);
 
 	QAction *createSliderAct;
 	QPoint *slider_pos;
@@ -97,7 +97,7 @@ public slots:
 	void opt_mani_val(double new_val);
 	hnode* search_node(int select_line_no, int select_col);
 	// QString search_all_params();
-	void update_params(hnode* node, std::vector<double> u_params);
+	void update_var_val(hnode* node, std::vector<double> u_params);
 	void write_opted_val(Eigen::VectorXd sols);
 	void pre_locate_param_string();
 	

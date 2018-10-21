@@ -56,6 +56,7 @@ public:
     void store_position(Eigen::VectorXd pos);
     Eigen::VectorXd extract_values();
     void compile();
+    bool is_compile();
     
     void clear();
 

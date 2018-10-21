@@ -134,33 +134,6 @@ void MyDMEditor::check_selection() {
 				mani_line_no = i;
 			}
 		}
-		
-
-
-
-		// for (int i = 0; i < lines.length(); i++) {
-		// 	if (lines[i].contains(desire)) {
-		// 		line_nos.append(i);
-		// 	}
-		// }
-		// // 2. find the closest line number
-		// int min_diff = 100000, diff = 0, closest_line_no = -1;
-		// for (int &line_no : line_nos) {
-		// 	diff = abs(line_no - selected_line_no);
-		// 	if (diff < min_diff) {
-		// 		min_diff = diff;
-		// 		closest_line_no = line_no;
-		// 	}
-		// }
-		// std::cout << selected_line_no << ", closest line number : " << closest_line_no << std::endl;
-		// // 3. parse the declaration and find the declare value..
-		// QStringList split_line = lines[closest_line_no].split("=");
-		// for (int i = 0; i < split_line.length(); i++) {
-		// 	std::cout << split_line[i].toStdString() << std::endl;
-		// }
-		// float dec_val = split_line[1].toFloat();
-		// std::cout << "dec val : " << dec_val << std::endl;
-
 	}
 }
 
@@ -176,7 +149,7 @@ void MyDMEditor::update_mani_val(double new_val) {
 		}
 		QString new_val_str = QString("%1").arg(new_val);
 		int str_len = new_val_str.length();
-		// this->textedit->
+		
 		this->textedit->insertPlainText(new_val_str);
 		for (int k = 0; k < str_len; k++) {
 			this->textedit->moveCursor(QTextCursor::MoveOperation::Left, QTextCursor::MoveMode::KeepAnchor);        
@@ -210,25 +183,43 @@ void MyDMEditor::update_mani_val(double new_val) {
 	}
 }
 
-// [IMPORTANT TODO] change the update method -> change the var values.
-void MyDMEditor::update_params(hnode* node, std::vector<double> u_params) {
+// Should we change a name of this?
+void MyDMEditor::update_var_val(hnode* node, std::vector<double> u_params) {
 	// type should be "poly"
 	std::string type = node->type;
 	std::string poly_type = node->node->name();
 	PrimitiveNode* pn = dynamic_cast<PrimitiveNode*>(const_cast<AbstractNode*>(node->node));
+
 		// PrimitiveNode* _pn = const_cast<const PrimitiveNode*>(pn);
 	if (poly_type == "cube") {
 		// check if the length = 3
 		// assert((int)u_params.size() == 3);
-		pn->x = u_params[0];
-		pn->y = u_params[1];
-		pn->z = u_params[2];
+		node->var_dict["x"]->_cur_val = u_params[0];
+		node->var_dict["y"]->_cur_val = u_params[1];
+		node->var_dict["z"]->_cur_val = u_params[2];
 	} else if (poly_type == "sphere") {
-		pn->r1 = u_params[0];
+		node->var_dict["r1"]->_cur_val = u_params[0];
 	} else if (poly_type == "cylinder") {
-		pn->h = u_params[0];
-		pn->r1 = u_params[1];
-		pn->r2 = u_params[2];
+		node->var_dict["h"]->_cur_val = u_params[0];
+		node->var_dict["r1"]->_cur_val = u_params[1];
+		node->var_dict["r2"]->_cur_val = u_params[2];
+	}
+}
+
+void MyDMEditor::editor_loc_shift(int shift, int cur_id) {
+    tree_hnode::sibling_iterator children;
+	tree_hnode::iterator iterator;
+    iterator = shape_tree->begin();
+	while (iterator != shape_tree->end()) {
+		std::string type = (*iterator)->type;
+		int index = (*iterator)->idx;
+		if (type == "poly") {
+			if (index != cur_id) {
+				(*iterator)->loc.param_start += shift;
+				(*iterator)->loc.param_end += shift;
+			}
+		}
+		++iterator;
 	}
 }
 
@@ -240,8 +231,8 @@ void MyDMEditor::update_params(hnode* node, std::vector<double> u_params) {
 // TODO : take the global position change into consideration...
 // Cuz the update parameter string len is different...
 void MyDMEditor::write_opted_val(Eigen::VectorXd sols) {
-	std::cout << "write the following values : " << std::endl;
-	std::cout << sols << std::endl;
+	// std::cout << "write the following values : " << std::endl;
+	// std::cout << sols << std::endl;
 	int global_shift = 0;
     tree_hnode::sibling_iterator children;
 	tree_hnode::iterator iterator;
@@ -263,6 +254,7 @@ void MyDMEditor::write_opted_val(Eigen::VectorXd sols) {
 				std::cout << str.toStdString() << " ";
 			}
 			std::cout << std::endl;
+			std::cout << "global shift : " << global_shift << std::endl;
 			QString sol_strs = val_strs.join(",");
 			// 2. find the position to put these params
 			(*iterator)->loc.param_start += global_shift;
@@ -271,10 +263,12 @@ void MyDMEditor::write_opted_val(Eigen::VectorXd sols) {
 			int _param_end_pos = (*iterator)->loc.param_end;
 
 			// original param str length.
-			int ori_param_str_len = _param_end_pos - _param_start_pos;
-			int cur_shift = sol_strs.length() - ori_param_str_len;
+			// int ori_param_str_len = (*iterator)->loc.param_str_len;
+			// int ori_param_str_len = _param_end_pos - _param_start_pos;
+			int cur_shift = sol_strs.length() - (*iterator)->loc.param_str_len;
 			global_shift += cur_shift;
 			(*iterator)->loc.param_end = _param_start_pos + sol_strs.length();
+			(*iterator)->loc.param_str_len = sol_strs.length();
 
 			QTextCursor param_cursor(this->textedit->document());
 			param_cursor.clearSelection();
@@ -285,7 +279,6 @@ void MyDMEditor::write_opted_val(Eigen::VectorXd sols) {
 			this->textedit->insertPlainText(sol_strs);
 		}
 		++iterator;
-		// param_cursor.clearSelection();
 	}
 	// TODO : move the cursor back to original edited place
 
@@ -304,6 +297,7 @@ void MyDMEditor::opt_mani_val(double new_val) {
 		std::cout << "new val str : " << new_val_str.toStdString() << " " << str_len << std::endl;
 		std::cout << "ori (mani) val str : " << mani_val_str.toStdString() << " " << mani_val_len << std::endl;
 		std::cout << "change len : " << change_len << std::endl;
+		
 		// 1. try to expand the selection to all params
 		int _param_start_pos = cur_selected_node->loc.param_start;
 		int _param_end_pos = cur_selected_node->loc.param_end;
@@ -321,6 +315,9 @@ void MyDMEditor::opt_mani_val(double new_val) {
 		mani_val_str = new_val_str;
 		mani_val_len = str_len;
 
+		// the update param_str_len should be applied to all the rest node as well...
+		this->editor_loc_shift(change_len, cur_selected_node->idx);
+
 		QTextCursor param_cursor(this->textedit->document());
 		param_cursor.clearSelection();
 		param_cursor.setPosition(_param_start_pos, QTextCursor::MoveAnchor);
@@ -336,19 +333,24 @@ void MyDMEditor::opt_mani_val(double new_val) {
 		}
 		std::cout << "updated_param_str : " << cur_param_str.toStdString() << std::endl;
 		// TODO 1 -> update the parameters in this node
-		// Change the update method into update the variable content
-		update_params(cur_selected_node, u_params);
+		update_var_val(cur_selected_node, u_params);
 		// TODO 2 -> extract the force..
-		Eigen::VectorXd edited_vars = DMSolver::pack_vars(shape_tree);
-		std::cout << "dim of vector : " << edited_vars.size() << std::endl;
-		for (int i = 0; i < edited_vars.size(); i++) {
-			std::cout << edited_vars[i] << " ";
+		// Eigen::VectorXd edited_vars = DMSolver::pack_vars(shape_tree);
+		// std::cout << "dim of vector : " << edited_vars.size() << std::endl;
+		// for (int i = 0; i < edited_vars.size(); i++) {
+		// 	std::cout << edited_vars[i] << " ";
+		// }
+		// std::cout << std::endl;
+		// 2. get the force using Var -> get n_vars set by first compiling the solver.
+		if (!m_solver->is_compile()) {
+			m_solver->compile();
 		}
-		std::cout << std::endl;
-
-		
-
-
+		Eigen::VectorXd edited_vars(this->m_solver->num_vars());
+		for (int i = 0; i < m_solver->num_vars(); i++) {
+			edited_vars[i] = m_solver->all_vars[i]->_cur_val;
+		}
+		// std::cout << "edited_vars outside : " << std::endl;
+		// std::cout << edited_vars << std::endl;
 		// fast linear solve
 		Eigen::VectorXd sol = this->m_solver->solve_ff(edited_vars);
 		// TODO : have to fix the variable value mapping issue...
