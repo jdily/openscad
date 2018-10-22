@@ -162,18 +162,33 @@ double EqualPtsConsts:: violate_distance(Eigen::VectorXd pos) {}
 // TODO : think what is the order of the varabiles??
 // ////////////////////////////////////////////
 
-AlignPoint2DConsts::AlignPoint2DConsts(std::vector<Var*> vas, std::vector<Var*> vbs,  std::vector<float> wsa, std::vector<float> wsb, std::vector<Var*> measurement) {
-    _as = vas;
-    _bs = vbs;
-    ws_a = wsa;
-    ws_b = wsb;
-    _meas = measurement;
+AlignPoint2DConsts::AlignPoint2DConsts(std::vector<Var*> v0, std::vector<Var*> v1, std::vector<Var*> measurements) {
+    ax0_vars = v0;
+    ax1_vars = v1;
+    _meas = measurements;
     _num_eqs = 2;
+}
+
+
+AlignPoint2DConsts::AlignPoint2DConsts(std::vector<Var*> vas, std::vector<Var*> vbs,  std::vector<float> wsa, std::vector<float> wsb, std::vector<Var*> measurement) {
+    // _as = vas;
+    // _bs = vbs;
+    // ws_a = wsa;
+    // ws_b = wsb;
+    // _meas = measurement;
+    // _num_eqs = 2;
 }
 
 AlignPoint2DConsts::~AlignPoint2DConsts() {}
 
 void AlignPoint2DConsts::write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos) {
+    int row0 = _row, row1 = _row+1;
+    jac_mat->coeffRef(row0, this->ax0_indices[0]) = 1;
+    jac_mat->coeffRef(row0, this->ax0_indices[1]) = -1;
+    jac_mat->coeffRef(row0, this->meas_indices[0]) = 1;
+    jac_mat->coeffRef(row1, this->ax1_indices[0]) = 1;
+    jac_mat->coeffRef(row1, this->ax1_indices[1]) = -1;
+    jac_mat->coeffRef(row1, this->meas_indices[1]) = 1;
 
 }
 
@@ -182,28 +197,39 @@ void AlignPoint2DConsts::accumulate_enforcement_grad(float step_size, Eigen::Vec
 }
 
 double AlignPoint2DConsts::violate_distance(Eigen::VectorXd pos) {
-
+    double ax0_0 = pos[this->ax0_indices[0]];
+    double ax0_1 = pos[this->ax0_indices[1]];
+    double ax1_0 = pos[this->ax1_indices[0]];
+    double ax1_1 = pos[this->ax1_indices[1]];
+    double d0 = (ax0_0-ax0_1)+(pos[this->meas_indices[0]]);
+    double d1 = (ax1_0-ax1_1)+(pos[this->meas_indices[1]]);
+    return std::max(fabs(d0), fabs(d1));
 }
 
 
 void AlignPoint2DConsts::save_indices() {
-    for (auto v : _as) {
+    for (const auto v : ax0_vars) {
         this->_indices.push_back(v->_solver_id);
+        this->ax0_indices.push_back(v->_solver_id);
     }
-    for (auto v : _bs) {
+    for (const auto v : ax1_vars) {
         this->_indices.push_back(v->_solver_id);
+        this->ax1_indices.push_back(v->_solver_id);
     }
     for (auto v : _meas) {
         this->_indices.push_back(v->_solver_id);
+        this->meas_indices.push_back(v->_solver_id);
     }
+
 }
 
 // what if one variable is constrained by multiple coonstraints
 std::vector<Var*> AlignPoint2DConsts::variables() {
-    std::vector<Var*> out;
-    
-    out.insert(out.end(), _as.begin(), _as.end());
-    out.insert(out.end(), _bs.begin(), _bs.end());
+    std::vector<Var*> out;  
+    out.insert(out.end(), ax0_vars.begin(), ax0_vars.end());
+    out.insert(out.end(), ax1_vars.begin(), ax1_vars.end());
+    out.insert(out.end(), _meas.begin(), _meas.end());
+    // out.insert(out.end(), _bs.begin(), _bs.end());
     return out;
 }
 

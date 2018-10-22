@@ -5,11 +5,13 @@
 DMSolver::DMSolver() {
     is_compiled = false;
     n_vars = 0;
+    n_eqs = 0;
     n_constraints = 0;
 }
 DMSolver::DMSolver(tree_hnode* tree) : shape_tree(tree) {
     is_compiled = false;
     n_vars = 0;
+    n_eqs = 0;
     n_constraints = 0;
 }
 DMSolver::~DMSolver() {}
@@ -17,6 +19,7 @@ DMSolver::~DMSolver() {}
 void DMSolver::set_tree(tree_hnode* tree) {
     shape_tree = tree;
     n_vars = 0;
+    n_eqs = 0;
     all_vars.clear();
     // n_constraints = 0;
 }
@@ -245,6 +248,7 @@ void DMSolver::compile() {
         std::cout << "solver already compiled" << std::endl;
     } else {
         n_vars = (int)all_vars.size();
+        n_eqs = 0;
         n_constraints = (int)all_constraints.size();
 
         std::cout << "n_vars : " << n_vars << std::endl;
@@ -253,6 +257,7 @@ void DMSolver::compile() {
         int n_constraints = all_constraints.size();
         for (int c = 0; c < n_constraints; c++) {
             all_constraints[c]->save_indices();
+            n_eqs += all_constraints[c]->num_eqs();
         }
         is_compiled = true; 
     }
@@ -270,10 +275,28 @@ void DMSolver::analyze_constraints() {
 
     Var *diff = new Var(-1, 1.5, true);
     NumDiffConsts *cont2 = new NumDiffConsts(shape_node_dict[shape0]->var_dict["z"], shape_node_dict[shape1]->var_dict["z"], diff);
-    this->add_constraint(cont2);
+    // this->add_constraint(cont2);
 
     Var *diff_x = new Var(-1, 0.0, true);
     Var *diff_y = new Var(-1, 0.0, true);
+    std::vector<Var*> measurements = {diff_x, diff_y};
+    // std::vector<float> wsa = {1, 1, 0};
+    // std::vector<float> wsb = {1, 1, 0};
+    std::vector<Var*> v_ax0, v_ax1;
+    v_ax0.push_back(shape_node_dict[shape0]->var_dict["x"]);
+    v_ax0.push_back(shape_node_dict[shape1]->var_dict["x"]);
+    v_ax1.push_back(shape_node_dict[shape0]->var_dict["y"]);
+    v_ax1.push_back(shape_node_dict[shape1]->var_dict["y"]);
+    // for (const auto &it: shape_node_dict[shape0]->var_dict) {
+    //     va.push_back(it.second);
+    // }
+    // for (const auto &it: shape_node_dict[shape1]->var_dict) {
+    //     vb.push_back(it.second);
+    // } 
+    AlignPoint2DConsts *cont3 = new AlignPoint2DConsts(v_ax0, v_ax1, measurements);
+    this->add_constraint(cont3);
+    // std::cout << "Test alignment:" << std::endl;
+    // std::cout << this->all_vars.size() << std::endl;    
 
 
     // // x
@@ -323,7 +346,7 @@ void DMSolver::add_constraints(std::vector<Constraint*> consts) {
 
 SpMat* DMSolver::load_constraint_jacobian(Eigen::VectorXd pos) {
     // if (jac_mat == nullptr) {
-    SpMat *out = new SpMat(n_constraints, n_vars);
+    SpMat *out = new SpMat(n_eqs, n_vars);
     std::cout << "init, nonzero count : " << out->nonZeros() << std::endl; 
 
     //     jac_mat = new SpMat(all_constraints.size(), var_count);

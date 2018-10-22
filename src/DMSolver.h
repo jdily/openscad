@@ -74,6 +74,7 @@ public:
 
     int n_vars;
     int n_constraints;
+    int n_eqs;
     bool is_compiled;
 
     // Given node id -> fetch the var ids in the var array

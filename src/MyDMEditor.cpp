@@ -214,7 +214,7 @@ void MyDMEditor::editor_loc_shift(int shift, int cur_id) {
 		std::string type = (*iterator)->type;
 		int index = (*iterator)->idx;
 		if (type == "poly") {
-			if (index != cur_id) {
+			if (index > cur_id) {
 				(*iterator)->loc.param_start += shift;
 				(*iterator)->loc.param_end += shift;
 			}
@@ -315,7 +315,7 @@ void MyDMEditor::opt_mani_val(double new_val) {
 		mani_val_str = new_val_str;
 		mani_val_len = str_len;
 
-		// the update param_str_len should be applied to all the rest node as well...
+		// the update param_str_len should be applied to all the following node as well...
 		this->editor_loc_shift(change_len, cur_selected_node->idx);
 
 		QTextCursor param_cursor(this->textedit->document());
