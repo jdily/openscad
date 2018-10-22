@@ -275,7 +275,7 @@ void DMSolver::analyze_constraints() {
 
     Var *diff = new Var(-1, 1.5, true);
     NumDiffConsts *cont2 = new NumDiffConsts(shape_node_dict[shape0]->var_dict["z"], shape_node_dict[shape1]->var_dict["z"], diff);
-    // this->add_constraint(cont2);
+    this->add_constraint(cont2);
 
     Var *diff_x = new Var(-1, 0.0, true);
     Var *diff_y = new Var(-1, 0.0, true);
@@ -294,7 +294,7 @@ void DMSolver::analyze_constraints() {
     //     vb.push_back(it.second);
     // } 
     AlignPoint2DConsts *cont3 = new AlignPoint2DConsts(v_ax0, v_ax1, measurements);
-    this->add_constraint(cont3);
+    // this->add_constraint(cont3);
     // std::cout << "Test alignment:" << std::endl;
     // std::cout << this->all_vars.size() << std::endl;    
 
@@ -386,7 +386,9 @@ bool DMSolver::is_compile() {
 // store the value back to all_vars
 void DMSolver::store_position(Eigen::VectorXd pos) {
     for (int i = 0; i < n_vars; i++) {
-        all_vars[i]->_cur_val = pos[i];
+        if (!all_vars[i]->is_scalar) {
+            all_vars[i]->_cur_val = pos[i];
+        }
     }
 }
 
@@ -482,14 +484,17 @@ Eigen::VectorXd DMSolver::snap_constraints(Eigen::VectorXd cur_vals) {
     std::cout << "snap to constraints using gradient descent" << std::endl;
     Eigen::VectorXd grad = Eigen::VectorXd::Zero(n_vars);
     float step_size = 0.49; // This is a crude tool here.  Can do better...
-    int num_steps = 5;
+    int num_steps = 50;
     Eigen::VectorXd vals = cur_vals;
+    std::cout << "cur_vals in snap : " << std::endl;
+    std::cout << cur_vals << std::endl; 
     for (int step = 0; step < num_steps; step++) {
         std::cout << "Step " << step << " : " << std::endl;
         grad.setZero();
         for (int i = 0; i < num_constraints(); i++) {
             // std::cout << i << " add constraint jacobian " << std::endl;
-            all_constraints[i]->accumulate_enforcement_grad(step_size, grad, cur_vals);  
+            // TODO : we should updagte the cur_vals;
+            all_constraints[i]->accumulate_enforcement_grad(step_size, grad, vals);  
             // row_i += all_constraints[i]->num_eqs();
         }
         std::cout << "grad : " << std::endl;
@@ -498,5 +503,7 @@ Eigen::VectorXd DMSolver::snap_constraints(Eigen::VectorXd cur_vals) {
             vals[k] += grad[k];
         }
     }
-    return vals;
+    this->store_position(vals); 
+    Eigen::VectorXd all_vals = extract_values();
+    return all_vals;
 }
