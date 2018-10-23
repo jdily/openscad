@@ -181,15 +181,18 @@ AlignPoint2DConsts::AlignPoint2DConsts(std::vector<Var*> vas, std::vector<Var*> 
 
 AlignPoint2DConsts::~AlignPoint2DConsts() {}
 
+// Check here.
+
 void AlignPoint2DConsts::write_jacobian(SpMat *jac_mat, int _row, Eigen::VectorXd pos) {
     int row0 = _row, row1 = _row+1;
+    // first row
     jac_mat->coeffRef(row0, this->ax0_indices[0]) = 1;
     jac_mat->coeffRef(row0, this->ax0_indices[1]) = -1;
     jac_mat->coeffRef(row0, this->meas_indices[0]) = 1;
+    // second row  
     jac_mat->coeffRef(row1, this->ax1_indices[0]) = 1;
     jac_mat->coeffRef(row1, this->ax1_indices[1]) = -1;
     jac_mat->coeffRef(row1, this->meas_indices[1]) = 1;
-
 }
 
 void AlignPoint2DConsts::accumulate_enforcement_grad(float step_size, Eigen::VectorXd &grad, Eigen::VectorXd pos) {
@@ -205,6 +208,7 @@ void AlignPoint2DConsts::accumulate_enforcement_grad(float step_size, Eigen::Vec
     grad[ax0_indices[0]] += step_size*d0;
     grad[ax0_indices[1]] -= step_size*d0;
     grad[ax1_indices[0]] += step_size*d1;
+    
     grad[ax1_indices[1]] -= step_size*d1;
 }
 

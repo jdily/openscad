@@ -499,6 +499,11 @@ Eigen::VectorXd DMSolver::snap_constraints(Eigen::VectorXd cur_vals) {
         }
         std::cout << "grad : " << std::endl;
         std::cout << grad << std::endl;
+        float grad_norm = grad.norm();
+        if (grad_norm < 1e-5) {
+            std::cout << "grad is too small already, stop the gd." << std::endl;
+            break;
+        }
         for (int k = 0; k < n_vars; k++) {
             vals[k] += grad[k];
         }
