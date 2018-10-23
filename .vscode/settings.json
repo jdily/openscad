@@ -65,6 +65,20 @@
         "xloctime": "cpp",
         "xmemory": "cpp",
         "xstddef": "cpp",
-        "xtree": "cpp"
+        "xtree": "cpp",
+        "core": "cpp",
+        "atomic": "cpp",
+        "strstream": "cpp",
+        "*.tcc": "cpp",
+        "bitset": "cpp",
+        "cctype": "cpp",
+        "clocale": "cpp",
+        "complex": "cpp",
+        "csignal": "cpp",
+        "cstdarg": "cpp",
+        "cwctype": "cpp",
+        "optional": "cpp",
+        "cinttypes": "cpp",
+        "typeindex": "cpp"
     }
 }

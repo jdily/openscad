@@ -480,6 +480,7 @@ Eigen::VectorXd DMSolver::solve_ff(Eigen::VectorXd desired_sigma) {
     return all_vals;
 }
 
+// Compute the length of the grad, and stop the iterations if it's too small.
 Eigen::VectorXd DMSolver::snap_constraints(Eigen::VectorXd cur_vals) {
     std::cout << "snap to constraints using gradient descent" << std::endl;
     Eigen::VectorXd grad = Eigen::VectorXd::Zero(n_vars);
@@ -504,6 +505,7 @@ Eigen::VectorXd DMSolver::snap_constraints(Eigen::VectorXd cur_vals) {
             std::cout << "grad is too small already, stop the gd." << std::endl;
             break;
         }
+
         for (int k = 0; k < n_vars; k++) {
             vals[k] += grad[k];
         }
