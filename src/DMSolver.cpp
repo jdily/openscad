@@ -275,7 +275,7 @@ void DMSolver::analyze_constraints() {
 
     Var *diff = new Var(-1, 1.5, true);
     NumDiffConsts *cont2 = new NumDiffConsts(shape_node_dict[shape0]->var_dict["z"], shape_node_dict[shape1]->var_dict["z"], diff);
-    this->add_constraint(cont2);
+    // this->add_constraint(cont2);
 
     Var *diff_x = new Var(-1, 0.0, true);
     Var *diff_y = new Var(-1, 0.0, true);
@@ -294,7 +294,7 @@ void DMSolver::analyze_constraints() {
     //     vb.push_back(it.second);
     // } 
     AlignPoint2DConsts *cont3 = new AlignPoint2DConsts(v_ax0, v_ax1, measurements);
-    // this->add_constraint(cont3);
+    this->add_constraint(cont3);
     // std::cout << "Test alignment:" << std::endl;
     // std::cout << this->all_vars.size() << std::endl;    
 

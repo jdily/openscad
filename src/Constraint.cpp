@@ -205,12 +205,11 @@ void AlignPoint2DConsts::accumulate_enforcement_grad(float step_size, Eigen::Vec
     std::cout << "d0 : " << d0 << std::endl;
     std::cout << "d1 : " << d1 << std::endl;
 
-    grad[ax0_indices[0]] += step_size*d0;
-    grad[ax0_indices[1]] -= step_size*d0;
-    grad[ax1_indices[0]] += step_size*d1;
-    
-    grad[ax1_indices[1]] -= step_size*d1;
-}
+    grad[ax0_indices[0]] -= step_size*d0;
+    grad[ax0_indices[1]] += step_size*d0;
+    grad[ax1_indices[0]] -= step_size*d1;
+    grad[ax1_indices[1]] += step_size*d1;
+} 
 
 double AlignPoint2DConsts::violate_distance(Eigen::VectorXd pos) {
     double ax0_0 = pos[this->ax0_indices[0]];
